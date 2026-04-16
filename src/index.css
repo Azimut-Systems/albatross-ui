@@ -17,3 +17,22 @@ html, body, #root {
 .mapboxgl-canvas {
   outline: none;
 }
+
+/* LiquidGlass overrides:
+   - Renders shadow overlay divs (.pointer-events-none) that break flow → hide them
+   - Renders cursor highlight spans → hide them
+   - Hardcodes translate(-50%,-50%) + top/left:50% → neutralize positioning */
+.glass-wrapper {
+  display: inline-block;
+}
+.glass-wrapper > .pointer-events-none {
+  display: none !important;
+}
+.glass-wrapper > span {
+  display: none !important;
+}
+.glass-wrapper > * {
+  transform: none !important;
+  top: auto !important;
+  left: auto !important;
+}

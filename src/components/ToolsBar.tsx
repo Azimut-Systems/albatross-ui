@@ -1,3 +1,5 @@
+import LiquidGlass from 'liquid-glass-react';
+
 function PencilIcon() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -30,15 +32,27 @@ export default function ToolsBar() {
   const tools = [PencilIcon, PinIcon, LayersIcon];
 
   return (
-    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 h-[64px] p-2 rounded-xl border border-[rgba(110,72,242,0.5)] bg-[rgba(122,86,246,0.2)]">
-      {tools.map((Icon, i) => (
-        <button
-          key={i}
-          className="flex items-center p-[10px] rounded-lg cursor-pointer hover:bg-[rgba(122,86,246,0.2)] transition-colors"
-        >
-          <Icon />
-        </button>
-      ))}
+    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 glass-wrapper">
+      <LiquidGlass
+        displacementScale={70}
+        blurAmount={0.5}
+        saturation={140}
+        elasticity={0}
+        cornerRadius={16}
+        padding="8px"
+        style={{ border: '1px solid rgba(110,72,242,0.5)' }}
+      >
+        <div className="flex items-center gap-2">
+          {tools.map((Icon, i) => (
+            <button
+              key={i}
+              className="flex items-center p-[10px] rounded-lg cursor-pointer hover:bg-[rgba(122,86,246,0.2)] transition-colors"
+            >
+              <Icon />
+            </button>
+          ))}
+        </div>
+      </LiquidGlass>
     </div>
   );
 }

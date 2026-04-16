@@ -1,3 +1,5 @@
+import LiquidGlass from 'liquid-glass-react';
+
 const navItems = ['Map', 'Archive', 'Fleet', 'Settings'] as const;
 
 function TargetIcon() {
@@ -42,6 +44,14 @@ function AzimutLogo() {
   );
 }
 
+const glassProps = {
+  displacementScale: 70,
+  blurAmount: 0.5,
+  saturation: 140,
+  elasticity: 0,
+  cornerRadius: 16,
+} as const;
+
 type HeaderProps = {
   activeNav: string;
   onNavChange: (item: string) => void;
@@ -59,41 +69,52 @@ export default function Header({ activeNav, onNavChange }: HeaderProps) {
       </div>
 
       {/* Center: Navigation Menu */}
-      <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 p-2 rounded-xl border border-[rgba(110,72,242,0.5)] bg-[rgba(122,86,246,0.2)]">
-        {navItems.map((item) => (
-          <button
-            key={item}
-            onClick={() => onNavChange(item)}
-            className={`flex items-center px-[14px] py-[14px] rounded-lg text-sm tracking-[0.25px] transition-all cursor-pointer ${
-              activeNav === item
-                ? 'text-white font-bold'
-                : 'text-[#dee3e7] font-medium hover:text-white'
-            }`}
-            style={
-              activeNav === item
-                ? {
-                    backgroundImage:
-                      'linear-gradient(90deg, rgba(105,49,245,0.7) 0%, rgba(105,49,245,0.7) 100%), linear-gradient(107deg, rgba(56,78,231,0.3) 5.66%, rgba(30,191,245,0.3) 98.96%)',
-                  }
-                : undefined
-            }
-          >
-            <span className="font-satoshi">{item}</span>
-          </button>
-        ))}
+      <div className="absolute left-1/2 -translate-x-1/2 glass-wrapper">
+        <LiquidGlass
+          {...glassProps}
+          padding="8px"
+          style={{ border: '1px solid rgba(110,72,242,0.5)' }}
+        >
+          <div className="flex items-center gap-2">
+            {navItems.map((item) => (
+              <button
+                key={item}
+                onClick={() => onNavChange(item)}
+                className={`flex items-center px-[14px] py-[14px] rounded-lg text-sm tracking-[0.25px] transition-all cursor-pointer ${
+                  activeNav === item
+                    ? 'text-white font-bold'
+                    : 'text-[#dee3e7] font-medium hover:text-white'
+                }`}
+                style={
+                  activeNav === item
+                    ? {
+                        backgroundImage:
+                          'linear-gradient(90deg, rgba(105,49,245,0.7) 0%, rgba(105,49,245,0.7) 100%), linear-gradient(107deg, rgba(56,78,231,0.3) 5.66%, rgba(30,191,245,0.3) 98.96%)',
+                      }
+                    : undefined
+                }
+              >
+                <span className="font-satoshi">{item}</span>
+              </button>
+            ))}
+          </div>
+        </LiquidGlass>
       </div>
 
       {/* Right: Utility Buttons */}
       <div className="flex items-center gap-2">
         {[TargetIcon, CameraIcon, BellIcon].map((Icon, i) => (
-          <button
-            key={i}
-            className="flex items-center p-2 rounded-xl border border-[rgba(59,49,97,0.5)] bg-[rgba(122,86,246,0.09)] cursor-pointer hover:bg-[rgba(122,86,246,0.2)] transition-colors"
-          >
-            <div className="flex items-center p-3 rounded-lg">
-              <Icon />
-            </div>
-          </button>
+          <div key={i} className="glass-wrapper">
+            <LiquidGlass
+              {...glassProps}
+              padding="8px"
+              style={{ border: '1px solid rgba(59,49,97,0.5)', cursor: 'pointer' }}
+            >
+              <div className="flex items-center p-3 rounded-lg">
+                <Icon />
+              </div>
+            </LiquidGlass>
+          </div>
         ))}
       </div>
     </div>
