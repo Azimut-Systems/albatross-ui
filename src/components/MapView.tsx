@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
+import { createRoot } from 'react-dom/client';
 import mapboxgl from 'mapbox-gl';
+import GlassPanel from './GlassPanel';
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN as string;
 
@@ -112,33 +114,24 @@ function createVesselMarkerEl(vessel: Vessel): HTMLDivElement {
   return el;
 }
 
+function CameraMarkerContent() {
+  return (
+    <GlassPanel cornerRadius={31} padding="12px" style={{ cursor: 'pointer' }}>
+      <div className="flex items-center justify-center w-[36px] h-[36px]">
+        <svg width="28" height="28" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="8" width="22" height="18" rx="3" stroke="#c4bfef" strokeWidth="2" fill="none" />
+          <path d="M24 14L32 10V26L24 22" stroke="#c4bfef" strokeWidth="2" strokeLinejoin="round" fill="none" />
+        </svg>
+      </div>
+    </GlassPanel>
+  );
+}
+
 function createCameraMarkerEl(): HTMLDivElement {
-  const el = document.createElement('div');
-  el.style.cssText = `
-    width: 62px;
-    height: 62px;
-    border-radius: 38.75px;
-    border: 1.292px solid #8b85c4;
-    background: linear-gradient(222.59deg, rgba(29,22,58,0.8) 13.21%, rgba(83,64,152,0.8) 82.98%);
-    backdrop-filter: blur(5.167px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    padding: 12.917px;
-    overflow: hidden;
-  `;
-
-  const svg = document.createElement('div');
-  svg.innerHTML = `
-    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="2" y="8" width="22" height="18" rx="3" stroke="#c4bfef" stroke-width="2" fill="none" />
-      <path d="M24 14L32 10V26L24 22" stroke="#c4bfef" stroke-width="2" stroke-linejoin="round" fill="none" />
-    </svg>
-  `;
-  el.appendChild(svg);
-
-  return el;
+  const container = document.createElement('div');
+  const root = createRoot(container);
+  root.render(<CameraMarkerContent />);
+  return container;
 }
 
 export default function MapView() {
