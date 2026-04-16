@@ -35,12 +35,12 @@ export default function ToolsBar() {
     <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 glass-wrapper">
       <LiquidGlass
         displacementScale={70}
-        blurAmount={0.5}
+        blurAmount={0.1}
         saturation={140}
         elasticity={0}
         cornerRadius={16}
         padding="8px"
-        style={{ border: '1px solid rgba(110,72,242,0.5)' }}
+        style={{ background: 'rgba(105,49,245,0.075)', borderRadius: 16 }}
       >
         <div className="flex items-center gap-2">
           {tools.map((Icon, i) => (

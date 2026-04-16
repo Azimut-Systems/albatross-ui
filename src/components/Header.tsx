@@ -46,7 +46,7 @@ function AzimutLogo() {
 
 const glassProps = {
   displacementScale: 70,
-  blurAmount: 0.5,
+  blurAmount: 0.1,
   saturation: 140,
   elasticity: 0,
   cornerRadius: 16,
@@ -73,7 +73,7 @@ export default function Header({ activeNav, onNavChange }: HeaderProps) {
         <LiquidGlass
           {...glassProps}
           padding="8px"
-          style={{ border: '1px solid rgba(110,72,242,0.5)' }}
+          style={{ background: 'rgba(105,49,245,0.075)', borderRadius: 16 }}
         >
           <div className="flex items-center gap-2">
             {navItems.map((item) => (
@@ -89,7 +89,7 @@ export default function Header({ activeNav, onNavChange }: HeaderProps) {
                   activeNav === item
                     ? {
                         backgroundImage:
-                          'linear-gradient(90deg, rgba(105,49,245,0.7) 0%, rgba(105,49,245,0.7) 100%), linear-gradient(107deg, rgba(56,78,231,0.3) 5.66%, rgba(30,191,245,0.3) 98.96%)',
+                          'linear-gradient(90deg, rgba(105,49,245,0.35) 0%, rgba(105,49,245,0.35) 100%), linear-gradient(107deg, rgba(56,78,231,0.15) 5.66%, rgba(30,191,245,0.15) 98.96%)',
                       }
                     : undefined
                 }
@@ -108,7 +108,7 @@ export default function Header({ activeNav, onNavChange }: HeaderProps) {
             <LiquidGlass
               {...glassProps}
               padding="8px"
-              style={{ border: '1px solid rgba(59,49,97,0.5)', cursor: 'pointer' }}
+              style={{ background: 'rgba(105,49,245,0.075)', borderRadius: 16, cursor: 'pointer' }}
             >
               <div className="flex items-center p-3 rounded-lg">
                 <Icon />
