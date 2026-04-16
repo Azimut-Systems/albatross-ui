@@ -75,7 +75,6 @@ function createVesselMarkerEl(vessel: Vessel): HTMLDivElement {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    position: relative;
   `;
 
   // Center dot
