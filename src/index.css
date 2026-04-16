@@ -18,6 +18,10 @@ html, body, #root {
   outline: none;
 }
 
+.mapboxgl-ctrl-logo {
+  display: none !important;
+}
+
 /* LiquidGlass overrides:
    - Renders shadow overlay divs (.pointer-events-none) that break flow → hide them
    - Renders cursor highlight spans → hide them
