@@ -1,4 +1,4 @@
-import LiquidGlass from 'liquid-glass-react';
+import GlassPanel from './GlassPanel';
 
 function PencilIcon() {
   return (
@@ -32,27 +32,17 @@ export default function ToolsBar() {
   const tools = [PencilIcon, PinIcon, LayersIcon];
 
   return (
-    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 glass-wrapper">
-      <LiquidGlass
-        displacementScale={70}
-        blurAmount={0.1}
-        saturation={140}
-        elasticity={0}
-        cornerRadius={16}
-        padding="8px"
-        style={{ background: 'rgba(105,49,245,0.075)', borderRadius: 16 }}
-      >
-        <div className="flex items-center gap-2">
-          {tools.map((Icon, i) => (
-            <button
-              key={i}
-              className="flex items-center p-[10px] rounded-lg cursor-pointer hover:bg-[rgba(122,86,246,0.2)] transition-colors"
-            >
-              <Icon />
-            </button>
-          ))}
-        </div>
-      </LiquidGlass>
-    </div>
+    <GlassPanel className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20">
+      <div className="flex items-center gap-2">
+        {tools.map((Icon, i) => (
+          <button
+            key={i}
+            className="flex items-center p-[10px] rounded-lg cursor-pointer hover:bg-[rgba(122,86,246,0.2)] transition-colors"
+          >
+            <Icon />
+          </button>
+        ))}
+      </div>
+    </GlassPanel>
   );
 }
