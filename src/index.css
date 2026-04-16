@@ -1,1 +1,19 @@
 @import "tailwindcss";
+@import "mapbox-gl/dist/mapbox-gl.css";
+
+@theme {
+  --font-satoshi: 'Satoshi', sans-serif;
+  --font-montserrat: 'Montserrat', sans-serif;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #12111b;
+}
+
+.mapboxgl-canvas {
+  outline: none;
+}
