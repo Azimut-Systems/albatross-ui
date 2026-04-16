@@ -67,9 +67,9 @@ function createVesselMarkerEl(vessel: Vessel): HTMLDivElement {
   const style = vesselStyles[vessel.color];
   const el = document.createElement('div');
   el.style.cssText = `
-    width: 36px;
-    height: 36px;
-    border-radius: 22.5px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
     background: ${style.bg};
     border: 1px solid ${style.border};
     backdrop-filter: blur(0.655px);
@@ -93,7 +93,7 @@ function createVesselMarkerEl(vessel: Vessel): HTMLDivElement {
   // Direction indicator
   const arrow = document.createElement('div');
   const rad = (vessel.heading - 90) * (Math.PI / 180);
-  const dist = 22;
+  const dist = 19;
   const ax = Math.cos(rad) * dist;
   const ay = Math.sin(rad) * dist;
   arrow.style.cssText = `
