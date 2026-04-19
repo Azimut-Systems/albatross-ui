@@ -1049,6 +1049,7 @@ export default function MapView({
           style={{
             left: targetMenu.screenX + 12,
             top: targetMenu.screenY + 12,
+            zoom: scale,
           }}
           onMouseDown={(e) => e.stopPropagation()}
           onContextMenu={(e) => e.preventDefault()}

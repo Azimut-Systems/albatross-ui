@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import GlassPanel from './GlassPanel';
 
 type IconProps = { className?: string };
 
@@ -206,16 +207,11 @@ type MenuBoxProps = {
 
 function MenuBox({ children, width }: MenuBoxProps) {
   return (
-    <div
-      className="flex flex-col rounded-lg border border-[#392f57] p-2"
-      style={{
-        width,
-        background: 'rgba(34,25,60,0.85)',
-        backdropFilter: 'blur(6px)',
-      }}
-    >
-      {children}
-    </div>
+    <GlassPanel cornerRadius={10} padding="8px">
+      <div className="flex flex-col" style={{ width }}>
+        {children}
+      </div>
+    </GlassPanel>
   );
 }
 
