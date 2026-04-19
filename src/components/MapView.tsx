@@ -1,7 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import mapboxgl from 'mapbox-gl';
 import GlassPanel from './GlassPanel';
+import TargetHoverCard, { type TargetHoverCardData } from './TargetHoverCard';
+import { useUISize } from '../contexts/UISizeContext';
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN as string;
 
@@ -13,6 +15,9 @@ interface Vessel {
   lat: number;
   color: VesselColor;
   heading: number;
+  name: string;
+  externalId: string;
+  thumbnailUrl?: string;
 }
 
 interface Camera {
@@ -45,16 +50,16 @@ const vesselStyles: Record<VesselColor, { bg: string; border: string; dot: strin
 };
 
 const mockVessels: Vessel[] = [
-  { id: 'v1', lng: 34.6385, lat: 31.8305, color: 'red', heading: 45 },
-  { id: 'v2', lng: 34.6520, lat: 31.8270, color: 'red', heading: 120 },
-  { id: 'v3', lng: 34.6410, lat: 31.8340, color: 'orange', heading: 200 },
-  { id: 'v4', lng: 34.6470, lat: 31.8220, color: 'orange', heading: 310 },
-  { id: 'v5', lng: 34.6350, lat: 31.8260, color: 'blue', heading: 170 },
-  { id: 'v6', lng: 34.6490, lat: 31.8290, color: 'blue', heading: 90 },
-  { id: 'v7', lng: 34.6530, lat: 31.8250, color: 'blue', heading: 260 },
-  { id: 'v8', lng: 34.6440, lat: 31.8200, color: 'yellow', heading: 30 },
-  { id: 'v9', lng: 34.6380, lat: 31.8235, color: 'yellow', heading: 150 },
-  { id: 'v10', lng: 34.6500, lat: 31.8210, color: 'yellow', heading: 280 },
+  { id: 'v1', lng: 34.6385, lat: 31.8305, color: 'red', heading: 45, name: 'Gustav Masrek 234', externalId: 'D983GH22', thumbnailUrl: '/target-ship.png' },
+  { id: 'v2', lng: 34.6520, lat: 31.8270, color: 'red', heading: 120, name: 'Maria Lopez 118', externalId: 'M118LP42', thumbnailUrl: '/target-ship.png' },
+  { id: 'v3', lng: 34.6410, lat: 31.8340, color: 'orange', heading: 200, name: 'Orion Tanker 77', externalId: 'O77TNK19', thumbnailUrl: '/target-ship.png' },
+  { id: 'v4', lng: 34.6470, lat: 31.8220, color: 'orange', heading: 310, name: 'Kestrel 302', externalId: 'K302BL88', thumbnailUrl: '/target-ship.png' },
+  { id: 'v5', lng: 34.6350, lat: 31.8260, color: 'blue', heading: 170, name: 'Nautilus 19', externalId: 'N19SUB07', thumbnailUrl: '/target-ship.png' },
+  { id: 'v6', lng: 34.6490, lat: 31.8290, color: 'blue', heading: 90, name: 'Polaris Cargo', externalId: 'P042CG55', thumbnailUrl: '/target-ship.png' },
+  { id: 'v7', lng: 34.6530, lat: 31.8250, color: 'blue', heading: 260, name: 'Aegean Star', externalId: 'A812ST31', thumbnailUrl: '/target-ship.png' },
+  { id: 'v8', lng: 34.6440, lat: 31.8200, color: 'yellow', heading: 30, name: 'Helios 44', externalId: 'H044HL92', thumbnailUrl: '/target-ship.png' },
+  { id: 'v9', lng: 34.6380, lat: 31.8235, color: 'yellow', heading: 150, name: 'Sirocco 8', externalId: 'S008SC61', thumbnailUrl: '/target-ship.png' },
+  { id: 'v10', lng: 34.6500, lat: 31.8210, color: 'yellow', heading: 280, name: 'Zephyr 221', externalId: 'Z221ZP04', thumbnailUrl: '/target-ship.png' },
 ];
 
 const mockCameras: Camera[] = [
@@ -134,9 +139,19 @@ function createCameraMarkerEl(): HTMLDivElement {
   return container;
 }
 
+type HoverState = {
+  target: TargetHoverCardData;
+  lng: number;
+  lat: number;
+  screenX: number;
+  screenY: number;
+};
+
 export default function MapView() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
+  const [hover, setHover] = useState<HoverState | null>(null);
+  const { scale } = useUISize();
 
   useEffect(() => {
     if (!mapContainer.current || mapRef.current) return;
@@ -153,23 +168,50 @@ export default function MapView() {
 
     mapRef.current = map;
 
-    map.on('load', () => {
-      // Add vessel markers
+    const updateHoverPos = () => {
+      setHover((prev) => {
+        if (!prev) return prev;
+        const p = map.project([prev.lng, prev.lat]);
+        return { ...prev, screenX: p.x, screenY: p.y };
+      });
+    };
+
+    const addMarkers = () => {
       mockVessels.forEach((vessel) => {
         const el = createVesselMarkerEl(vessel);
+        el.addEventListener('mouseenter', () => {
+          const p = map.project([vessel.lng, vessel.lat]);
+          setHover({
+            target: {
+              name: vessel.name,
+              externalId: vessel.externalId,
+              status: 'Active',
+              thumbnailUrl: vessel.thumbnailUrl,
+            },
+            lng: vessel.lng,
+            lat: vessel.lat,
+            screenX: p.x,
+            screenY: p.y,
+          });
+        });
+        el.addEventListener('mouseleave', () => setHover(null));
         new mapboxgl.Marker({ element: el })
           .setLngLat([vessel.lng, vessel.lat])
           .addTo(map);
       });
 
-      // Add camera markers
       mockCameras.forEach((camera) => {
         const el = createCameraMarkerEl();
         new mapboxgl.Marker({ element: el })
           .setLngLat([camera.lng, camera.lat])
           .addTo(map);
       });
-    });
+    };
+
+    addMarkers();
+
+    map.on('move', updateHoverPos);
+    map.on('zoom', updateHoverPos);
 
     return () => {
       map.remove();
@@ -178,6 +220,21 @@ export default function MapView() {
   }, []);
 
   return (
-    <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
+    <>
+      <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
+      {hover && (
+        <div
+          className="pointer-events-none absolute z-20"
+          style={{
+            left: hover.screenX,
+            top: hover.screenY - 20 * scale,
+            transform: `translate(-50%, -100%) scale(${scale})`,
+            transformOrigin: 'center bottom',
+          }}
+        >
+          <TargetHoverCard target={hover.target} />
+        </div>
+      )}
+    </>
   );
 }
