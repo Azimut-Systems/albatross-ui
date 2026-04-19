@@ -705,9 +705,11 @@ export default function MapView({
     if (measure.mode !== 'off') return;
     const map = mapRef.current;
     if (!map) return;
-    const p = map.project([vessel.lng, vessel.lat]);
+    const rect = mapContainer.current?.getBoundingClientRect();
+    const x = rect ? e.clientX - rect.left : e.clientX;
+    const y = rect ? e.clientY - rect.top : e.clientY;
     setHover(null);
-    setTargetMenu({ vesselId: vessel.id, screenX: p.x, screenY: p.y });
+    setTargetMenu({ vesselId: vessel.id, screenX: x, screenY: y });
   };
 
   const handleTargetMenuAction = (
