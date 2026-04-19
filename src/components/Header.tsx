@@ -49,9 +49,18 @@ type HeaderProps = {
   onNavChange: (item: string) => void;
   targetsOpen?: boolean;
   onTargetsToggle?: () => void;
+  camerasOpen?: boolean;
+  onCamerasToggle?: () => void;
 };
 
-export default function Header({ activeNav, onNavChange, targetsOpen, onTargetsToggle }: HeaderProps) {
+export default function Header({
+  activeNav,
+  onNavChange,
+  targetsOpen,
+  onTargetsToggle,
+  camerasOpen,
+  onCamerasToggle,
+}: HeaderProps) {
   const utilityButtons = [
     {
       Icon: TargetIcon,
@@ -59,7 +68,12 @@ export default function Header({ activeNav, onNavChange, targetsOpen, onTargetsT
       active: targetsOpen,
       onClick: onTargetsToggle,
     },
-    { Icon: CameraIcon, label: 'Cameras' },
+    {
+      Icon: CameraIcon,
+      label: 'Toggle cameras list',
+      active: camerasOpen,
+      onClick: onCamerasToggle,
+    },
     { Icon: BellIcon, label: 'Notifications' },
   ];
 

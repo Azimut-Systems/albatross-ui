@@ -5,6 +5,7 @@ import ToolsBar from './components/ToolsBar';
 import GlassShowcase from './components/GlassShowcase';
 import SettingsPanel from './components/SettingsPanel';
 import TargetsList, { type Target } from './components/TargetsList';
+import CamerasList, { type Camera } from './components/CamerasList';
 import { UISizeProvider, useUISize } from './contexts/UISizeContext';
 
 const MOCK_TARGETS: Target[] = Array.from({ length: 7 }, (_, i) => ({
@@ -19,10 +20,20 @@ const MOCK_TARGETS: Target[] = Array.from({ length: 7 }, (_, i) => ({
   size: '72M',
 }));
 
+const MOCK_CAMERAS: Camera[] = Array.from({ length: 7 }, (_, i) => ({
+  id: String(i),
+  name: 'Cameras Name',
+  status: 'Connected',
+  activity: 'Idle',
+  completion: 75,
+}));
+
 function AppShell() {
   const [activeNav, setActiveNav] = useState('Map');
   const [targetsOpen, setTargetsOpen] = useState(false);
+  const [camerasOpen, setCamerasOpen] = useState(false);
   const [activeTargetId, setActiveTargetId] = useState<string | undefined>('1');
+  const [activeCameraId, setActiveCameraId] = useState<string | undefined>('1');
   const { scale } = useUISize();
   const uiScaleStyle = { zoom: scale } as React.CSSProperties;
 
@@ -36,6 +47,8 @@ function AppShell() {
           onNavChange={setActiveNav}
           targetsOpen={targetsOpen}
           onTargetsToggle={() => setTargetsOpen((v) => !v)}
+          camerasOpen={camerasOpen}
+          onCamerasToggle={() => setCamerasOpen((v) => !v)}
         />
         <ToolsBar />
         {targetsOpen && (
@@ -43,6 +56,13 @@ function AppShell() {
             targets={MOCK_TARGETS}
             activeId={activeTargetId}
             onSelect={setActiveTargetId}
+          />
+        )}
+        {camerasOpen && (
+          <CamerasList
+            cameras={MOCK_CAMERAS}
+            activeId={activeCameraId}
+            onSelect={setActiveCameraId}
           />
         )}
         {activeNav === 'Settings' && <SettingsPanel />}
