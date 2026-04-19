@@ -12,6 +12,13 @@ html, body, #root {
   padding: 0;
   overflow: hidden;
   background: #12111b;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+input, textarea, [contenteditable="true"] {
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 .mapboxgl-canvas {

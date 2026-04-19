@@ -356,6 +356,23 @@ export default function MapView() {
   );
   const [mapZoom, setMapZoom] = useState<number>(14);
 
+  // Overlay markers (cameras, vessels, pins) sit in front of the map canvas
+  // as DOM siblings, so wheel events over them never reach mapbox's zoom
+  // handler. Drive the map zoom directly instead, centered on the cursor.
+  const forwardWheelToMap = useCallback((e: React.WheelEvent) => {
+    const map = mapRef.current;
+    if (!map) return;
+    e.preventDefault();
+    const rect = map.getContainer().getBoundingClientRect();
+    const px: [number, number] = [e.clientX - rect.left, e.clientY - rect.top];
+    const lineDelta = e.deltaMode === 1 ? e.deltaY * 40 : e.deltaY;
+    map.easeTo({
+      zoom: map.getZoom() - lineDelta * 0.003,
+      around: map.unproject(px),
+      duration: 80,
+    });
+  }, []);
+
   const recomputeScreenPositions = useCallback(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -616,6 +633,7 @@ export default function MapView() {
               top: pos.y,
               transform: 'translate(-50%, -50%)',
             }}
+            onWheel={forwardWheelToMap}
           >
             <CameraMarker />
           </div>
@@ -633,6 +651,7 @@ export default function MapView() {
                 top: item.y,
                 transform: 'translate(-50%, -50%)',
               }}
+              onWheel={forwardWheelToMap}
             >
               <VesselMarker
                 vessel={item.vessel}
@@ -650,6 +669,7 @@ export default function MapView() {
               top: item.y,
               transform: 'translate(-50%, -50%)',
             }}
+            onWheel={forwardWheelToMap}
           >
             <VesselClusterMarker
               count={item.vessels.length}
@@ -675,6 +695,7 @@ export default function MapView() {
               top: pos.y,
               transform: 'translate(-50%, -50%)',
             }}
+            onWheel={forwardWheelToMap}
           >
             <div className="relative">
               <MapPin
@@ -752,6 +773,7 @@ export default function MapView() {
             transform: 'translate(-50%, -100%)',
             paddingBottom: 30,
           }}
+          onWheel={forwardWheelToMap}
         >
           <TargetHoverCard target={hover.target} style={{ zoom: scale }} />
         </div>
