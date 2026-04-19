@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
 import GlassPanel from './GlassPanel';
 import PinContextMenu from './PinContextMenu';
@@ -1046,27 +1046,19 @@ export default function MapView({
         })}
       </svg>
       {targetMenu && (
-        <div
-          className="absolute z-30"
-          style={{
-            left: targetMenu.screenX + 12,
-            top: targetMenu.screenY + 12,
-          }}
+        <TargetContextMenuOverlay
+          x={targetMenu.screenX}
+          y={targetMenu.screenY}
+          scale={scale}
           onMouseDown={(e) => e.stopPropagation()}
-          onContextMenu={(e) => e.preventDefault()}
           onWheel={forwardWheelToMap}
-        >
-         <div style={{ zoom: scale }}>
-          <TargetContextMenu
-            onAction={(action) => {
-              const vessel = mockVessels.find(
-                (v) => v.id === targetMenu.vesselId,
-              );
-              if (vessel) handleTargetMenuAction(vessel, action);
-            }}
-          />
-         </div>
-        </div>
+          onAction={(action) => {
+            const vessel = mockVessels.find(
+              (v) => v.id === targetMenu.vesselId,
+            );
+            if (vessel) handleTargetMenuAction(vessel, action);
+          }}
+        />
       )}
       {hover && !hoverHiddenByCluster && pin.mode === 'off' && measure.mode === 'off' && (
         <div
@@ -1087,6 +1079,54 @@ export default function MapView({
         </div>
       )}
     </>
+  );
+}
+
+function TargetContextMenuOverlay({
+  x,
+  y,
+  scale,
+  onAction,
+  onMouseDown,
+  onWheel,
+}: {
+  x: number;
+  y: number;
+  scale: number;
+  onAction: (action: TargetContextMenuAction) => void;
+  onMouseDown: (e: React.MouseEvent) => void;
+  onWheel: (e: React.WheelEvent) => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ left: x + 12, top: y + 12 });
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const margin = 8;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    let left = x + 12;
+    let top = y + 12;
+    if (left + rect.width + margin > vw) left = Math.max(margin, x - rect.width - 12);
+    if (top + rect.height + margin > vh) top = Math.max(margin, y - rect.height - 12);
+    setPos({ left, top });
+  }, [x, y, scale]);
+
+  return (
+    <div
+      ref={ref}
+      className="absolute z-30"
+      style={{ left: pos.left, top: pos.top }}
+      onMouseDown={onMouseDown}
+      onContextMenu={(e) => e.preventDefault()}
+      onWheel={onWheel}
+    >
+      <div style={{ zoom: scale }}>
+        <TargetContextMenu onAction={onAction} />
+      </div>
+    </div>
   );
 }
 
