@@ -177,6 +177,7 @@ function MapPin({
 }
 
 type HoverState = {
+  vesselId: string;
   target: TargetHoverCardData;
   lng: number;
   lat: number;
@@ -188,7 +189,6 @@ export default function MapView() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [hover, setHover] = useState<HoverState | null>(null);
-  const hideTimerRef = useRef<number | null>(null);
   const { scale } = useUISize();
   const pin = usePinMode();
 
@@ -203,21 +203,6 @@ export default function MapView() {
   const [cameraScreenPositions, setCameraScreenPositions] = useState<
     Record<string, { x: number; y: number }>
   >({});
-
-  const cancelHide = useCallback(() => {
-    if (hideTimerRef.current !== null) {
-      window.clearTimeout(hideTimerRef.current);
-      hideTimerRef.current = null;
-    }
-  }, []);
-
-  const scheduleHide = useCallback(() => {
-    cancelHide();
-    hideTimerRef.current = window.setTimeout(() => {
-      setHover(null);
-      hideTimerRef.current = null;
-    }, 300);
-  }, [cancelHide]);
 
   const recomputePinScreenPositions = useCallback(() => {
     const map = mapRef.current;
@@ -264,21 +249,25 @@ export default function MapView() {
 
     mockVessels.forEach((vessel) => {
       const el = createVesselMarkerEl(vessel);
-      el.addEventListener('mouseenter', () => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
         if (pinRef.current.mode !== 'off') return;
-        cancelHide();
         const p = map.project([vessel.lng, vessel.lat]);
-        setHover({
-          target: {
-            name: vessel.name,
-            externalId: vessel.externalId,
-            status: 'Active',
-            thumbnailUrl: vessel.thumbnailUrl,
-          },
-          lng: vessel.lng,
-          lat: vessel.lat,
-          screenX: p.x,
-          screenY: p.y,
+        setHover((prev) => {
+          if (prev?.vesselId === vessel.id) return null;
+          return {
+            vesselId: vessel.id,
+            target: {
+              name: vessel.name,
+              externalId: vessel.externalId,
+              status: 'Active',
+              thumbnailUrl: vessel.thumbnailUrl,
+            },
+            lng: vessel.lng,
+            lat: vessel.lat,
+            screenX: p.x,
+            screenY: p.y,
+          };
         });
       });
       new mapboxgl.Marker({ element: el })
@@ -292,8 +281,9 @@ export default function MapView() {
         state.addPin(e.lngLat.lng, e.lngLat.lat);
       } else if (state.mode === 'moving') {
         state.commitMovePin(e.lngLat.lng, e.lngLat.lat);
-      } else if (state.selectedPinId) {
-        state.setSelectedPin(null);
+      } else {
+        setHover(null);
+        if (state.selectedPinId) state.setSelectedPin(null);
       }
     });
 
@@ -305,7 +295,7 @@ export default function MapView() {
       map.remove();
       mapRef.current = null;
     };
-  }, [cancelHide, recomputePinScreenPositions]);
+  }, [recomputePinScreenPositions]);
 
   // Recompute pin screen positions whenever pins change.
   useEffect(() => {
@@ -402,8 +392,6 @@ export default function MapView() {
             transform: 'translate(-50%, -100%)',
             paddingBottom: 30,
           }}
-          onMouseEnter={cancelHide}
-          onMouseLeave={scheduleHide}
         >
           <TargetHoverCard target={hover.target} style={{ zoom: scale }} />
         </div>
