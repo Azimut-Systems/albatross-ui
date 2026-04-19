@@ -107,53 +107,150 @@ const mockVessels: Vessel[] = [
   { id: 'v10', lng: 34.6500, lat: 31.8210, color: 'yellow', heading: 280, name: 'Zephyr 221', externalId: 'Z221ZP04', thumbnailUrl: '/target-ship.png' },
 ];
 
-function createVesselMarkerEl(vessel: Vessel): HTMLDivElement {
+function VesselMarker({
+  vessel,
+  onClick,
+}: {
+  vessel: Vessel;
+  onClick: (e: React.MouseEvent) => void;
+}) {
   const style = vesselStyles[vessel.color];
-  const el = document.createElement('div');
-  el.style.cssText = `
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: ${style.bg};
-    border: 1px solid ${style.border};
-    backdrop-filter: blur(0.655px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  `;
-
-  const dot = document.createElement('div');
-  dot.style.cssText = `
-    width: 13.5px;
-    height: 13.5px;
-    border-radius: 50%;
-    background: ${style.dot};
-    border: 2px solid white;
-  `;
-  el.appendChild(dot);
-
-  const arrow = document.createElement('div');
   const rad = (vessel.heading - 90) * (Math.PI / 180);
   const dist = 19;
   const ax = Math.cos(rad) * dist;
   const ay = Math.sin(rad) * dist;
-  arrow.style.cssText = `
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    left: calc(50% + ${ax}px - 6px);
-    top: calc(50% + ${ay}px - 6px);
-    transform: rotate(${vessel.heading}deg);
-  `;
-  arrow.innerHTML = `
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-      <path d="M6 0L10 8L6 6L2 8L6 0Z" fill="${style.border}" />
-    </svg>
-  `;
-  el.appendChild(arrow);
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        position: 'relative',
+        width: 30,
+        height: 30,
+        borderRadius: '50%',
+        background: style.bg,
+        border: `1px solid ${style.border}`,
+        backdropFilter: 'blur(0.655px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+      }}
+    >
+      <div
+        style={{
+          width: 13.5,
+          height: 13.5,
+          borderRadius: '50%',
+          background: style.dot,
+          border: '2px solid white',
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          width: 12,
+          height: 12,
+          left: `calc(50% + ${ax}px - 6px)`,
+          top: `calc(50% + ${ay}px - 6px)`,
+          transform: `rotate(${vessel.heading}deg)`,
+        }}
+      >
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M6 0L10 8L6 6L2 8L6 0Z" fill={style.border} />
+        </svg>
+      </div>
+    </div>
+  );
+}
 
-  return el;
+function VesselClusterMarker({
+  count,
+  onClick,
+}: {
+  count: number;
+  onClick: (e: React.MouseEvent) => void;
+}) {
+  return (
+    <div onClick={onClick} style={{ cursor: 'pointer' }}>
+      <GlassPanel cornerRadius={31} padding="12px">
+        <div
+          className="flex items-center justify-center w-[36px] h-[36px]"
+          style={{
+            color: 'white',
+            fontSize: count >= 10 ? 18 : 20,
+            fontWeight: 600,
+            letterSpacing: '0.3px',
+            fontVariantNumeric: 'tabular-nums',
+            textShadow: '0 1px 2px rgba(0,0,0,0.45)',
+          }}
+        >
+          {count}
+        </div>
+      </GlassPanel>
+    </div>
+  );
+}
+
+type VesselClusterItem =
+  | { kind: 'single'; id: string; x: number; y: number; vessel: Vessel }
+  | {
+      kind: 'cluster';
+      id: string;
+      x: number;
+      y: number;
+      lng: number;
+      lat: number;
+      vessels: Vessel[];
+    };
+
+function clusterVessels(
+  vessels: Vessel[],
+  positions: Record<string, { x: number; y: number }>,
+  radiusPx: number,
+): VesselClusterItem[] {
+  const r2 = radiusPx * radiusPx;
+  const used = new Set<string>();
+  const out: VesselClusterItem[] = [];
+  for (const v of vessels) {
+    if (used.has(v.id)) continue;
+    const p = positions[v.id];
+    if (!p) continue;
+    const group: Vessel[] = [v];
+    used.add(v.id);
+    for (const other of vessels) {
+      if (used.has(other.id)) continue;
+      const po = positions[other.id];
+      if (!po) continue;
+      const dx = po.x - p.x;
+      const dy = po.y - p.y;
+      if (dx * dx + dy * dy < r2) {
+        group.push(other);
+        used.add(other.id);
+      }
+    }
+    if (group.length === 1) {
+      out.push({ kind: 'single', id: v.id, x: p.x, y: p.y, vessel: v });
+    } else {
+      const cx =
+        group.reduce((a, g) => a + positions[g.id].x, 0) / group.length;
+      const cy =
+        group.reduce((a, g) => a + positions[g.id].y, 0) / group.length;
+      const clng =
+        group.reduce((a, g) => a + g.lng, 0) / group.length;
+      const clat =
+        group.reduce((a, g) => a + g.lat, 0) / group.length;
+      out.push({
+        kind: 'cluster',
+        id: `cluster-${group.map((g) => g.id).join('-')}`,
+        x: cx,
+        y: cy,
+        lng: clng,
+        lat: clat,
+        vessels: group,
+      });
+    }
+  }
+  return out;
 }
 
 function CameraMarker() {
@@ -243,6 +340,9 @@ export default function MapView() {
   const [cameraScreenPositions, setCameraScreenPositions] = useState<
     Record<string, { x: number; y: number }>
   >({});
+  const [vesselScreenPositions, setVesselScreenPositions] = useState<
+    Record<string, { x: number; y: number }>
+  >({});
   const [measurementScreenPositions, setMeasurementScreenPositions] = useState<
     Record<string, { start: { x: number; y: number }; end: { x: number; y: number } }>
   >({});
@@ -254,6 +354,7 @@ export default function MapView() {
   const [cursorScreen, setCursorScreen] = useState<{ x: number; y: number } | null>(
     null,
   );
+  const [mapZoom, setMapZoom] = useState<number>(14);
 
   const recomputeScreenPositions = useCallback(() => {
     const map = mapRef.current;
@@ -270,6 +371,12 @@ export default function MapView() {
       camPositions[c.id] = { x: pt.x, y: pt.y };
     });
     setCameraScreenPositions(camPositions);
+    const vesselPositions: Record<string, { x: number; y: number }> = {};
+    mockVessels.forEach((v) => {
+      const pt = map.project([v.lng, v.lat]);
+      vesselPositions[v.id] = { x: pt.x, y: pt.y };
+    });
+    setVesselScreenPositions(vesselPositions);
     const measurementPositions: Record<
       string,
       { start: { x: number; y: number }; end: { x: number; y: number } }
@@ -321,35 +428,6 @@ export default function MapView() {
       recomputeScreenPositions();
     };
 
-    mockVessels.forEach((vessel) => {
-      const el = createVesselMarkerEl(vessel);
-      el.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (pinRef.current.mode !== 'off') return;
-        if (measureRef.current.mode !== 'off') return;
-        const p = map.project([vessel.lng, vessel.lat]);
-        setHover((prev) => {
-          if (prev?.vesselId === vessel.id) return null;
-          return {
-            vesselId: vessel.id,
-            target: {
-              name: vessel.name,
-              externalId: vessel.externalId,
-              status: 'Active',
-              thumbnailUrl: vessel.thumbnailUrl,
-            },
-            lng: vessel.lng,
-            lat: vessel.lat,
-            screenX: p.x,
-            screenY: p.y,
-          };
-        });
-      });
-      new mapboxgl.Marker({ element: el })
-        .setLngLat([vessel.lng, vessel.lat])
-        .addTo(map);
-    });
-
     map.on('click', (e) => {
       const pinState = pinRef.current;
       const measureState = measureRef.current;
@@ -380,9 +458,14 @@ export default function MapView() {
       setCursorScreen(null);
     });
 
+    const updateZoom = () => setMapZoom(map.getZoom());
     map.on('move', updateHoverPos);
     map.on('zoom', updateHoverPos);
-    map.on('load', recomputeScreenPositions);
+    map.on('zoom', updateZoom);
+    map.on('load', () => {
+      recomputeScreenPositions();
+      updateZoom();
+    });
 
     return () => {
       map.remove();
@@ -428,6 +511,57 @@ export default function MapView() {
   const previewEndLngLat =
     measure.mode === 'awaiting-end' && cursorLngLat ? cursorLngLat : null;
 
+  // Group vessels whose projected screen positions overlap. Radius is a bit
+  // larger than the marker diameter so visibly-touching icons collapse.
+  const vesselItems = clusterVessels(mockVessels, vesselScreenPositions, 36);
+  const clusteredVesselIds = new Set<string>();
+  vesselItems.forEach((it) => {
+    if (it.kind === 'cluster') it.vessels.forEach((v) => clusteredVesselIds.add(v.id));
+  });
+  const hoverHiddenByCluster =
+    hover != null && clusteredVesselIds.has(hover.vesselId);
+
+  const handleVesselClick = (vessel: Vessel, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (pin.mode !== 'off') return;
+    if (measure.mode !== 'off') return;
+    const map = mapRef.current;
+    if (!map) return;
+    const p = map.project([vessel.lng, vessel.lat]);
+    setHover((prev) => {
+      if (prev?.vesselId === vessel.id) return null;
+      return {
+        vesselId: vessel.id,
+        target: {
+          name: vessel.name,
+          externalId: vessel.externalId,
+          status: 'Active',
+          thumbnailUrl: vessel.thumbnailUrl,
+        },
+        lng: vessel.lng,
+        lat: vessel.lat,
+        screenX: p.x,
+        screenY: p.y,
+      };
+    });
+  };
+
+  const handleClusterClick = (
+    cluster: Extract<VesselClusterItem, { kind: 'cluster' }>,
+    e: React.MouseEvent,
+  ) => {
+    e.stopPropagation();
+    if (pin.mode !== 'off') return;
+    if (measure.mode !== 'off') return;
+    const map = mapRef.current;
+    if (!map) return;
+    map.easeTo({
+      center: [cluster.lng, cluster.lat],
+      zoom: Math.min(map.getZoom() + 1.5, 20),
+      duration: 350,
+    });
+  };
+
   return (
     <>
       <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
@@ -468,8 +602,9 @@ export default function MapView() {
           />
         )}
       </svg>
-      {/* Fixed cameras (infrastructure, not tied to pin mode). */}
-      {mockCameras.map((c) => {
+      {/* Fixed cameras (infrastructure, not tied to pin mode). Hidden when
+          zoomed out so they don't clutter the overview. */}
+      {mapZoom >= 13 && mockCameras.map((c) => {
         const pos = cameraScreenPositions[c.id];
         if (!pos) return null;
         return (
@@ -483,6 +618,43 @@ export default function MapView() {
             }}
           >
             <CameraMarker />
+          </div>
+        );
+      })}
+      {/* Vessels: individual markers, or a count bubble when they overlap on screen. */}
+      {vesselItems.map((item) => {
+        if (item.kind === 'single') {
+          return (
+            <div
+              key={item.id}
+              className="absolute z-10"
+              style={{
+                left: item.x,
+                top: item.y,
+                transform: 'translate(-50%, -50%)',
+              }}
+            >
+              <VesselMarker
+                vessel={item.vessel}
+                onClick={(e) => handleVesselClick(item.vessel, e)}
+              />
+            </div>
+          );
+        }
+        return (
+          <div
+            key={item.id}
+            className="absolute z-10"
+            style={{
+              left: item.x,
+              top: item.y,
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <VesselClusterMarker
+              count={item.vessels.length}
+              onClick={(e) => handleClusterClick(item, e)}
+            />
           </div>
         );
       })}
@@ -571,7 +743,7 @@ export default function MapView() {
             />
           </>
         )}
-      {hover && pin.mode === 'off' && measure.mode === 'off' && (
+      {hover && !hoverHiddenByCluster && pin.mode === 'off' && measure.mode === 'off' && (
         <div
           className="absolute z-20"
           style={{
