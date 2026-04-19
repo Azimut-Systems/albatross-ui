@@ -29,7 +29,7 @@ const ICON_STROKE_WIDTH = 1.33;
 
 function ShareIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
         d="M8 18.6667C9.10457 18.6667 10 17.7712 10 16.6667C10 15.5621 9.10457 14.6667 8 14.6667C6.89543 14.6667 6 15.5621 6 16.6667C6 17.7712 6.89543 18.6667 8 18.6667Z"
         stroke={ICON_COLOR}
@@ -57,7 +57,7 @@ function ShareIcon() {
 
 function BookmarkIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
         d="M15.3345 6.00061C15.6881 6.00061 16.0272 6.14108 16.2773 6.39113C16.5273 6.64118 16.6678 6.98032 16.6678 7.33394V17.3339C16.6678 17.4507 16.6371 17.5654 16.5788 17.6665C16.5205 17.7677 16.4367 17.8518 16.3357 17.9104C16.2347 17.9689 16.1201 18 16.0034 18.0004C15.8867 18.0008 15.7719 17.9705 15.6705 17.9126L12.6625 16.1939C12.4611 16.0789 12.2331 16.0184 12.0011 16.0184C11.7692 16.0184 11.5412 16.0789 11.3398 16.1939L8.33181 17.9126C8.23044 17.9705 8.11564 18.0008 7.9989 18.0004C7.88215 18 7.76756 17.9689 7.66658 17.9104C7.5656 17.8518 7.48177 17.7677 7.42349 17.6665C7.36521 17.5654 7.33452 17.4507 7.33448 17.3339V7.33394C7.33448 6.98032 7.47496 6.64118 7.72501 6.39113C7.97505 6.14108 8.31419 6.00061 8.66781 6.00061H15.3345Z"
         stroke={ICON_COLOR}
@@ -71,7 +71,7 @@ function BookmarkIcon() {
 
 function ArchiveIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
         d="M17.9987 6H5.9987C5.63051 6 5.33203 6.29848 5.33203 6.66667V8.66667C5.33203 9.03486 5.63051 9.33333 5.9987 9.33333H17.9987C18.3669 9.33333 18.6654 9.03486 18.6654 8.66667V6.66667C18.6654 6.29848 18.3669 6 17.9987 6Z"
         stroke={ICON_COLOR}
@@ -111,7 +111,7 @@ function IconButton({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[rgba(187,176,220,0.14)] cursor-pointer hover:bg-[rgba(187,176,220,0.24)] transition-colors"
+      className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[rgba(187,176,220,0.14)] cursor-pointer hover:bg-[rgba(187,176,220,0.24)] transition-colors"
     >
       {children}
     </button>
