@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import mapboxgl from 'mapbox-gl';
 import GlassPanel from './GlassPanel';
@@ -151,7 +151,23 @@ export default function MapView() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [hover, setHover] = useState<HoverState | null>(null);
+  const hideTimerRef = useRef<number | null>(null);
   const { scale } = useUISize();
+
+  const cancelHide = useCallback(() => {
+    if (hideTimerRef.current !== null) {
+      window.clearTimeout(hideTimerRef.current);
+      hideTimerRef.current = null;
+    }
+  }, []);
+
+  const scheduleHide = useCallback(() => {
+    cancelHide();
+    hideTimerRef.current = window.setTimeout(() => {
+      setHover(null);
+      hideTimerRef.current = null;
+    }, 300);
+  }, [cancelHide]);
 
   useEffect(() => {
     if (!mapContainer.current || mapRef.current) return;
@@ -180,6 +196,7 @@ export default function MapView() {
       mockVessels.forEach((vessel) => {
         const el = createVesselMarkerEl(vessel);
         el.addEventListener('mouseenter', () => {
+          cancelHide();
           const p = map.project([vessel.lng, vessel.lat]);
           setHover({
             target: {
@@ -194,7 +211,6 @@ export default function MapView() {
             screenY: p.y,
           });
         });
-        el.addEventListener('mouseleave', () => setHover(null));
         new mapboxgl.Marker({ element: el })
           .setLngLat([vessel.lng, vessel.lat])
           .addTo(map);
@@ -217,19 +233,22 @@ export default function MapView() {
       map.remove();
       mapRef.current = null;
     };
-  }, []);
+  }, [cancelHide]);
 
   return (
     <>
       <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
       {hover && (
         <div
-          className="pointer-events-none absolute z-20"
+          className="absolute z-20"
           style={{
             left: hover.screenX,
-            top: hover.screenY - 20 * scale,
+            top: hover.screenY + 15,
             transform: 'translate(-50%, -100%)',
+            paddingBottom: 30,
           }}
+          onMouseEnter={cancelHide}
+          onMouseLeave={scheduleHide}
         >
           <TargetHoverCard target={hover.target} />
         </div>
