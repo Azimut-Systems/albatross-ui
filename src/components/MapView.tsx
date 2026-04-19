@@ -250,7 +250,7 @@ export default function MapView() {
           onMouseEnter={cancelHide}
           onMouseLeave={scheduleHide}
         >
-          <TargetHoverCard target={hover.target} />
+          <TargetHoverCard target={hover.target} style={{ zoom: scale }} />
         </div>
       )}
     </>
