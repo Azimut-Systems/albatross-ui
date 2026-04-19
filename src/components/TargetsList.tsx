@@ -1,3 +1,5 @@
+import GlassPanel from './GlassPanel';
+
 function SearchIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -149,14 +151,12 @@ export default function TargetsList() {
   const activeId = '1';
 
   return (
-    <div
-      className="absolute top-[110px] left-6 z-20 w-[464px] max-h-[calc(100vh-140px)] flex flex-col gap-8 p-6 rounded-3xl overflow-hidden"
-      style={{
-        backgroundColor: 'rgba(106,67,241,0.1)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-      }}
+    <GlassPanel
+      className="absolute top-[110px] left-6 z-20"
+      cornerRadius={24}
+      padding="24px"
     >
+      <div className="flex flex-col gap-8 w-[416px] max-h-[calc(100vh-180px)]">
       <div className="flex flex-col gap-4 w-full shrink-0">
         <div className="flex items-center gap-1.5 w-full">
           <h2 className="flex-1 font-satoshi font-bold text-[22px] text-white leading-[1.5]">
@@ -178,6 +178,7 @@ export default function TargetsList() {
           <TargetCard key={t.id} target={t} active={t.id === activeId} />
         ))}
       </div>
-    </div>
+      </div>
+    </GlassPanel>
   );
 }
