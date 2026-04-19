@@ -79,13 +79,7 @@ export default function Header({
 
   return (
     <div className="absolute top-[25px] left-1/2 -translate-x-1/2 w-[calc(100%-44px)] h-[64px] z-20 flex items-center justify-between">
-      {/* Left: Logo + Site Name */}
-      <div className="flex items-center gap-4">
-        <AzimutLogo />
-        <span className="font-montserrat font-bold text-[28px] text-white tracking-[1.14px]">
-          Ashdod
-        </span>
-      </div>
+      <div />
 
       {/* Center: Navigation Menu */}
       <GlassPanel className="absolute left-1/2 -translate-x-1/2">
