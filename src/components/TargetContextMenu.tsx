@@ -200,6 +200,26 @@ function ChevronRightIcon({ className }: IconProps) {
   );
 }
 
+function ChevronLeftIcon({ className }: IconProps) {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      className={className}
+    >
+      <path
+        d="M10 4l-4 4 4 4"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 type MenuBoxProps = {
   children: React.ReactNode;
   width: number;
@@ -222,6 +242,7 @@ type MenuItemProps = {
   trailing?: React.ReactNode;
   onClick?: () => void;
   onMouseEnter?: () => void;
+  reverse?: boolean;
 };
 
 function MenuItem({
@@ -231,17 +252,20 @@ function MenuItem({
   trailing,
   onClick,
   onMouseEnter,
+  reverse,
 }: MenuItemProps) {
   return (
     <button
       type="button"
       onClick={onClick}
       onMouseEnter={onMouseEnter}
-      className={`flex items-center gap-[6px] w-full px-2 py-[10px] rounded text-white text-left cursor-pointer transition-colors ${
+      className={`flex items-center gap-[6px] w-full px-2 py-[10px] rounded text-white cursor-pointer transition-colors ${
+        reverse ? 'flex-row-reverse text-right' : 'text-left'
+      } ${
         active ? 'bg-[rgba(93,52,165,0.45)]' : 'hover:bg-[rgba(93,52,165,0.35)]'
       }`}
     >
-      <div className="flex flex-1 items-center gap-2 min-w-0 text-white">
+      <div className={`flex flex-1 items-center gap-2 min-w-0 text-white ${reverse ? 'flex-row-reverse' : ''}`}>
         {icon}
         <span
           className={`text-[14px] ${active ? 'font-bold' : 'font-medium'}`}
@@ -265,68 +289,54 @@ export type TargetContextMenuAction =
 
 type Props = {
   onAction: (action: TargetContextMenuAction) => void;
+  openLeft?: boolean;
+  openUp?: boolean;
 };
 
-export default function TargetContextMenu({ onAction }: Props) {
+export default function TargetContextMenu({ onAction, openLeft, openUp }: Props) {
   const [submenu, setSubmenu] = useState<'target' | 'map' | null>('target');
 
+  const chevron = openLeft ? <ChevronLeftIcon /> : <ChevronRightIcon />;
+
+  const rootBox = (
+    <MenuBox width={136}>
+      <MenuItem
+        icon={<TargetIcon />}
+        label="Target"
+        active={submenu === 'target'}
+        onMouseEnter={() => setSubmenu('target')}
+        trailing={chevron}
+        reverse={openLeft}
+      />
+      <MenuItem
+        icon={<MapIcon />}
+        label="Map"
+        active={submenu === 'map'}
+        onMouseEnter={() => setSubmenu('map')}
+        trailing={chevron}
+        reverse={openLeft}
+      />
+    </MenuBox>
+  );
+
+  const submenuBox = submenu === 'target' && (
+    <MenuBox width={141}>
+      <MenuItem icon={<CrosshairIcon />} label="Track Target" onClick={() => onAction('track')} />
+      <MenuItem icon={<InvestigateIcon />} label="Investigate" onClick={() => onAction('investigate')} />
+      <MenuItem icon={<ClearAlertIcon />} label="Clear Alert" onClick={() => onAction('clear-alert')} />
+      <MenuItem icon={<FocusIcon />} label="Point Camera" onClick={() => onAction('point-camera')} />
+      <MenuItem icon={<RouteIcon />} label="History Path" onClick={() => onAction('history-path')} />
+      <MenuItem icon={<RulerIcon />} label="Measure" onClick={() => onAction('measure')} />
+      <MenuItem icon={<TargetIcon />} label="Highlight TGT" onClick={() => onAction('highlight')} />
+    </MenuBox>
+  );
+
   return (
-    <div className="flex items-start gap-1 pointer-events-auto">
-      <MenuBox width={136}>
-        <MenuItem
-          icon={<TargetIcon />}
-          label="Target"
-          active={submenu === 'target'}
-          onMouseEnter={() => setSubmenu('target')}
-          trailing={<ChevronRightIcon />}
-        />
-        <MenuItem
-          icon={<MapIcon />}
-          label="Map"
-          active={submenu === 'map'}
-          onMouseEnter={() => setSubmenu('map')}
-          trailing={<ChevronRightIcon />}
-        />
-      </MenuBox>
-      {submenu === 'target' && (
-        <MenuBox width={141}>
-          <MenuItem
-            icon={<CrosshairIcon />}
-            label="Track Target"
-            onClick={() => onAction('track')}
-          />
-          <MenuItem
-            icon={<InvestigateIcon />}
-            label="Investigate"
-            onClick={() => onAction('investigate')}
-          />
-          <MenuItem
-            icon={<ClearAlertIcon />}
-            label="Clear Alert"
-            onClick={() => onAction('clear-alert')}
-          />
-          <MenuItem
-            icon={<FocusIcon />}
-            label="Point Camera"
-            onClick={() => onAction('point-camera')}
-          />
-          <MenuItem
-            icon={<RouteIcon />}
-            label="History Path"
-            onClick={() => onAction('history-path')}
-          />
-          <MenuItem
-            icon={<RulerIcon />}
-            label="Measure"
-            onClick={() => onAction('measure')}
-          />
-          <MenuItem
-            icon={<TargetIcon />}
-            label="Highlight TGT"
-            onClick={() => onAction('highlight')}
-          />
-        </MenuBox>
-      )}
+    <div
+      className={`flex gap-1 pointer-events-auto ${openUp ? 'items-end' : 'items-start'} ${openLeft ? 'flex-row-reverse' : ''}`}
+    >
+      {rootBox}
+      {submenuBox}
     </div>
   );
 }

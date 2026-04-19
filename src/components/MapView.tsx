@@ -1098,7 +1098,11 @@ function TargetContextMenuOverlay({
   onWheel: (e: React.WheelEvent) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [pos, setPos] = useState({ left: x + 12, top: y + 12 });
+  const [layout, setLayout] = useState<{
+    openLeft: boolean;
+    openUp: boolean;
+    measured: boolean;
+  }>({ openLeft: false, openUp: false, measured: false });
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -1107,24 +1111,36 @@ function TargetContextMenuOverlay({
     const margin = 8;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-    let left = x + 12;
-    let top = y + 12;
-    if (left + rect.width + margin > vw) left = Math.max(margin, x - rect.width - 12);
-    if (top + rect.height + margin > vh) top = Math.max(margin, y - rect.height - 12);
-    setPos({ left, top });
+    const openLeft = x + 12 + rect.width + margin > vw;
+    const openUp = y + 12 + rect.height + margin > vh;
+    setLayout({ openLeft, openUp, measured: true });
   }, [x, y, scale]);
+
+  const offset = 12;
+  const left = layout.openLeft ? x - offset : x + offset;
+  const top = layout.openUp ? y - offset : y + offset;
+  const translate = `${layout.openLeft ? '-100%' : '0'}, ${layout.openUp ? '-100%' : '0'}`;
 
   return (
     <div
       ref={ref}
       className="absolute z-30"
-      style={{ left: pos.left, top: pos.top }}
+      style={{
+        left,
+        top,
+        transform: `translate(${translate})`,
+        visibility: layout.measured ? 'visible' : 'hidden',
+      }}
       onMouseDown={onMouseDown}
       onContextMenu={(e) => e.preventDefault()}
       onWheel={onWheel}
     >
       <div style={{ zoom: scale }}>
-        <TargetContextMenu onAction={onAction} />
+        <TargetContextMenu
+          onAction={onAction}
+          openLeft={layout.openLeft}
+          openUp={layout.openUp}
+        />
       </div>
     </div>
   );
