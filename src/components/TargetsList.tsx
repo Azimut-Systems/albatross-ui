@@ -203,7 +203,10 @@ export default function TargetsList({
       cornerRadius={24}
       padding="24px"
     >
-      <div className="flex flex-col gap-8 w-[416px] max-h-[calc(100vh-180px)]">
+      <div
+        className="flex flex-col gap-8 w-[416px]"
+        style={{ height: 'calc((100vh - 110px) / var(--ui-scale) - 110px)' }}
+      >
         <div className="flex flex-col gap-4 w-full shrink-0">
           <div className="flex items-center gap-1.5 w-full">
             <h2 className="flex-1 font-satoshi font-bold text-[22px] text-white leading-[1.5]">
@@ -228,7 +231,7 @@ export default function TargetsList({
         <ul
           role="listbox"
           aria-label="Targets"
-          className="flex flex-col gap-4 w-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden list-none m-0 p-0"
+          className="flex flex-col gap-4 w-full flex-1 min-h-0 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden list-none m-0 p-0"
         >
           {targets.map((t) => (
             <li key={t.id} role="option" aria-selected={t.id === activeId}>
