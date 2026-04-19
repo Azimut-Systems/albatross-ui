@@ -48,7 +48,7 @@ function AppShell() {
 
   return (
     <div className="relative h-screen w-screen bg-[#12111b] overflow-hidden">
-      <MapView />
+      <MapView onTargetOpen={() => { setTargetsOpen(true); setActiveTargetId('0'); }} />
       <div className="absolute bottom-6 left-6 z-20 pointer-events-none">
         <svg width="80" height="17" viewBox="0 0 135 29" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M48.3412 8.91016H30.9934V13.7846H39.2333L30.5605 28.4101V28.7708H48.4599V23.8964H39.6685L48.3412 9.27079V8.91016Z" fill="#844CFF" fillOpacity="0.6"/>

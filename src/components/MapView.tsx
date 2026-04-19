@@ -89,12 +89,46 @@ interface CameraPlacement {
 }
 
 const mockCameras: CameraPlacement[] = [
+  // Ashdod (Israel)
   { id: 'c1', lng: 34.632, lat: 31.826 },
   { id: 'c2', lng: 34.648, lat: 31.819 },
   { id: 'c3', lng: 34.646, lat: 31.823 },
+  // Bosphorus (Istanbul, TR)
+  { id: 'c-bos-1', lng: 29.0574, lat: 41.0857 },
+  { id: 'c-bos-2', lng: 29.0144, lat: 41.0253 },
+  { id: 'c-bos-3', lng: 29.0925, lat: 41.1381 },
+  // Strait of Gibraltar
+  { id: 'c-gib-1', lng: -5.3442, lat: 36.1112 },
+  { id: 'c-gib-2', lng: -5.4453, lat: 36.1239 },
+  { id: 'c-gib-3', lng: -5.7283, lat: 36.0589 },
+  // Panama Canal
+  { id: 'c-pan-1', lng: -79.9211, lat: 9.2718 },
+  { id: 'c-pan-2', lng: -79.5906, lat: 8.9936 },
+  { id: 'c-pan-3', lng: -79.9089, lat: 9.3492 },
+  // Suez Canal
+  { id: 'c-suez-1', lng: 32.3019, lat: 31.2653 },
+  { id: 'c-suez-2', lng: 32.2719, lat: 30.5965 },
+  { id: 'c-suez-3', lng: 32.5469, lat: 29.9668 },
+  // Strait of Malacca / Singapore
+  { id: 'c-mal-1', lng: 103.8547, lat: 1.2364 },
+  { id: 'c-mal-2', lng: 103.7436, lat: 1.4456 },
+  { id: 'c-mal-3', lng: 102.2501, lat: 2.1896 },
+  // Bab-el-Mandeb
+  { id: 'c-bab-1', lng: 43.4172, lat: 12.6392 },
+  { id: 'c-bab-2', lng: 44.9856, lat: 12.7856 },
+  { id: 'c-bab-3', lng: 43.1403, lat: 11.5883 },
+  // Strait of Hormuz
+  { id: 'c-hor-1', lng: 56.2489, lat: 26.1833 },
+  { id: 'c-hor-2', lng: 56.2897, lat: 27.1833 },
+  { id: 'c-hor-3', lng: 55.9434, lat: 25.79 },
+  // Dover Strait / English Channel
+  { id: 'c-dov-1', lng: 1.3125, lat: 51.1279 },
+  { id: 'c-dov-2', lng: 1.8542, lat: 50.9513 },
+  { id: 'c-dov-3', lng: 0.9575, lat: 50.9139 },
 ];
 
 const mockVessels: Vessel[] = [
+  // Ashdod (Israel)
   { id: 'v1', lng: 34.6385, lat: 31.8305, color: 'red', heading: 45, name: 'Gustav Masrek 234', externalId: 'D983GH22', thumbnailUrl: '/target-ship.png' },
   { id: 'v2', lng: 34.6520, lat: 31.8270, color: 'red', heading: 120, name: 'Maria Lopez 118', externalId: 'M118LP42', thumbnailUrl: '/target-ship.png' },
   { id: 'v3', lng: 34.6410, lat: 31.8340, color: 'orange', heading: 200, name: 'Orion Tanker 77', externalId: 'O77TNK19', thumbnailUrl: '/target-ship.png' },
@@ -105,6 +139,66 @@ const mockVessels: Vessel[] = [
   { id: 'v8', lng: 34.6440, lat: 31.8200, color: 'yellow', heading: 30, name: 'Helios 44', externalId: 'H044HL92', thumbnailUrl: '/target-ship.png' },
   { id: 'v9', lng: 34.6380, lat: 31.8235, color: 'yellow', heading: 150, name: 'Sirocco 8', externalId: 'S008SC61', thumbnailUrl: '/target-ship.png' },
   { id: 'v10', lng: 34.6500, lat: 31.8210, color: 'yellow', heading: 280, name: 'Zephyr 221', externalId: 'Z221ZP04', thumbnailUrl: '/target-ship.png' },
+  // Bosphorus (N-S strait, ~0°/180° headings)
+  { id: 'v-bos-1', lng: 29.0445, lat: 41.0793, color: 'red', heading: 182, name: 'Karadeniz 417', externalId: 'KD417BZ', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-bos-2', lng: 29.0458, lat: 41.0801, color: 'blue', heading: 200, name: 'Marmara Star', externalId: 'MR088ST', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-bos-3', lng: 29.0471, lat: 41.0788, color: 'orange', heading: 5, name: 'Anatolia 52', externalId: 'AN052TR', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-bos-4', lng: 29.0312, lat: 41.0451, color: 'yellow', heading: 170, name: 'Izmir Pride', externalId: 'IZ512PR', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-bos-5', lng: 29.0816, lat: 41.1207, color: 'blue', heading: 355, name: 'Bosphorus Link', externalId: 'BS779LK', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-bos-6', lng: 29.0233, lat: 41.0335, color: 'red', heading: 185, name: 'Galata Trader', externalId: 'GT212GL', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-bos-7', lng: 29.0947, lat: 41.1365, color: 'orange', heading: 8, name: 'Ussuri 9', externalId: 'USK009DR', thumbnailUrl: '/target-ship.png' },
+  // Strait of Gibraltar (E-W strait, ~90°/270° headings)
+  { id: 'v-gib-1', lng: -5.4095, lat: 35.9702, color: 'blue', heading: 92, name: 'Algeciras 77', externalId: 'AL077CG', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-gib-2', lng: -5.4108, lat: 35.9718, color: 'orange', heading: 275, name: 'Tarifa Voyager', externalId: 'TR641VY', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-gib-3', lng: -5.4121, lat: 35.9695, color: 'yellow', heading: 95, name: 'Ceuta Moon', externalId: 'CE248MN', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-gib-4', lng: -5.5932, lat: 35.9128, color: 'red', heading: 280, name: 'Atlantic Runner', externalId: 'AT903RN', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-gib-5', lng: -5.3205, lat: 36.0518, color: 'blue', heading: 85, name: 'Pillars of Hercules', externalId: 'PL311AH', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-gib-6', lng: -5.6784, lat: 35.9861, color: 'orange', heading: 270, name: 'Rock Trader', externalId: 'RK552TR', thumbnailUrl: '/target-ship.png' },
+  // Panama Canal
+  { id: 'v-pan-1', lng: -79.9198, lat: 9.2655, color: 'blue', heading: 160, name: 'Balboa Carrier', externalId: 'BL101CR', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-pan-2', lng: -79.9185, lat: 9.2641, color: 'red', heading: 340, name: 'Colón Bay 21', externalId: 'CB021BY', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-pan-3', lng: -79.9173, lat: 9.2629, color: 'orange', heading: 175, name: 'Panamax 7', externalId: 'PX007MX', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-pan-4', lng: -79.8991, lat: 9.3412, color: 'yellow', heading: 350, name: 'Gatun Star', externalId: 'GT778ST', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-pan-5', lng: -79.5844, lat: 8.9884, color: 'blue', heading: 170, name: 'Miraflores Light', externalId: 'MF134LT', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-pan-6', lng: -79.9042, lat: 9.3588, color: 'red', heading: 345, name: 'Cristóbal 3', externalId: 'CR003OB', thumbnailUrl: '/target-ship.png' },
+  // Suez Canal (N-S, ~0°/180°)
+  { id: 'v-suez-1', lng: 32.3157, lat: 31.2418, color: 'blue', heading: 180, name: 'Port Said Light', externalId: 'PS412LT', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-suez-2', lng: 32.2815, lat: 30.6127, color: 'orange', heading: 175, name: 'Ismailia Transit', externalId: 'IS099TR', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-suez-3', lng: 32.5501, lat: 29.9715, color: 'red', heading: 2, name: 'Suez Sentinel', externalId: 'SZ321SN', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-suez-4', lng: 32.5493, lat: 29.9822, color: 'yellow', heading: 8, name: 'Red Sea Clipper', externalId: 'RS678CL', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-suez-5', lng: 32.3641, lat: 30.3432, color: 'blue', heading: 180, name: 'Great Bitter 12', externalId: 'GB012BT', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-suez-6', lng: 32.3655, lat: 30.3445, color: 'orange', heading: 0, name: 'Canal Drifter', externalId: 'CD455DR', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-suez-7', lng: 32.3628, lat: 30.3418, color: 'red', heading: 185, name: 'Pyramids Dawn', externalId: 'PY719DW', thumbnailUrl: '/target-ship.png' },
+  // Strait of Malacca / Singapore
+  { id: 'v-mal-1', lng: 103.8512, lat: 1.2298, color: 'orange', heading: 125, name: 'Straits Tiger 8', externalId: 'ST008TG', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-mal-2', lng: 103.8527, lat: 1.2312, color: 'red', heading: 305, name: 'Singapore Drift', externalId: 'SG244DF', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-mal-3', lng: 103.8495, lat: 1.2276, color: 'blue', heading: 130, name: 'Johor Wave', externalId: 'JH567WV', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-mal-4', lng: 102.2418, lat: 2.1743, color: 'yellow', heading: 310, name: 'Malacca Rose', externalId: 'ML822RS', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-mal-5', lng: 100.3182, lat: 5.3917, color: 'blue', heading: 140, name: 'Penang Run', externalId: 'PN091RN', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-mal-6', lng: 103.7268, lat: 1.1632, color: 'red', heading: 300, name: 'South Sentinel', externalId: 'SS356SN', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-mal-7', lng: 101.3902, lat: 3.0044, color: 'orange', heading: 135, name: 'Kuala Breeze', externalId: 'KL114BR', thumbnailUrl: '/target-ship.png' },
+  // Bab-el-Mandeb
+  { id: 'v-bab-1', lng: 43.3587, lat: 12.5743, color: 'red', heading: 15, name: 'Aden Runner', externalId: 'AD612RN', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-bab-2', lng: 43.3604, lat: 12.5759, color: 'orange', heading: 195, name: 'Perim Wind', externalId: 'PR887WD', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-bab-3', lng: 43.3572, lat: 12.5728, color: 'yellow', heading: 25, name: 'Horn Horizon', externalId: 'HN202HZ', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-bab-4', lng: 43.2145, lat: 12.1258, color: 'blue', heading: 200, name: 'Mocha 44', externalId: 'MC044HA', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-bab-5', lng: 43.1498, lat: 11.6012, color: 'red', heading: 10, name: 'Djibouti Star', externalId: 'DJ551ST', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-bab-6', lng: 44.2317, lat: 12.8104, color: 'orange', heading: 190, name: 'Socotra Shadow', externalId: 'SC163SD', thumbnailUrl: '/target-ship.png' },
+  // Strait of Hormuz
+  { id: 'v-hor-1', lng: 56.2643, lat: 26.5812, color: 'red', heading: 300, name: 'Gulf Sentinel', externalId: 'GS904SN', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-hor-2', lng: 56.2659, lat: 26.5825, color: 'blue', heading: 120, name: 'Musandam Arc', externalId: 'MS088AR', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-hor-3', lng: 56.2628, lat: 26.5797, color: 'orange', heading: 295, name: 'Hormuz Tanker 12', externalId: 'HZ012TK', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-hor-4', lng: 55.9724, lat: 26.2518, color: 'yellow', heading: 130, name: 'Persian Pearl', externalId: 'PP451PL', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-hor-5', lng: 55.7856, lat: 26.7443, color: 'red', heading: 310, name: 'Qeshm Rider', externalId: 'QS237RD', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-hor-6', lng: 55.0328, lat: 25.2169, color: 'blue', heading: 125, name: 'Abu Musa Dawn', externalId: 'AM672DW', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-hor-7', lng: 56.4012, lat: 26.3841, color: 'orange', heading: 305, name: 'Strait Shepherd', externalId: 'SS893SP', thumbnailUrl: '/target-ship.png' },
+  // Dover Strait / English Channel (SW-NE, ~60°/240°)
+  { id: 'v-dov-1', lng: 1.4218, lat: 51.0317, color: 'blue', heading: 62, name: 'Channel Fox', externalId: 'CF433FX', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-dov-2', lng: 1.4234, lat: 51.0329, color: 'orange', heading: 240, name: 'Calais Link', externalId: 'CL782LK', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-dov-3', lng: 1.4203, lat: 51.0305, color: 'red', heading: 65, name: 'White Cliffs 3', externalId: 'WC003CL', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-dov-4', lng: 1.5976, lat: 50.9784, color: 'yellow', heading: 245, name: 'Kent Navigator', externalId: 'KN521NV', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-dov-5', lng: 1.2541, lat: 51.0912, color: 'blue', heading: 55, name: 'Strait Rider', externalId: 'SR864RD', thumbnailUrl: '/target-ship.png' },
+  { id: 'v-dov-6', lng: 1.7325, lat: 50.9356, color: 'red', heading: 70, name: 'North Sea Pilot', externalId: 'NS298PL', thumbnailUrl: '/target-ship.png' },
 ];
 
 function VesselMarker({
@@ -319,7 +413,7 @@ type HoverState = {
   screenY: number;
 };
 
-export default function MapView() {
+export default function MapView({ onTargetOpen }: { onTargetOpen?: (vesselId: string) => void }) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [hover, setHover] = useState<HoverState | null>(null);
@@ -775,7 +869,11 @@ export default function MapView() {
           }}
           onWheel={forwardWheelToMap}
         >
-          <TargetHoverCard target={hover.target} style={{ zoom: scale }} />
+          <TargetHoverCard
+            target={hover.target}
+            style={{ zoom: scale }}
+            onOpen={() => { onTargetOpen?.(hover.vesselId); setHover(null); }}
+          />
         </div>
       )}
     </>

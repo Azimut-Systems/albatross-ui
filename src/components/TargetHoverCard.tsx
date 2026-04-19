@@ -14,6 +14,7 @@ type TargetHoverCardProps = {
   target: TargetHoverCardData;
   className?: string;
   style?: CSSProperties;
+  onOpen?: () => void;
   onShare?: () => void;
   onBookmark?: () => void;
   onArchive?: () => void;
@@ -122,6 +123,7 @@ export default function TargetHoverCard({
   target,
   className = '',
   style,
+  onOpen,
   onShare,
   onBookmark,
   onArchive,
@@ -135,7 +137,10 @@ export default function TargetHoverCard({
       padding="0px"
       style={{ background: 'rgba(54,12,198,0.1)', ...style }}
     >
-      <div className="flex rounded-[10px] overflow-hidden min-h-[125px]">
+      <div
+        className="flex rounded-[10px] overflow-hidden min-h-[125px] cursor-pointer"
+        onClick={onOpen}
+      >
         <div className="relative w-[150px] shrink-0">
           {target.thumbnailUrl ? (
             <img
