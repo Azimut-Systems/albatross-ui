@@ -4,6 +4,7 @@ import MapView from './components/MapView';
 import ToolsBar from './components/ToolsBar';
 import SettingsPanel from './components/SettingsPanel';
 import TargetsList, { type Target } from './components/TargetsList';
+import TargetCard from './components/TargetCard';
 import CamerasList, { type Camera } from './components/CamerasList';
 import PinCursor from './components/PinCursor';
 import MeasureCursor from './components/MeasureCursor';
@@ -13,14 +14,19 @@ import { MeasureModeProvider } from './contexts/MeasureModeContext';
 
 const MOCK_TARGETS: Target[] = Array.from({ length: 7 }, (_, i) => ({
   id: String(i),
-  name: 'Target Name',
+  name: 'Karish-Cam-01',
   coordinates: `31°38'17 N | 31°12'08 E`,
   status: 'Critical',
-  vesselClass: 'Bulk',
+  vesselClass: 'Cargo',
   heading: '084°',
   speed: '09 kt',
   transmission: 'AIS',
   size: '72M',
+  aidId: '267835682',
+  vesselName: 'Gustav Masrek 234',
+  owner: 'Ross Geller',
+  imoNumber: '---',
+  threatLevel: 'Security classification',
 }));
 
 const MOCK_CAMERAS: Camera[] = Array.from({ length: 7 }, (_, i) => ({
@@ -35,7 +41,7 @@ function AppShell() {
   const [activeNav, setActiveNav] = useState('Map');
   const [targetsOpen, setTargetsOpen] = useState(false);
   const [camerasOpen, setCamerasOpen] = useState(false);
-  const [activeTargetId, setActiveTargetId] = useState<string | undefined>('1');
+  const [activeTargetId, setActiveTargetId] = useState<string | undefined>(undefined);
   const [activeCameraId, setActiveCameraId] = useState<string | undefined>('1');
   const { scale } = useUISize();
   const uiScaleStyle = { zoom: scale } as React.CSSProperties;
@@ -68,11 +74,21 @@ function AppShell() {
           onCamerasToggle={() => setCamerasOpen((v) => !v)}
         />
         <ToolsBar />
-        {targetsOpen && (
+        {targetsOpen && activeTargetId === undefined && (
           <TargetsList
             targets={MOCK_TARGETS}
             activeId={activeTargetId}
             onSelect={setActiveTargetId}
+          />
+        )}
+        {targetsOpen && activeTargetId !== undefined && (
+          <TargetCard
+            target={MOCK_TARGETS.find((t) => t.id === activeTargetId) ?? MOCK_TARGETS[0]}
+            onBack={() => setActiveTargetId(undefined)}
+            onClose={() => {
+              setActiveTargetId(undefined);
+              setTargetsOpen(false);
+            }}
           />
         )}
         {camerasOpen && (

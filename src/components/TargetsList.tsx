@@ -12,6 +12,11 @@ export type Target = {
   speed: string;
   transmission: string;
   size: string;
+  aidId?: string;
+  vesselName?: string;
+  owner?: string;
+  imoNumber?: string;
+  threatLevel?: string;
 };
 
 export type TargetsListFilter = 'Status' | 'Class' | 'Type' | 'AIS';
