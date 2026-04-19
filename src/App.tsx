@@ -6,6 +6,7 @@ import SettingsPanel from './components/SettingsPanel';
 import TargetsList, { type Target } from './components/TargetsList';
 import TargetCard from './components/TargetCard';
 import CamerasList, { type Camera } from './components/CamerasList';
+import CameraCard from './components/CameraCard';
 import PinCursor from './components/PinCursor';
 import MeasureCursor from './components/MeasureCursor';
 import { UISizeProvider, useUISize } from './contexts/UISizeContext';
@@ -31,7 +32,7 @@ const MOCK_TARGETS: Target[] = Array.from({ length: 7 }, (_, i) => ({
 
 const MOCK_CAMERAS: Camera[] = Array.from({ length: 7 }, (_, i) => ({
   id: String(i),
-  name: 'Cameras Name',
+  name: 'Karish-Cam-01',
   status: 'Connected',
   activity: 'Idle',
   completion: 75,
@@ -42,13 +43,16 @@ function AppShell() {
   const [targetsOpen, setTargetsOpen] = useState(false);
   const [camerasOpen, setCamerasOpen] = useState(false);
   const [activeTargetId, setActiveTargetId] = useState<string | undefined>(undefined);
-  const [activeCameraId, setActiveCameraId] = useState<string | undefined>('1');
+  const [activeCameraId, setActiveCameraId] = useState<string | undefined>(undefined);
   const { scale } = useUISize();
   const uiScaleStyle = { zoom: scale } as React.CSSProperties;
 
   return (
     <div className="relative h-screen w-screen bg-[#12111b] overflow-hidden">
-      <MapView onTargetOpen={() => { setTargetsOpen(true); setActiveTargetId('0'); }} />
+      <MapView
+        onTargetOpen={() => { setTargetsOpen(true); setActiveTargetId('0'); }}
+        onCameraOpen={(id) => { setCamerasOpen(true); setActiveCameraId(id); }}
+      />
       <div className="absolute bottom-6 left-6 z-20 pointer-events-none">
         <svg width="80" height="17" viewBox="0 0 135 29" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M48.3412 8.91016H30.9934V13.7846H39.2333L30.5605 28.4101V28.7708H48.4599V23.8964H39.6685L48.3412 9.27079V8.91016Z" fill="#844CFF" fillOpacity="0.6"/>
@@ -91,11 +95,21 @@ function AppShell() {
             }}
           />
         )}
-        {camerasOpen && (
+        {camerasOpen && activeCameraId === undefined && (
           <CamerasList
             cameras={MOCK_CAMERAS}
             activeId={activeCameraId}
             onSelect={setActiveCameraId}
+          />
+        )}
+        {camerasOpen && activeCameraId !== undefined && (
+          <CameraCard
+            camera={MOCK_CAMERAS.find((c) => c.id === activeCameraId) ?? MOCK_CAMERAS[0]}
+            onBack={() => setActiveCameraId(undefined)}
+            onClose={() => {
+              setActiveCameraId(undefined);
+              setCamerasOpen(false);
+            }}
           />
         )}
         {activeNav === 'Settings' && <SettingsPanel />}

@@ -413,7 +413,13 @@ type HoverState = {
   screenY: number;
 };
 
-export default function MapView({ onTargetOpen }: { onTargetOpen?: (vesselId: string) => void }) {
+export default function MapView({
+  onTargetOpen,
+  onCameraOpen,
+}: {
+  onTargetOpen?: (vesselId: string) => void;
+  onCameraOpen?: (cameraId: string) => void;
+}) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [hover, setHover] = useState<HoverState | null>(null);
@@ -721,13 +727,19 @@ export default function MapView({ onTargetOpen }: { onTargetOpen?: (vesselId: st
         return (
           <div
             key={c.id}
-            className="absolute z-10"
+            className="absolute z-10 cursor-pointer"
             style={{
               left: pos.x,
               top: pos.y,
               transform: 'translate(-50%, -50%)',
             }}
             onWheel={forwardWheelToMap}
+            onClick={(e) => {
+              e.stopPropagation();
+              onCameraOpen?.(c.id);
+            }}
+            role="button"
+            tabIndex={0}
           >
             <CameraMarker />
           </div>
