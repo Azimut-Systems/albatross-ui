@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Header from './components/Header';
 import MapView from './components/MapView';
 import ToolsBar from './components/ToolsBar';
-import GlassShowcase from './components/GlassShowcase';
 import SettingsPanel from './components/SettingsPanel';
 import TargetsList, { type Target } from './components/TargetsList';
 import CamerasList, { type Camera } from './components/CamerasList';
@@ -41,7 +40,6 @@ function AppShell() {
     <div className="relative h-screen w-screen bg-[#12111b] overflow-hidden">
       <MapView />
       <div style={uiScaleStyle}>
-        <GlassShowcase />
         <Header
           activeNav={activeNav}
           onNavChange={setActiveNav}
