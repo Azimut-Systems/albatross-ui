@@ -1,14 +1,12 @@
 import GlassPanel from './GlassPanel';
 import PinIcon from './icons/PinIcon';
+import RulerIcon from './icons/RulerIcon';
 import { usePinMode } from '../contexts/PinModeContext';
-
-function PencilIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
+import {
+  useMeasureMode,
+  type MeasureStatus,
+} from '../contexts/MeasureModeContext';
+import type { PinStatus } from '../contexts/PinModeContext';
 
 function LayersIcon() {
   return (
@@ -21,7 +19,9 @@ function LayersIcon() {
 }
 
 function StatusTooltip() {
-  const { status } = usePinMode();
+  const { status: pinStatus } = usePinMode();
+  const { status: measureStatus } = useMeasureMode();
+  const status: PinStatus | MeasureStatus = pinStatus ?? measureStatus;
   if (!status) return null;
 
   return (
@@ -46,8 +46,24 @@ function StatusTooltip() {
 }
 
 export default function ToolsBar() {
-  const { mode, togglePinMode } = usePinMode();
-  const pinActive = mode !== 'off';
+  const { mode: pinMode, togglePinMode, exitPinMode } = usePinMode();
+  const {
+    mode: measureMode,
+    toggleMeasureMode,
+    exitMeasureMode,
+  } = useMeasureMode();
+  const pinActive = pinMode !== 'off';
+  const measureActive = measureMode !== 'off';
+
+  const handleMeasureClick = () => {
+    if (pinActive) exitPinMode();
+    toggleMeasureMode();
+  };
+
+  const handlePinClick = () => {
+    if (measureActive) exitMeasureMode();
+    togglePinMode();
+  };
 
   return (
     <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20">
@@ -56,16 +72,22 @@ export default function ToolsBar() {
         <div className="flex items-center gap-2">
           <button
             type="button"
-            aria-label="Draw"
-            className="flex items-center p-[10px] rounded-lg cursor-pointer hover:bg-[rgba(122,86,246,0.2)] transition-colors"
+            aria-label="Measure"
+            aria-pressed={measureActive}
+            onClick={handleMeasureClick}
+            className={`flex items-center p-[10px] rounded-lg cursor-pointer transition-colors ${
+              measureActive
+                ? 'bg-[rgba(105,49,245,0.55)]'
+                : 'hover:bg-[rgba(122,86,246,0.2)]'
+            }`}
           >
-            <PencilIcon />
+            <RulerIcon />
           </button>
           <button
             type="button"
             aria-label="Pin"
             aria-pressed={pinActive}
-            onClick={togglePinMode}
+            onClick={handlePinClick}
             className={`flex items-center p-[10px] rounded-lg cursor-pointer transition-colors ${
               pinActive
                 ? 'bg-[rgba(105,49,245,0.55)]'

@@ -6,6 +6,43 @@ import PinIcon from './icons/PinIcon';
 import TargetHoverCard, { type TargetHoverCardData } from './TargetHoverCard';
 import { useUISize } from '../contexts/UISizeContext';
 import { usePinMode } from '../contexts/PinModeContext';
+import { useMeasureMode, type LngLat } from '../contexts/MeasureModeContext';
+
+function haversineMeters(a: LngLat, b: LngLat): number {
+  const R = 6371000;
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(b.lat - a.lat);
+  const dLng = toRad(b.lng - a.lng);
+  const lat1 = toRad(a.lat);
+  const lat2 = toRad(b.lat);
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+function bearingDegrees(a: LngLat, b: LngLat): number {
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const toDeg = (r: number) => (r * 180) / Math.PI;
+  const φ1 = toRad(a.lat);
+  const φ2 = toRad(b.lat);
+  const Δλ = toRad(b.lng - a.lng);
+  const y = Math.sin(Δλ) * Math.cos(φ2);
+  const x =
+    Math.cos(φ1) * Math.sin(φ2) -
+    Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+  return (toDeg(Math.atan2(y, x)) + 360) % 360;
+}
+
+function formatMeasurement(a: LngLat, b: LngLat): string {
+  const meters = haversineMeters(a, b);
+  const bearing = bearingDegrees(a, b);
+  const distanceLabel =
+    meters >= 1000
+      ? `${(meters / 1000).toFixed(1)} km`
+      : `${meters.toFixed(1)} m`;
+  return `${distanceLabel}, ${bearing.toFixed(1)}°`;
+}
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN as string;
 
@@ -191,9 +228,12 @@ export default function MapView() {
   const [hover, setHover] = useState<HoverState | null>(null);
   const { scale } = useUISize();
   const pin = usePinMode();
+  const measure = useMeasureMode();
 
   const pinRef = useRef(pin);
   pinRef.current = pin;
+  const measureRef = useRef(measure);
+  measureRef.current = measure;
 
   const [hoveredPinId, setHoveredPinId] = useState<string | null>(null);
   const [, setMapRenderTick] = useState(0);
@@ -203,8 +243,19 @@ export default function MapView() {
   const [cameraScreenPositions, setCameraScreenPositions] = useState<
     Record<string, { x: number; y: number }>
   >({});
+  const [measurementScreenPositions, setMeasurementScreenPositions] = useState<
+    Record<string, { start: { x: number; y: number }; end: { x: number; y: number } }>
+  >({});
+  const [pendingStartScreen, setPendingStartScreen] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+  const [cursorLngLat, setCursorLngLat] = useState<LngLat | null>(null);
+  const [cursorScreen, setCursorScreen] = useState<{ x: number; y: number } | null>(
+    null,
+  );
 
-  const recomputePinScreenPositions = useCallback(() => {
+  const recomputeScreenPositions = useCallback(() => {
     const map = mapRef.current;
     if (!map) return;
     const pinPositions: Record<string, { x: number; y: number }> = {};
@@ -219,7 +270,30 @@ export default function MapView() {
       camPositions[c.id] = { x: pt.x, y: pt.y };
     });
     setCameraScreenPositions(camPositions);
+    const measurementPositions: Record<
+      string,
+      { start: { x: number; y: number }; end: { x: number; y: number } }
+    > = {};
+    measureRef.current.measurements.forEach((m) => {
+      const s = map.project([m.start.lng, m.start.lat]);
+      const e = map.project([m.end.lng, m.end.lat]);
+      measurementPositions[m.id] = {
+        start: { x: s.x, y: s.y },
+        end: { x: e.x, y: e.y },
+      };
+    });
+    setMeasurementScreenPositions(measurementPositions);
+    const pending = measureRef.current.pendingStart;
+    if (pending) {
+      const pt = map.project([pending.lng, pending.lat]);
+      setPendingStartScreen({ x: pt.x, y: pt.y });
+    } else {
+      setPendingStartScreen(null);
+    }
   }, []);
+
+  // Keep this alias for call sites that reference pin positions only.
+  const recomputePinScreenPositions = recomputeScreenPositions;
 
   // Initialize map once.
   useEffect(() => {
@@ -244,7 +318,7 @@ export default function MapView() {
         const p = map.project([prev.lng, prev.lat]);
         return { ...prev, screenX: p.x, screenY: p.y };
       });
-      recomputePinScreenPositions();
+      recomputeScreenPositions();
     };
 
     mockVessels.forEach((vessel) => {
@@ -252,6 +326,7 @@ export default function MapView() {
       el.addEventListener('click', (e) => {
         e.stopPropagation();
         if (pinRef.current.mode !== 'off') return;
+        if (measureRef.current.mode !== 'off') return;
         const p = map.project([vessel.lng, vessel.lat]);
         setHover((prev) => {
           if (prev?.vesselId === vessel.id) return null;
@@ -276,43 +351,123 @@ export default function MapView() {
     });
 
     map.on('click', (e) => {
-      const state = pinRef.current;
-      if (state.mode === 'placing') {
-        state.addPin(e.lngLat.lng, e.lngLat.lat);
-      } else if (state.mode === 'moving') {
-        state.commitMovePin(e.lngLat.lng, e.lngLat.lat);
-      } else {
-        setHover(null);
-        if (state.selectedPinId) state.setSelectedPin(null);
+      const pinState = pinRef.current;
+      const measureState = measureRef.current;
+      if (pinState.mode === 'placing') {
+        pinState.addPin(e.lngLat.lng, e.lngLat.lat);
+        return;
       }
+      if (pinState.mode === 'moving') {
+        pinState.commitMovePin(e.lngLat.lng, e.lngLat.lat);
+        return;
+      }
+      if (measureState.mode !== 'off') {
+        measureState.placePoint(e.lngLat.lng, e.lngLat.lat);
+        return;
+      }
+      setHover(null);
+      if (pinState.selectedPinId) pinState.setSelectedPin(null);
+      if (measureState.selectedMeasurementId)
+        measureState.setSelectedMeasurement(null);
+    });
+
+    map.on('mousemove', (e) => {
+      setCursorLngLat({ lng: e.lngLat.lng, lat: e.lngLat.lat });
+      setCursorScreen({ x: e.point.x, y: e.point.y });
+    });
+    map.on('mouseout', () => {
+      setCursorLngLat(null);
+      setCursorScreen(null);
     });
 
     map.on('move', updateHoverPos);
     map.on('zoom', updateHoverPos);
-    map.on('load', recomputePinScreenPositions);
+    map.on('load', recomputeScreenPositions);
 
     return () => {
       map.remove();
       mapRef.current = null;
     };
-  }, [recomputePinScreenPositions]);
+  }, [recomputeScreenPositions]);
 
-  // Recompute pin screen positions whenever pins change.
+  // Recompute screen positions whenever pins, measurements, or pending start change.
   useEffect(() => {
-    recomputePinScreenPositions();
-  }, [pin.pins, recomputePinScreenPositions]);
+    recomputeScreenPositions();
+  }, [
+    pin.pins,
+    measure.measurements,
+    measure.pendingStart,
+    recomputeScreenPositions,
+  ]);
 
-  // Map cursor reflects pin mode.
+  // Map cursor reflects pin or measure mode.
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
     const canvas = map.getCanvas();
-    canvas.style.cursor = pin.mode !== 'off' ? 'none' : '';
-  }, [pin.mode]);
+    const active = pin.mode !== 'off' || measure.mode !== 'off';
+    canvas.style.cursor = active ? 'none' : '';
+  }, [pin.mode, measure.mode]);
+
+  // Hide cursor on <body> only while measuring (PinCursor already manages this for pin mode).
+  useEffect(() => {
+    if (pin.mode !== 'off') return;
+    if (measure.mode === 'off') {
+      document.body.style.cursor = '';
+      return;
+    }
+    document.body.style.cursor = 'none';
+    return () => {
+      document.body.style.cursor = '';
+    };
+  }, [measure.mode, pin.mode]);
+
+  // Preview end-point: while awaiting end click, follow cursor. Otherwise null.
+  const previewEndScreen =
+    measure.mode === 'awaiting-end' && cursorScreen ? cursorScreen : null;
+  const previewEndLngLat =
+    measure.mode === 'awaiting-end' && cursorLngLat ? cursorLngLat : null;
 
   return (
     <>
       <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
+      {/* Measurement lines (SVG overlay). */}
+      <svg
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        style={{ zIndex: 9 }}
+      >
+        {measure.measurements.map((m) => {
+          const pos = measurementScreenPositions[m.id];
+          if (!pos) return null;
+          return (
+            <line
+              key={m.id}
+              x1={pos.start.x}
+              y1={pos.start.y}
+              x2={pos.end.x}
+              y2={pos.end.y}
+              stroke="white"
+              strokeWidth={1.25}
+              strokeDasharray="5 4"
+              strokeLinecap="round"
+              opacity={0.95}
+            />
+          );
+        })}
+        {pendingStartScreen && previewEndScreen && (
+          <line
+            x1={pendingStartScreen.x}
+            y1={pendingStartScreen.y}
+            x2={previewEndScreen.x}
+            y2={previewEndScreen.y}
+            stroke="white"
+            strokeWidth={1.25}
+            strokeDasharray="5 4"
+            strokeLinecap="round"
+            opacity={0.95}
+          />
+        )}
+      </svg>
       {/* Fixed cameras (infrastructure, not tied to pin mode). */}
       {mockCameras.map((c) => {
         const pos = cameraScreenPositions[c.id];
@@ -383,7 +538,40 @@ export default function MapView() {
           </div>
         );
       })}
-      {hover && pin.mode === 'off' && (
+      {/* Committed measurements (only visible while the tool is active — cleared on exit). */}
+      {measure.measurements.map((m) => {
+        const pos = measurementScreenPositions[m.id];
+        if (!pos) return null;
+        return (
+          <div key={m.id}>
+            <MeasurementEndpoint pos={pos.start} />
+            <MeasurementEndpoint pos={pos.end} />
+            <MeasurementLabel
+              start={pos.start}
+              end={pos.end}
+              text={formatMeasurement(m.start, m.end)}
+            />
+          </div>
+        );
+      })}
+      {/* Pending measurement: start dot, live end dot under cursor, live label. */}
+      {pendingStartScreen && (
+        <MeasurementEndpoint pos={pendingStartScreen} />
+      )}
+      {pendingStartScreen &&
+        previewEndScreen &&
+        measure.pendingStart &&
+        previewEndLngLat && (
+          <>
+            <MeasurementEndpoint pos={previewEndScreen} />
+            <MeasurementLabel
+              start={pendingStartScreen}
+              end={previewEndScreen}
+              text={formatMeasurement(measure.pendingStart, previewEndLngLat)}
+            />
+          </>
+        )}
+      {hover && pin.mode === 'off' && measure.mode === 'off' && (
         <div
           className="absolute z-20"
           style={{
@@ -397,5 +585,66 @@ export default function MapView() {
         </div>
       )}
     </>
+  );
+}
+
+function MeasurementEndpoint({ pos }: { pos: { x: number; y: number } }) {
+  return (
+    <div
+      className="absolute z-10 pointer-events-none"
+      style={{
+        left: pos.x,
+        top: pos.y,
+        transform: 'translate(-50%, -50%)',
+      }}
+    >
+      <div
+        className="w-[8px] h-[8px] rounded-full"
+        style={{
+          background: '#ffffff',
+          boxShadow:
+            '0 0 0 2px rgba(105,49,245,0.55), 0 0 6px rgba(0,0,0,0.6)',
+        }}
+      />
+    </div>
+  );
+}
+
+function MeasurementLabel({
+  start,
+  end,
+  text,
+}: {
+  start: { x: number; y: number };
+  end: { x: number; y: number };
+  text: string;
+}) {
+  const midX = (start.x + end.x) / 2;
+  const midY = (start.y + end.y) / 2;
+  let angle =
+    (Math.atan2(end.y - start.y, end.x - start.x) * 180) / Math.PI;
+  // Keep text upright: flip if line reads right-to-left.
+  if (angle > 90) angle -= 180;
+  else if (angle < -90) angle += 180;
+  return (
+    <div
+      className="absolute z-20 pointer-events-none"
+      style={{
+        left: midX,
+        top: midY,
+        transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-14px)`,
+        transformOrigin: 'center',
+      }}
+    >
+      <div
+        className="text-white text-[11px] font-medium tracking-[0.3px] whitespace-nowrap"
+        style={{
+          textShadow:
+            '0 0 4px rgba(0,0,0,0.9), 0 1px 2px rgba(0,0,0,0.8)',
+        }}
+      >
+        {text}
+      </div>
+    </div>
   );
 }

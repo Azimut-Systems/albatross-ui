@@ -6,8 +6,10 @@ import SettingsPanel from './components/SettingsPanel';
 import TargetsList, { type Target } from './components/TargetsList';
 import CamerasList, { type Camera } from './components/CamerasList';
 import PinCursor from './components/PinCursor';
+import MeasureCursor from './components/MeasureCursor';
 import { UISizeProvider, useUISize } from './contexts/UISizeContext';
 import { PinModeProvider } from './contexts/PinModeContext';
+import { MeasureModeProvider } from './contexts/MeasureModeContext';
 
 const MOCK_TARGETS: Target[] = Array.from({ length: 7 }, (_, i) => ({
   id: String(i),
@@ -83,6 +85,7 @@ function AppShell() {
         {activeNav === 'Settings' && <SettingsPanel />}
       </div>
       <PinCursor />
+      <MeasureCursor />
     </div>
   );
 }
@@ -91,7 +94,9 @@ export default function App() {
   return (
     <UISizeProvider>
       <PinModeProvider>
-        <AppShell />
+        <MeasureModeProvider>
+          <AppShell />
+        </MeasureModeProvider>
       </PinModeProvider>
     </UISizeProvider>
   );
