@@ -21,7 +21,7 @@ const MOCK_TARGETS: Target[] = Array.from({ length: 7 }, (_, i) => ({
 
 function AppShell() {
   const [activeNav, setActiveNav] = useState('Map');
-  const [targetsOpen, setTargetsOpen] = useState(true);
+  const [targetsOpen, setTargetsOpen] = useState(false);
   const [activeTargetId, setActiveTargetId] = useState<string | undefined>('1');
   const { scale } = useUISize();
   const uiScaleStyle = { zoom: scale } as React.CSSProperties;
