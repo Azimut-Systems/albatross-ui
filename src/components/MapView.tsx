@@ -1051,12 +1051,12 @@ export default function MapView({
           style={{
             left: targetMenu.screenX + 12,
             top: targetMenu.screenY + 12,
-            zoom: scale,
           }}
           onMouseDown={(e) => e.stopPropagation()}
           onContextMenu={(e) => e.preventDefault()}
           onWheel={forwardWheelToMap}
         >
+         <div style={{ zoom: scale }}>
           <TargetContextMenu
             onAction={(action) => {
               const vessel = mockVessels.find(
@@ -1065,6 +1065,7 @@ export default function MapView({
               if (vessel) handleTargetMenuAction(vessel, action);
             }}
           />
+         </div>
         </div>
       )}
       {hover && !hoverHiddenByCluster && pin.mode === 'off' && measure.mode === 'off' && (
