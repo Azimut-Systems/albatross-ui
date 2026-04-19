@@ -317,7 +317,7 @@ export default function MapView() {
     const map = mapRef.current;
     if (!map) return;
     const canvas = map.getCanvas();
-    canvas.style.cursor = pin.mode !== 'off' ? 'pointer' : '';
+    canvas.style.cursor = pin.mode !== 'off' ? 'none' : '';
   }, [pin.mode]);
 
   return (
