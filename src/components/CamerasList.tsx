@@ -72,13 +72,6 @@ function MoreIcon() {
   );
 }
 
-function ExpandIcon() {
-  return (
-    <svg width="19" height="19" viewBox="0 0 19 19" fill="none" aria-hidden="true">
-      <path d="M4 4H8M4 4V8M4 4L8 8M15 4H11M15 4V8M15 4L11 8M4 15H8M4 15V11M4 15L8 11M15 15H11M15 15V11M15 15L11 11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
 
 function FilterPill({ label, onClick }: { label: string; onClick?: () => void }) {
   return (
@@ -140,13 +133,10 @@ function CameraThumbnail({ url }: { url?: string }) {
         />
       )}
       <div className="absolute inset-0 bg-[rgba(105,49,245,0.1)]" />
-      <div className="absolute top-3 left-0 right-0 flex items-center justify-between px-5">
-        <span className="rotate-90 text-white/80">
-          <ExpandIcon />
-        </span>
-        <span className="text-white/80">
-          <ExpandIcon />
-        </span>
+      <div className="absolute top-3 right-5">
+        <svg width="19" height="19" viewBox="0 0 19 19" fill="none" aria-hidden="true" className="text-white/80">
+          <path d="M4 4H8M4 4V8M4 4L8 8M15 4H11M15 4V8M15 4L11 8M4 15H8M4 15V11M4 15L8 11M15 15H11M15 15V11M15 15L11 11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
       </div>
     </div>
   );
