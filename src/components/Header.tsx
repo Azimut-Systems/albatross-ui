@@ -47,9 +47,22 @@ function AzimutLogo() {
 type HeaderProps = {
   activeNav: string;
   onNavChange: (item: string) => void;
+  targetsOpen?: boolean;
+  onTargetsToggle?: () => void;
 };
 
-export default function Header({ activeNav, onNavChange }: HeaderProps) {
+export default function Header({ activeNav, onNavChange, targetsOpen, onTargetsToggle }: HeaderProps) {
+  const utilityButtons = [
+    {
+      Icon: TargetIcon,
+      label: 'Toggle targets list',
+      active: targetsOpen,
+      onClick: onTargetsToggle,
+    },
+    { Icon: CameraIcon, label: 'Cameras' },
+    { Icon: BellIcon, label: 'Notifications' },
+  ];
+
   return (
     <div className="absolute top-[25px] left-1/2 -translate-x-1/2 w-[calc(100%-44px)] h-[64px] z-20 flex items-center justify-between">
       {/* Left: Logo + Site Name */}
@@ -89,11 +102,29 @@ export default function Header({ activeNav, onNavChange }: HeaderProps) {
 
       {/* Right: Utility Buttons */}
       <div className="flex items-center gap-2">
-        {[TargetIcon, CameraIcon, BellIcon].map((Icon, i) => (
-          <GlassPanel key={i} style={{ cursor: 'pointer' }}>
-            <div className="flex items-center p-3 rounded-lg">
+        {utilityButtons.map(({ Icon, label, active, onClick }) => (
+          <GlassPanel
+            key={label}
+            style={
+              active
+                ? {
+                    border: '1px solid #6e48f2',
+                    background: 'rgba(110,72,242,0.15)',
+                  }
+                : undefined
+            }
+          >
+            <button
+              type="button"
+              onClick={onClick}
+              aria-label={label}
+              aria-pressed={active ?? undefined}
+              className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${
+                active ? 'text-white' : 'text-[#dee3e7] hover:text-white'
+              }`}
+            >
               <Icon />
-            </div>
+            </button>
           </GlassPanel>
         ))}
       </div>
