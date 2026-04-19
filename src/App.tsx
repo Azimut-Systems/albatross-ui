@@ -15,8 +15,8 @@ function AppShell() {
   return (
     <div className="relative h-screen w-screen bg-[#12111b] overflow-hidden">
       <MapView />
-      <GlassShowcase />
       <div style={uiScaleStyle}>
+        <GlassShowcase />
         <Header activeNav={activeNav} onNavChange={setActiveNav} />
         <ToolsBar />
         <TargetsList />
