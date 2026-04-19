@@ -228,8 +228,7 @@ export default function MapView() {
           style={{
             left: hover.screenX,
             top: hover.screenY - 20 * scale,
-            transform: `translate(-50%, -100%) scale(${scale})`,
-            transformOrigin: 'center bottom',
+            transform: 'translate(-50%, -100%)',
           }}
         >
           <TargetHoverCard target={hover.target} />

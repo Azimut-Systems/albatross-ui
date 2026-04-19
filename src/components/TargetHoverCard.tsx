@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import GlassPanel from './GlassPanel';
 
 export type TargetHoverCardStatus = 'Active' | 'Inactive';
 
@@ -24,28 +25,29 @@ const STATUS_STYLES: Record<TargetHoverCardStatus, { border: string; bg: string;
 };
 
 const ICON_COLOR = '#BBB0DC';
+const ICON_STROKE_WIDTH = 1.33;
 
 function ShareIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
-        d="M4 12.6667C5.10457 12.6667 6 11.7712 6 10.6667C6 9.56209 5.10457 8.66667 4 8.66667C2.89543 8.66667 2 9.56209 2 10.6667C2 11.7712 2.89543 12.6667 4 12.6667Z"
+        d="M8 18.6667C9.10457 18.6667 10 17.7712 10 16.6667C10 15.5621 9.10457 14.6667 8 14.6667C6.89543 14.6667 6 15.5621 6 16.6667C6 17.7712 6.89543 18.6667 8 18.6667Z"
         stroke={ICON_COLOR}
-        strokeWidth="1.33"
+        strokeWidth={ICON_STROKE_WIDTH}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M6 10.6667H11.6667C12.2855 10.6667 12.879 10.4208 13.3166 9.98325C13.7542 9.54566 14 8.95217 14 8.33333C14 7.71449 13.7542 7.121 13.3166 6.68342C12.879 6.24583 12.2855 6 11.6667 6H4.33333C3.71449 6 3.121 5.75417 2.68342 5.31658C2.24583 4.879 2 4.28551 2 3.66667C2 3.04783 2.24583 2.45434 2.68342 2.01675C3.121 1.57917 3.71449 1.33333 4.33333 1.33333H10"
+        d="M10 16.6667H15.6667C16.2855 16.6667 16.879 16.4208 17.3166 15.9832C17.7542 15.5457 18 14.9522 18 14.3333C18 13.7145 17.7542 13.121 17.3166 12.6834C16.879 12.2458 16.2855 12 15.6667 12H8.33333C7.71449 12 7.121 11.7542 6.68342 11.3166C6.24583 10.879 6 10.2855 6 9.66667C6 9.04783 6.24583 8.45434 6.68342 8.01675C7.121 7.57917 7.71449 7.33333 8.33333 7.33333H14"
         stroke={ICON_COLOR}
-        strokeWidth="1.33"
+        strokeWidth={ICON_STROKE_WIDTH}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M12 3.33333C13.1046 3.33333 14 2.4379 14 1.33333C14 0.228763 13.1046 -0.666667 12 -0.666667C10.8954 -0.666667 10 0.228763 10 1.33333C10 2.4379 10.8954 3.33333 12 3.33333Z"
+        d="M16 9.33333C17.1046 9.33333 18 8.4379 18 7.33333C18 6.22876 17.1046 5.33333 16 5.33333C14.8954 5.33333 14 6.22876 14 7.33333C14 8.4379 14.8954 9.33333 16 9.33333Z"
         stroke={ICON_COLOR}
-        strokeWidth="1.33"
+        strokeWidth={ICON_STROKE_WIDTH}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -55,11 +57,11 @@ function ShareIcon() {
 
 function BookmarkIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
-        d="M11.3345 0.666667C11.6881 0.666667 12.0272 0.807143 12.2773 1.05719C12.5273 1.30724 12.6678 1.64638 12.6678 2V12C12.6678 12.1168 12.6371 12.2315 12.5788 12.3326C12.5205 12.4338 12.4367 12.5179 12.3357 12.5764C12.2347 12.635 12.1201 12.6661 12.0034 12.6665C11.8867 12.6669 11.7719 12.6366 11.6705 12.5787L8.66249 10.86C8.46109 10.745 8.23314 10.6844 8.00115 10.6844C7.76916 10.6844 7.54121 10.745 7.33982 10.86L4.33182 12.5787C4.23044 12.6366 4.11564 12.6669 3.9989 12.6665C3.88215 12.6661 3.76756 12.635 3.66658 12.5764C3.5656 12.5179 3.48177 12.4338 3.42349 12.3326C3.36521 12.2315 3.33452 12.1168 3.33448 12V2C3.33448 1.64638 3.47496 1.30724 3.72501 1.05719C3.97505 0.807143 4.31419 0.666667 4.66781 0.666667H11.3345Z"
+        d="M15.3345 6.00061C15.6881 6.00061 16.0272 6.14108 16.2773 6.39113C16.5273 6.64118 16.6678 6.98032 16.6678 7.33394V17.3339C16.6678 17.4507 16.6371 17.5654 16.5788 17.6665C16.5205 17.7677 16.4367 17.8518 16.3357 17.9104C16.2347 17.9689 16.1201 18 16.0034 18.0004C15.8867 18.0008 15.7719 17.9705 15.6705 17.9126L12.6625 16.1939C12.4611 16.0789 12.2331 16.0184 12.0011 16.0184C11.7692 16.0184 11.5412 16.0789 11.3398 16.1939L8.33181 17.9126C8.23044 17.9705 8.11564 18.0008 7.9989 18.0004C7.88215 18 7.76756 17.9689 7.66658 17.9104C7.5656 17.8518 7.48177 17.7677 7.42349 17.6665C7.36521 17.5654 7.33452 17.4507 7.33448 17.3339V7.33394C7.33448 6.98032 7.47496 6.64118 7.72501 6.39113C7.97505 6.14108 8.31419 6.00061 8.66781 6.00061H15.3345Z"
         stroke={ICON_COLOR}
-        strokeWidth="1.3"
+        strokeWidth={ICON_STROKE_WIDTH}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -69,25 +71,25 @@ function BookmarkIcon() {
 
 function ArchiveIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
-        d="M13.9987 0.666667H1.9987C1.63051 0.666667 1.33203 0.965144 1.33203 1.33333V3.33333C1.33203 3.70152 1.63051 4 1.9987 4H13.9987C14.3669 4 14.6654 3.70152 14.6654 3.33333V1.33333C14.6654 0.965144 14.3669 0.666667 13.9987 0.666667Z"
+        d="M17.9987 6H5.9987C5.63051 6 5.33203 6.29848 5.33203 6.66667V8.66667C5.33203 9.03486 5.63051 9.33333 5.9987 9.33333H17.9987C18.3669 9.33333 18.6654 9.03486 18.6654 8.66667V6.66667C18.6654 6.29848 18.3669 6 17.9987 6Z"
         stroke={ICON_COLOR}
-        strokeWidth="1.3"
+        strokeWidth={ICON_STROKE_WIDTH}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M2.66797 4V11.3333C2.66797 11.687 2.80844 12.0261 3.05849 12.2761C3.30854 12.5262 3.64768 12.6667 4.0013 12.6667H12.0013C12.3549 12.6667 12.6941 12.5262 12.9441 12.2761C13.1942 12.0261 13.3346 11.687 13.3346 11.3333V4"
+        d="M6.66797 9.33203V16.6654C6.66797 17.019 6.80844 17.3581 7.05849 17.6082C7.30854 17.8582 7.64768 17.9987 8.0013 17.9987H16.0013C16.3549 17.9987 16.6941 17.8582 16.9441 17.6082C17.1942 17.3581 17.3346 17.019 17.3346 16.6654V9.33203"
         stroke={ICON_COLOR}
-        strokeWidth="1.3"
+        strokeWidth={ICON_STROKE_WIDTH}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M6.66797 6.66667H9.33464"
+        d="M10.668 12H13.3346"
         stroke={ICON_COLOR}
-        strokeWidth="1.33333"
+        strokeWidth={ICON_STROKE_WIDTH}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -109,7 +111,7 @@ function IconButton({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="flex items-center justify-center w-6 h-6 rounded-full bg-[rgba(187,176,220,0.14)] cursor-pointer hover:bg-[rgba(187,176,220,0.24)] transition-colors"
+      className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[rgba(187,176,220,0.14)] cursor-pointer hover:bg-[rgba(187,176,220,0.24)] transition-colors"
     >
       {children}
     </button>
@@ -127,68 +129,71 @@ export default function TargetHoverCard({
   const statusStyle = STATUS_STYLES[target.status];
 
   return (
-    <div
-      className={`w-[342px] h-[125px] rounded-[10px] overflow-hidden ${className.includes('fixed') || className.includes('absolute') ? '' : 'relative'} ${className}`}
-      style={{
-        backgroundColor: 'rgba(54,12,198,0.1)',
-        backdropFilter: 'blur(32px)',
-        WebkitBackdropFilter: 'blur(32px)',
-        ...style,
-      }}
+    <GlassPanel
+      className={className}
+      cornerRadius={10}
+      padding="0px"
+      style={{ background: 'rgba(54,12,198,0.1)', ...style }}
     >
-      <div className="absolute top-0 left-0 w-[170px] h-full rounded-l-[10px] overflow-hidden">
-        {target.thumbnailUrl ? (
-          <img
-            src={target.thumbnailUrl}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-        ) : (
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                'linear-gradient(135deg, rgba(30,191,245,0.35), rgba(105,49,245,0.25) 60%, rgba(12,11,25,0.6))',
-            }}
-          />
-        )}
-        <div className="absolute inset-0 bg-[rgba(54,12,198,0.19)]" />
+      <div className="flex rounded-[10px] overflow-hidden min-h-[125px]">
+        <div className="relative w-[150px] shrink-0">
+          {target.thumbnailUrl ? (
+            <img
+              src={target.thumbnailUrl}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  'linear-gradient(135deg, rgba(30,191,245,0.35), rgba(105,49,245,0.25) 60%, rgba(12,11,25,0.6))',
+              }}
+            />
+          )}
+          <div className="absolute inset-0 bg-[rgba(54,12,198,0.19)]" />
+        </div>
+
+        <div className="flex flex-col flex-1 py-[14px] px-[12px] gap-[14px] justify-between">
+          <div className="flex flex-col gap-[3px]">
+            <p
+              className="m-0 font-satoshi font-medium text-[18px] leading-none text-white whitespace-nowrap"
+              style={{ letterSpacing: '-0.36px' }}
+            >
+              {target.name}
+            </p>
+            <p className="m-0 font-satoshi font-normal text-[14px] leading-[1.25] text-[#c4c4c4]">
+              ID {target.externalId}
+            </p>
+          </div>
+
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-[7px]">
+              <IconButton label="Share target" onClick={onShare}>
+                <ShareIcon />
+              </IconButton>
+              <IconButton label="Bookmark target" onClick={onBookmark}>
+                <BookmarkIcon />
+              </IconButton>
+              <IconButton label="Archive target" onClick={onArchive}>
+                <ArchiveIcon />
+              </IconButton>
+            </div>
+            <div
+              className="inline-flex items-center h-7 px-3 rounded-full border"
+              style={{ borderColor: statusStyle.border, backgroundColor: statusStyle.bg }}
+            >
+              <span
+                className="font-satoshi font-medium text-sm leading-none"
+                style={{ color: statusStyle.text }}
+              >
+                {target.status}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <p
-        className="absolute top-[14px] left-[180px] m-0 font-satoshi font-medium text-[18px] text-white whitespace-nowrap"
-        style={{ letterSpacing: '-0.36px' }}
-      >
-        {target.name}
-      </p>
-
-      <p className="absolute top-[41px] left-[180px] m-0 font-satoshi font-normal text-[14px] text-[#c4c4c4]">
-        ID {target.externalId}
-      </p>
-
-      <div className="absolute top-[85px] left-[180px] flex items-center gap-[7px]">
-        <IconButton label="Share target" onClick={onShare}>
-          <ShareIcon />
-        </IconButton>
-        <IconButton label="Bookmark target" onClick={onBookmark}>
-          <BookmarkIcon />
-        </IconButton>
-        <IconButton label="Archive target" onClick={onArchive}>
-          <ArchiveIcon />
-        </IconButton>
-      </div>
-
-      <div
-        className="absolute top-[89px] left-[281px] flex items-center h-5 px-2 rounded-[34px] border"
-        style={{ borderColor: statusStyle.border, backgroundColor: statusStyle.bg }}
-      >
-        <span
-          className="font-satoshi font-medium text-xs leading-none"
-          style={{ color: statusStyle.text }}
-        >
-          {target.status}
-        </span>
-      </div>
-    </div>
+    </GlassPanel>
   );
 }
