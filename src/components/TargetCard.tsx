@@ -184,8 +184,9 @@ function TabButton({
       type="button"
       onClick={onClick}
       className={`relative h-7 px-0 mr-5 font-ibm-plex-sans font-semibold text-[13px] tracking-wide cursor-pointer transition-colors ${
-        active ? 'text-white' : 'text-[#9a8fc0] hover:text-[rgba(255,255,255,0.85)]'
+        active ? 'text-white' : 'hover:text-white'
       }`}
+      style={active ? undefined : { color: 'var(--accent-muted)' }}
     >
       {label}
       {active && (
@@ -198,7 +199,7 @@ function TabButton({
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex-1 flex flex-col gap-1 items-start bg-[rgb(var(--accent-rgb)/0.08)] border border-[rgba(255,255,255,0.04)] rounded-lg px-3 py-2.5 min-w-0">
-      <span className="font-ibm-plex-sans font-normal text-[11px] text-[#9a8fc0] tracking-wide uppercase">{label}</span>
+      <span className="font-ibm-plex-sans font-normal text-[11px] tracking-wide uppercase" style={{ color: 'var(--accent-muted)' }}>{label}</span>
       <span className="font-ibm-plex-sans font-medium text-sm text-white truncate w-full">{value}</span>
     </div>
   );
@@ -209,7 +210,7 @@ function AlertRow({ title, time }: { title: string; time: string }) {
     <div className="flex items-center gap-3 bg-[rgb(var(--accent-rgb)/0.12)] border border-[rgba(255,255,255,0.04)] rounded-lg pl-3.5 pr-2 py-2.5 w-full">
       <div className="flex flex-1 flex-col min-w-0 font-ibm-plex-sans">
         <span className="font-medium text-sm text-white truncate">{title}</span>
-        <span className="font-normal text-[11px] text-[#9a8fc0] truncate">{time}</span>
+        <span className="font-normal text-[11px] truncate" style={{ color: 'var(--accent-muted)' }}>{time}</span>
       </div>
       <div className="flex items-center gap-0.5 shrink-0">
         <div
@@ -246,11 +247,11 @@ function VisualRecognition() {
             <span className="font-ibm-plex-sans font-semibold text-[22px] text-white tracking-[-0.4px] tabular-nums leading-none">
               82%
             </span>
-            <span className="font-ibm-plex-sans font-normal text-xs text-[#9a8fc0] tracking-[-0.1px]">
+            <span className="font-ibm-plex-sans font-normal text-xs tracking-[-0.1px]" style={{ color: 'var(--accent-muted)' }}>
               Confidence Score
             </span>
           </div>
-          <div className="flex items-center gap-1 text-[#9a8fc0]">
+          <div className="flex items-center gap-1" style={{ color: 'var(--accent-muted)' }}>
             <IconButton label="Mark correct">
               <ThumbUpIcon />
             </IconButton>
@@ -259,7 +260,7 @@ function VisualRecognition() {
             </IconButton>
           </div>
         </div>
-        <span className="font-ibm-plex-sans font-normal text-[11px] text-[#9a8fc0] tracking-wide tabular-nums">
+        <span className="font-ibm-plex-sans font-normal text-[11px] tracking-wide tabular-nums" style={{ color: 'var(--accent-muted)' }}>
           Live Detection Image · 01/04/26, 10:44:13
         </span>
         <div
@@ -413,7 +414,7 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
                 value={alertInput}
                 onChange={(e) => setAlertInput(e.target.value)}
                 placeholder="Add your input…"
-                className="flex-1 min-w-0 bg-transparent border-none outline-none font-ibm-plex-sans font-medium text-sm text-white placeholder:text-[#9a8fc0]"
+                className="flex-1 min-w-0 bg-transparent border-none outline-none font-ibm-plex-sans font-medium text-sm text-white accent-muted-placeholder"
               />
               <button
                 type="button"
