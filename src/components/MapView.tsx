@@ -291,12 +291,11 @@ function VesselClusterMarker({
         <div
           className="flex items-center justify-center w-[36px] h-[36px]"
           style={{
-            color: 'white',
+            color: 'var(--accent-active-fg)',
             fontSize: count >= 10 ? 18 : 20,
             fontWeight: 600,
             letterSpacing: '0.3px',
             fontVariantNumeric: 'tabular-nums',
-            textShadow: '0 1px 2px rgba(0,0,0,0.45)',
           }}
         >
           {count}
