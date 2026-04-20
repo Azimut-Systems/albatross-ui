@@ -1,8 +1,11 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
 import GlassPanel from './GlassPanel';
 import PinContextMenu from './PinContextMenu';
 import PinIcon from './icons/PinIcon';
+import TargetContextMenu, {
+  type TargetContextMenuAction,
+} from './TargetContextMenu';
 import TargetHoverCard, { type TargetHoverCardData } from './TargetHoverCard';
 import { useUISize } from '../contexts/UISizeContext';
 import { usePinMode } from '../contexts/PinModeContext';
@@ -204,9 +207,11 @@ const mockVessels: Vessel[] = [
 function VesselMarker({
   vessel,
   onClick,
+  onContextMenu,
 }: {
   vessel: Vessel;
   onClick: (e: React.MouseEvent) => void;
+  onContextMenu: (e: React.MouseEvent) => void;
 }) {
   const style = vesselStyles[vessel.color];
   const rad = (vessel.heading - 90) * (Math.PI / 180);
@@ -216,6 +221,7 @@ function VesselMarker({
   return (
     <div
       onClick={onClick}
+      onContextMenu={onContextMenu}
       style={{
         position: 'relative',
         width: 30,
@@ -413,6 +419,36 @@ type HoverState = {
   screenY: number;
 };
 
+type TargetMenuState = {
+  vesselId: string;
+  screenX: number;
+  screenY: number;
+};
+
+// Synthetic historical trail: points (lng/lat) back-extrapolated from the
+// vessel's current heading with a meandering wobble.
+function generateHistoryTrail(vessel: Vessel): LngLat[] {
+  const points: LngLat[] = [];
+  const steps = 24;
+  const stepMeters = 30;
+  // Bearing opposite to heading (where the vessel came from).
+  const backBearing = ((vessel.heading + 180) % 360) * (Math.PI / 180);
+  const perp = backBearing + Math.PI / 2;
+  const metersPerLat = 111_320;
+  const metersPerLng = 111_320 * Math.cos((vessel.lat * Math.PI) / 180);
+  for (let i = 0; i < steps; i++) {
+    const along = stepMeters * i;
+    const wobble = Math.sin(i * 0.9) * stepMeters * 0.9;
+    const dxMeters = Math.sin(backBearing) * along + Math.sin(perp) * wobble;
+    const dyMeters = Math.cos(backBearing) * along + Math.cos(perp) * wobble;
+    points.push({
+      lng: vessel.lng + dxMeters / metersPerLng,
+      lat: vessel.lat + dyMeters / metersPerLat,
+    });
+  }
+  return points;
+}
+
 export default function MapView({
   onTargetOpen,
   onCameraOpen,
@@ -423,6 +459,13 @@ export default function MapView({
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [hover, setHover] = useState<HoverState | null>(null);
+  const [targetMenu, setTargetMenu] = useState<TargetMenuState | null>(null);
+  const [historyVesselIds, setHistoryVesselIds] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [highlightedVesselIds, setHighlightedVesselIds] = useState<Set<string>>(
+    () => new Set(),
+  );
   const { scale } = useUISize();
   const pin = usePinMode();
   const measure = useMeasureMode();
@@ -431,6 +474,9 @@ export default function MapView({
   pinRef.current = pin;
   const measureRef = useRef(measure);
   measureRef.current = measure;
+  const historyIdsRef = useRef(historyVesselIds);
+  historyIdsRef.current = historyVesselIds;
+  const historyTrailsRef = useRef<Record<string, LngLat[]>>({});
 
   const [hoveredPinId, setHoveredPinId] = useState<string | null>(null);
   const [, setMapRenderTick] = useState(0);
@@ -445,6 +491,9 @@ export default function MapView({
   >({});
   const [measurementScreenPositions, setMeasurementScreenPositions] = useState<
     Record<string, { start: { x: number; y: number }; end: { x: number; y: number } }>
+  >({});
+  const [historyScreenPaths, setHistoryScreenPaths] = useState<
+    Record<string, { x: number; y: number }[]>
   >({});
   const [pendingStartScreen, setPendingStartScreen] = useState<{
     x: number;
@@ -507,6 +556,16 @@ export default function MapView({
       };
     });
     setMeasurementScreenPositions(measurementPositions);
+    const historyPaths: Record<string, { x: number; y: number }[]> = {};
+    historyIdsRef.current.forEach((vid) => {
+      const trail = historyTrailsRef.current[vid];
+      if (!trail) return;
+      historyPaths[vid] = trail.map((pt) => {
+        const p = map.project([pt.lng, pt.lat]);
+        return { x: p.x, y: p.y };
+      });
+    });
+    setHistoryScreenPaths(historyPaths);
     const pending = measureRef.current.pendingStart;
     if (pending) {
       const pt = map.project([pending.lng, pending.lat]);
@@ -597,6 +656,7 @@ export default function MapView({
     pin.pins,
     measure.measurements,
     measure.pendingStart,
+    historyVesselIds,
     recomputeScreenPositions,
   ]);
 
@@ -637,6 +697,72 @@ export default function MapView({
   });
   const hoverHiddenByCluster =
     hover != null && clusteredVesselIds.has(hover.vesselId);
+
+  const handleVesselContextMenu = (vessel: Vessel, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (pin.mode !== 'off') return;
+    if (measure.mode !== 'off') return;
+    const map = mapRef.current;
+    if (!map) return;
+    const rect = mapContainer.current?.getBoundingClientRect();
+    const x = rect ? e.clientX - rect.left : e.clientX;
+    const y = rect ? e.clientY - rect.top : e.clientY;
+    setHover(null);
+    setTargetMenu({ vesselId: vessel.id, screenX: x, screenY: y });
+  };
+
+  const handleTargetMenuAction = (
+    vessel: Vessel,
+    action: TargetContextMenuAction,
+  ) => {
+    setTargetMenu(null);
+    if (action === 'history-path') {
+      if (!historyTrailsRef.current[vessel.id]) {
+        historyTrailsRef.current[vessel.id] = generateHistoryTrail(vessel);
+      }
+      setHistoryVesselIds((prev) => {
+        const next = new Set(prev);
+        if (next.has(vessel.id)) next.delete(vessel.id);
+        else next.add(vessel.id);
+        return next;
+      });
+      return;
+    }
+    if (action === 'highlight') {
+      setHighlightedVesselIds((prev) => {
+        const next = new Set(prev);
+        if (next.has(vessel.id)) next.delete(vessel.id);
+        else next.add(vessel.id);
+        return next;
+      });
+      return;
+    }
+    if (action === 'measure') {
+      if (measure.mode === 'off') measure.toggleMeasureMode();
+      return;
+    }
+    if (action === 'track' || action === 'investigate' || action === 'point-camera') {
+      onTargetOpen?.(vessel.id);
+      return;
+    }
+    // 'clear-alert' — no-op in mock data.
+  };
+
+  // Close the context menu on outside click / escape.
+  useEffect(() => {
+    if (!targetMenu) return;
+    const onDown = () => setTargetMenu(null);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setTargetMenu(null);
+    };
+    window.addEventListener('mousedown', onDown);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('mousedown', onDown);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [targetMenu]);
 
   const handleVesselClick = (vessel: Vessel, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -762,7 +888,24 @@ export default function MapView({
               <VesselMarker
                 vessel={item.vessel}
                 onClick={(e) => handleVesselClick(item.vessel, e)}
+                onContextMenu={(e) => handleVesselContextMenu(item.vessel, e)}
               />
+              {highlightedVesselIds.has(item.vessel.id) && (
+                <div
+                  className="absolute pointer-events-none"
+                  style={{
+                    left: '50%',
+                    top: '50%',
+                    width: 58,
+                    height: 58,
+                    transform: 'translate(-50%, -50%)',
+                    borderRadius: '50%',
+                    border: '2px solid rgba(255,255,255,0.95)',
+                    boxShadow:
+                      '0 0 0 3px rgba(255,255,255,0.25), 0 0 10px rgba(255,255,255,0.6)',
+                  }}
+                />
+              )}
             </div>
           );
         }
@@ -870,6 +1013,53 @@ export default function MapView({
             />
           </>
         )}
+      {/* History paths: wavy trail behind the vessel. */}
+      <svg
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        style={{ zIndex: 8 }}
+      >
+        {Object.entries(historyScreenPaths).map(([vid, pts]) => {
+          if (pts.length < 2) return null;
+          const d = pts
+            .map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x} ${p.y}`)
+            .join(' ');
+          return (
+            <g key={vid}>
+              <path
+                d={d}
+                fill="none"
+                stroke="rgba(255,255,255,0.3)"
+                strokeWidth={5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d={d}
+                fill="none"
+                stroke="white"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </g>
+          );
+        })}
+      </svg>
+      {targetMenu && (
+        <TargetContextMenuOverlay
+          x={targetMenu.screenX}
+          y={targetMenu.screenY}
+          scale={scale}
+          onMouseDown={(e) => e.stopPropagation()}
+          onWheel={forwardWheelToMap}
+          onAction={(action) => {
+            const vessel = mockVessels.find(
+              (v) => v.id === targetMenu.vesselId,
+            );
+            if (vessel) handleTargetMenuAction(vessel, action);
+          }}
+        />
+      )}
       {hover && !hoverHiddenByCluster && pin.mode === 'off' && measure.mode === 'off' && (
         <div
           className="absolute z-20"
@@ -889,6 +1079,70 @@ export default function MapView({
         </div>
       )}
     </>
+  );
+}
+
+function TargetContextMenuOverlay({
+  x,
+  y,
+  scale,
+  onAction,
+  onMouseDown,
+  onWheel,
+}: {
+  x: number;
+  y: number;
+  scale: number;
+  onAction: (action: TargetContextMenuAction) => void;
+  onMouseDown: (e: React.MouseEvent) => void;
+  onWheel: (e: React.WheelEvent) => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [layout, setLayout] = useState<{
+    openLeft: boolean;
+    openUp: boolean;
+    measured: boolean;
+  }>({ openLeft: false, openUp: false, measured: false });
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const margin = 8;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const openLeft = x + 12 + rect.width + margin > vw;
+    const openUp = y + 12 + rect.height + margin > vh;
+    setLayout({ openLeft, openUp, measured: true });
+  }, [x, y, scale]);
+
+  const offset = 12;
+  const left = layout.openLeft ? x - offset : x + offset;
+  const top = layout.openUp ? y - offset : y + offset;
+  const translate = `${layout.openLeft ? '-100%' : '0'}, ${layout.openUp ? '-100%' : '0'}`;
+
+  return (
+    <div
+      ref={ref}
+      className="absolute z-30"
+      style={{
+        left,
+        top,
+        transform: `translate(${translate})`,
+        visibility: layout.measured ? 'visible' : 'hidden',
+      }}
+      onMouseDown={onMouseDown}
+      onContextMenu={(e) => e.preventDefault()}
+      onWheel={onWheel}
+    >
+      <div style={{ zoom: scale }}>
+        <TargetContextMenu
+          onAction={onAction}
+          openLeft={layout.openLeft}
+          openUp={layout.openUp}
+        />
+      </div>
+    </div>
   );
 }
 
