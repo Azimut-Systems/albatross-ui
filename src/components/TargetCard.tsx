@@ -365,6 +365,8 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
           </div>
         </div>
 
+        <VisualRecognition />
+
         <section className="flex flex-col gap-4 shrink-0">
           <div className="flex items-center h-[26px]">
             {(['EO', 'AIS', 'AID'] as const).map((t) => (
@@ -416,8 +418,6 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
           </div>
         </section>
 
-        <VisualRecognition />
-        <PositionHistory />
       </div>
     </GlassPanel>
   );
