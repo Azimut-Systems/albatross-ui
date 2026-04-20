@@ -89,11 +89,12 @@ export default function Header({
               key={item}
               onClick={() => onNavChange(item)}
               className={`flex items-center px-[14px] py-[14px] rounded-lg text-sm tracking-[0.25px] transition-all cursor-pointer ${
-                activeNav === item ? 'text-white font-bold' : 'font-medium hover:text-white'
+                activeNav === item ? 'font-bold' : 'font-medium'
               }`}
               style={
                 activeNav === item
                   ? {
+                      color: 'var(--accent)',
                       backgroundImage:
                         'linear-gradient(90deg, rgb(var(--accent-rgb) / 0.35) 0%, rgb(var(--accent-rgb) / 0.35) 100%), linear-gradient(107deg, rgba(56,78,231,0.15) 5.66%, rgba(30,191,245,0.15) 98.96%)',
                     }
