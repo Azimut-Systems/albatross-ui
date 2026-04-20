@@ -354,24 +354,22 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
             <div className="flex items-center justify-center size-11 rounded-lg bg-[rgb(var(--accent-rgb)/0.15)] text-white shrink-0">
               <ShipIcon />
             </div>
-            <div className="flex flex-1 flex-col gap-2 min-w-0">
-              <div className="flex items-center gap-0.5 w-full">
-                <h2 className="flex-1 font-ibm-plex-sans font-bold text-lg text-white leading-tight tracking-[-0.2px] truncate">
-                  {target.name}
-                </h2>
-                <IconButton label="Track target">
-                  <TargetDotIcon />
-                </IconButton>
-                <IconButton label="Bookmark target">
-                  <BookmarkIcon />
-                </IconButton>
-                <IconButton label="More actions">
-                  <MoreIcon />
-                </IconButton>
-              </div>
-              <div className="flex items-center">
-                <StatusBadge status={target.status} />
-              </div>
+            <div className="flex flex-1 flex-col items-start gap-1.5 min-w-0">
+              <h2 className="max-w-full font-ibm-plex-sans font-bold text-lg text-white leading-tight tracking-[-0.2px] truncate">
+                {target.name}
+              </h2>
+              <StatusBadge status={target.status} />
+            </div>
+            <div className="flex items-center gap-0.5 shrink-0 -mr-1">
+              <IconButton label="Track target">
+                <TargetDotIcon />
+              </IconButton>
+              <IconButton label="Bookmark target">
+                <BookmarkIcon />
+              </IconButton>
+              <IconButton label="More actions">
+                <MoreIcon />
+              </IconButton>
             </div>
           </div>
         </div>
