@@ -1415,7 +1415,10 @@ function ClusterVesselMenu({
         <div className="px-1 pt-0.5 pb-1 font-ibm-plex-sans font-bold text-[13px] text-[var(--accent-muted)] tracking-wide uppercase">
           {vessels.length} Vessels
         </div>
-        <div className="flex flex-col gap-1 max-h-[320px] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div
+          className="flex flex-col gap-1 max-h-[320px] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          onWheel={(e) => e.stopPropagation()}
+        >
           {vessels.map((v) => (
             <ClusterVesselRow
               key={v.id}
