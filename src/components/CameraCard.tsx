@@ -251,14 +251,12 @@ function LiveCamera({ onSwap }: { onSwap?: () => void }) {
           <span className="font-ibm-plex-sans font-bold text-sm">Swap View</span>
         </button>
       </div>
-      <div
-        className="relative h-[283px] w-full overflow-hidden rounded-[8.48px] border border-black"
-        style={{
-          background:
-            'linear-gradient(135deg, rgba(30,191,245,0.35), rgb(var(--accent-rgb) / 0.35) 55%, rgba(12,11,25,0.75))',
-        }}
-      >
-        <div className="absolute inset-0" style={{ background: 'rgb(var(--accent-rgb) / 0.1)' }} />
+      <div className="relative h-[283px] w-full overflow-hidden rounded-[8.48px]">
+        <img
+          src="/live-camera.jpeg"
+          alt="Live camera feed"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
         <div className="absolute left-0 right-0 top-3 flex items-center justify-between px-5 text-white/80">
           <CompassIcon />
           <ExpandIcon />

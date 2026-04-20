@@ -263,15 +263,12 @@ function VisualRecognition() {
         <span className="font-ibm-plex-sans font-normal text-[11px] tracking-wide tabular-nums" style={{ color: 'var(--accent-muted)' }}>
           Live Detection Image · 01/04/26, 10:44:13
         </span>
-        <div
-          className="relative h-[175px] w-full rounded-md overflow-hidden"
-          style={{
-            backgroundImage:
-              'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.55) 100%), linear-gradient(135deg, rgba(30,191,245,0.45), rgb(var(--accent-rgb)/0.35) 60%, rgba(12,11,25,0.75))',
-          }}
-        >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_60%,rgba(114,84,237,0.25),transparent_60%)]" />
-          <div className="absolute top-1/2 left-6 right-6 h-px bg-[rgba(255,255,255,0.3)]" />
+        <div className="w-full rounded-md overflow-hidden">
+          <img
+            src="/target-image.jpg"
+            alt="Live detection image"
+            className="w-full h-auto block"
+          />
         </div>
       </div>
     </section>
