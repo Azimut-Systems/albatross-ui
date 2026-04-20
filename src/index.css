@@ -9,6 +9,20 @@
   --accent: #6931F5;
   --accent-rgb: 105 49 245;
   --accent-muted: color-mix(in srgb, var(--accent) 45%, white);
+  --bg-page: #12111b;
+  --fg: #ffffff;
+  --fg-rgb: 255 255 255;
+  --fg-muted: #dee3e7;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --accent-muted: color-mix(in srgb, var(--accent) 55%, black);
+  --bg-page: #f2f3f7;
+  --fg: #12111b;
+  --fg-rgb: 18 17 27;
+  --fg-muted: #3b3b47;
+  color-scheme: light;
 }
 
 html, body, #root {
@@ -16,11 +30,32 @@ html, body, #root {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background: #12111b;
+  background: var(--bg-page);
+  color: var(--fg);
   font-family: 'IBM Plex Sans', sans-serif;
   user-select: none;
   -webkit-user-select: none;
 }
+
+/* Light-mode overrides: invert common "white" foreground patterns used across the UI.
+   Tailwind utilities here use higher-specificity attribute selectors to win. */
+:root[data-theme="light"] .text-white { color: var(--fg); }
+:root[data-theme="light"] .bg-white\/5 { background-color: rgb(var(--fg-rgb) / 0.05); }
+:root[data-theme="light"] .bg-white\/10 { background-color: rgb(var(--fg-rgb) / 0.08); }
+:root[data-theme="light"] .bg-white\/20 { background-color: rgb(var(--fg-rgb) / 0.12); }
+:root[data-theme="light"] .border-white\/5 { border-color: rgb(var(--fg-rgb) / 0.08); }
+:root[data-theme="light"] .border-white\/10 { border-color: rgb(var(--fg-rgb) / 0.12); }
+:root[data-theme="light"] .border-white\/20 { border-color: rgb(var(--fg-rgb) / 0.18); }
+:root[data-theme="light"] .border-white\/30 { border-color: rgb(var(--fg-rgb) / 0.28); }
+:root[data-theme="light"] .border-white\/60 { border-color: rgb(var(--fg-rgb) / 0.5); }
+:root[data-theme="light"] .text-\[\#dee3e7\] { color: var(--fg-muted); }
+:root[data-theme="light"] .hover\:text-white:hover { color: var(--fg); }
+:root[data-theme="light"] .bg-\[\#12111b\] { background-color: var(--bg-page); }
+/* SVG icons that hardcode white fill/stroke */
+:root[data-theme="light"] svg [fill="white"],
+:root[data-theme="light"] svg[fill="white"] { fill: var(--fg); }
+:root[data-theme="light"] svg [stroke="white"],
+:root[data-theme="light"] svg[stroke="white"] { stroke: var(--fg); }
 
 input, textarea, [contenteditable="true"] {
   user-select: text;
@@ -53,4 +88,7 @@ input, textarea, [contenteditable="true"] {
   top: auto !important;
   left: auto !important;
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+}
+.glass-wrapper, .glass-wrapper * {
+  text-shadow: none !important;
 }

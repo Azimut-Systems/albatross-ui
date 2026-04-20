@@ -11,6 +11,7 @@ import PinCursor from './components/PinCursor';
 import MeasureCursor from './components/MeasureCursor';
 import { UISizeProvider, useUISize } from './contexts/UISizeContext';
 import { AccentColorProvider } from './contexts/AccentColorContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { PinModeProvider } from './contexts/PinModeContext';
 import { MeasureModeProvider } from './contexts/MeasureModeContext';
 
@@ -49,7 +50,7 @@ function AppShell() {
   const uiScaleStyle = { zoom: scale } as React.CSSProperties;
 
   return (
-    <div className="relative h-screen w-screen bg-[#12111b] overflow-hidden">
+    <div className="relative h-screen w-screen overflow-hidden" style={{ background: 'var(--bg-page)' }}>
       <MapView
         onTargetOpen={() => { setTargetsOpen(true); setActiveTargetId('0'); }}
         onCameraOpen={(id) => { setCamerasOpen(true); setActiveCameraId(id); }}
@@ -123,14 +124,16 @@ function AppShell() {
 
 export default function App() {
   return (
-    <UISizeProvider>
-      <AccentColorProvider>
-        <PinModeProvider>
-          <MeasureModeProvider>
-            <AppShell />
-          </MeasureModeProvider>
-        </PinModeProvider>
-      </AccentColorProvider>
-    </UISizeProvider>
+    <ThemeProvider>
+      <UISizeProvider>
+        <AccentColorProvider>
+          <PinModeProvider>
+            <MeasureModeProvider>
+              <AppShell />
+            </MeasureModeProvider>
+          </PinModeProvider>
+        </AccentColorProvider>
+      </UISizeProvider>
+    </ThemeProvider>
   );
 }

@@ -10,6 +10,12 @@ import TargetHoverCard, { type TargetHoverCardData } from './TargetHoverCard';
 import { useUISize } from '../contexts/UISizeContext';
 import { usePinMode } from '../contexts/PinModeContext';
 import { useMeasureMode, type LngLat } from '../contexts/MeasureModeContext';
+import { useTheme } from '../contexts/ThemeContext';
+
+const MAP_STYLES = {
+  dark: 'mapbox://styles/mapbox/dark-v11',
+  light: 'mapbox://styles/mapbox/light-v11',
+} as const;
 
 function haversineMeters(a: LngLat, b: LngLat): number {
   const R = 6371000;
@@ -483,6 +489,7 @@ export default function MapView({
     () => new Set(),
   );
   const { scale } = useUISize();
+  const { theme } = useTheme();
   const pin = usePinMode();
   const measure = useMeasureMode();
 
@@ -594,13 +601,20 @@ export default function MapView({
   // Keep this alias for call sites that reference pin positions only.
   const recomputePinScreenPositions = recomputeScreenPositions;
 
+  // Swap map style when theme changes.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    map.setStyle(MAP_STYLES[theme]);
+  }, [theme]);
+
   // Initialize map once.
   useEffect(() => {
     if (!mapContainer.current || mapRef.current) return;
 
     const map = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/dark-v11',
+      style: MAP_STYLES[theme],
       center: [34.6430, 31.8240],
       zoom: 14,
       pitch: 0,
