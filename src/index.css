@@ -13,7 +13,7 @@
   --fg: #ffffff;
   --fg-rgb: 255 255 255;
   --fg-muted: #dee3e7;
-  --accent-active-fg: #ffffff;
+  --accent-active-fg: color-mix(in srgb, var(--accent) 25%, white);
   color-scheme: dark;
 }
 
