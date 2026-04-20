@@ -367,8 +367,8 @@ function CameraMarker() {
     <GlassPanel cornerRadius={31} padding="12px">
       <div className="flex items-center justify-center w-[36px] h-[36px]">
         <svg width="28" height="28" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="8" width="22" height="18" rx="3" stroke="var(--accent)" strokeWidth="2" fill="none" />
-          <path d="M24 14L32 10V26L24 22" stroke="var(--accent)" strokeWidth="2" strokeLinejoin="round" fill="none" />
+          <rect x="2" y="8" width="22" height="18" rx="3" stroke="var(--accent-muted)" strokeWidth="2" fill="none" />
+          <path d="M24 14L32 10V26L24 22" stroke="var(--accent-muted)" strokeWidth="2" strokeLinejoin="round" fill="none" />
         </svg>
       </div>
     </GlassPanel>
