@@ -88,17 +88,18 @@ export default function Header({
             <button
               key={item}
               onClick={() => onNavChange(item)}
-              className={`flex items-center px-[14px] py-[14px] rounded-lg text-sm tracking-[0.25px] transition-all cursor-pointer ${
+              className={`flex items-center px-[14px] py-[14px] text-sm tracking-[0.25px] transition-colors cursor-pointer ${
                 activeNav === item ? 'font-bold' : 'font-medium'
               }`}
               style={
                 activeNav === item
                   ? {
+                      borderRadius: 'var(--glass-inner-radius)',
                       color: 'var(--accent-active-fg)',
                       backgroundImage:
                         'linear-gradient(90deg, rgb(var(--accent-rgb) / 0.35) 0%, rgb(var(--accent-rgb) / 0.35) 100%), linear-gradient(107deg, rgba(56,78,231,0.15) 5.66%, rgba(30,191,245,0.15) 98.96%)',
                     }
-                  : { color: 'var(--accent-muted)' }
+                  : { borderRadius: 'var(--glass-inner-radius)', color: 'var(--accent-muted)' }
               }
             >
               <span className="font-ibm-plex-sans">{item}</span>
@@ -126,8 +127,11 @@ export default function Header({
               onClick={onClick}
               aria-label={label}
               aria-pressed={active ?? undefined}
-              className="flex items-center p-3 rounded-lg cursor-pointer transition-colors"
-              style={{ color: active ? 'var(--accent-active-fg)' : 'var(--accent-muted)' }}
+              className="flex items-center p-3 cursor-pointer transition-colors"
+              style={{
+                borderRadius: 'var(--glass-inner-radius)',
+                color: active ? 'var(--accent-active-fg)' : 'var(--accent-muted)',
+              }}
             >
               <Icon />
             </button>

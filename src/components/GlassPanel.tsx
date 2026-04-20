@@ -35,6 +35,8 @@ export default function GlassPanel({
     window.dispatchEvent(new Event('resize'));
   }, [scale]);
 
+  const innerRadius = `calc(${cornerRadius}px / var(--ui-scale, 1) - ${parseFloat(padding)}px)`;
+
   return (
     <div
       className={`glass-wrapper ${className}`}
@@ -53,7 +55,17 @@ export default function GlassPanel({
           ...style,
         }}
       >
-        <div style={{ zoom: scale, padding } as CSSProperties}>{children}</div>
+        <div
+          style={
+            {
+              zoom: scale,
+              padding,
+              '--glass-inner-radius': innerRadius,
+            } as CSSProperties
+          }
+        >
+          {children}
+        </div>
       </LiquidGlass>
     </div>
   );

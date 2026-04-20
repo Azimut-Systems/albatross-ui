@@ -75,12 +75,15 @@ export default function ToolsBar() {
             aria-label="Measure"
             aria-pressed={measureActive}
             onClick={handleMeasureClick}
-            className={`flex items-center p-[10px] rounded-lg cursor-pointer transition-colors ${
+            className={`flex items-center p-[10px] cursor-pointer transition-colors ${
               measureActive
                 ? 'bg-[rgb(var(--accent-rgb)/0.55)]'
                 : 'hover:bg-[rgb(var(--accent-rgb)/0.2)]'
             }`}
-            style={measureActive ? undefined : { color: 'var(--accent-muted)' }}
+            style={{
+              borderRadius: 'var(--glass-inner-radius)',
+              ...(measureActive ? {} : { color: 'var(--accent-muted)' }),
+            }}
           >
             <RulerIcon />
           </button>
@@ -89,20 +92,26 @@ export default function ToolsBar() {
             aria-label="Pin"
             aria-pressed={pinActive}
             onClick={handlePinClick}
-            className={`flex items-center p-[10px] rounded-lg cursor-pointer transition-colors ${
+            className={`flex items-center p-[10px] cursor-pointer transition-colors ${
               pinActive
                 ? 'bg-[rgb(var(--accent-rgb)/0.55)]'
                 : 'hover:bg-[rgb(var(--accent-rgb)/0.2)]'
             }`}
-            style={pinActive ? undefined : { color: 'var(--accent-muted)' }}
+            style={{
+              borderRadius: 'var(--glass-inner-radius)',
+              ...(pinActive ? {} : { color: 'var(--accent-muted)' }),
+            }}
           >
             <PinIcon />
           </button>
           <button
             type="button"
             aria-label="Layers"
-            className="flex items-center p-[10px] rounded-lg cursor-pointer hover:bg-[rgb(var(--accent-rgb)/0.2)] transition-colors"
-            style={{ color: 'var(--accent-muted)' }}
+            className="flex items-center p-[10px] cursor-pointer hover:bg-[rgb(var(--accent-rgb)/0.2)] transition-colors"
+            style={{
+              borderRadius: 'var(--glass-inner-radius)',
+              color: 'var(--accent-muted)',
+            }}
           >
             <LayersIcon />
           </button>
