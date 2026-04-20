@@ -8,7 +8,6 @@ import TargetCard from './components/TargetCard';
 import CamerasList, { type Camera } from './components/CamerasList';
 import CameraCard from './components/CameraCard';
 import PinCursor from './components/PinCursor';
-import MeasureCursor from './components/MeasureCursor';
 import { UISizeProvider, useUISize } from './contexts/UISizeContext';
 import { AccentColorProvider } from './contexts/AccentColorContext';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -117,7 +116,6 @@ function AppShell() {
         {activeNav === 'Settings' && <SettingsPanel onClose={() => setActiveNav('Map')} />}
       </div>
       <PinCursor />
-      <MeasureCursor />
     </div>
   );
 }

@@ -695,14 +695,14 @@ export default function MapView({
     const map = mapRef.current;
     if (!map) return;
     const canvas = map.getCanvas();
-    const active = pin.mode !== 'off' || measure.mode !== 'off';
-    canvas.style.cursor = active ? 'none' : '';
+    if (pin.mode !== 'off') canvas.style.cursor = 'none';
+    else if (measure.mode !== 'off') canvas.style.cursor = 'crosshair';
+    else canvas.style.cursor = '';
   }, [pin.mode, measure.mode]);
 
-  // Hide cursor on <body> only while measuring (PinCursor already manages this for pin mode).
+  // Hide cursor on <body> only while in pin mode (PinCursor renders its own overlay).
   useEffect(() => {
-    if (pin.mode !== 'off') return;
-    if (measure.mode === 'off') {
+    if (pin.mode === 'off') {
       document.body.style.cursor = '';
       return;
     }
@@ -710,7 +710,7 @@ export default function MapView({
     return () => {
       document.body.style.cursor = '';
     };
-  }, [measure.mode, pin.mode]);
+  }, [pin.mode]);
 
   // Preview end-point: while awaiting end click, follow cursor. Otherwise null.
   const previewEndScreen =
@@ -898,11 +898,10 @@ export default function MapView({
               y1={pos.start.y}
               x2={pos.end.x}
               y2={pos.end.y}
-              stroke="white"
-              strokeWidth={1.25}
+              stroke="var(--accent)"
+              strokeWidth={1.5}
               strokeDasharray="5 4"
               strokeLinecap="round"
-              opacity={0.95}
             />
           );
         })}
@@ -912,11 +911,10 @@ export default function MapView({
             y1={pendingStartScreen.y}
             x2={previewEndScreen.x}
             y2={previewEndScreen.y}
-            stroke="white"
-            strokeWidth={1.25}
+            stroke="var(--accent)"
+            strokeWidth={1.5}
             strokeDasharray="5 4"
             strokeLinecap="round"
-            opacity={0.95}
           />
         )}
       </svg>
@@ -1393,11 +1391,10 @@ function MeasurementEndpoint({ pos }: { pos: { x: number; y: number } }) {
       }}
     >
       <div
-        className="w-[8px] h-[8px] rounded-full"
+        className="w-[10px] h-[10px] rounded-full border-2"
         style={{
-          background: '#ffffff',
-          boxShadow:
-            '0 0 0 2px rgb(var(--accent-rgb)/0.55), 0 0 6px rgba(0,0,0,0.6)',
+          background: 'var(--bg-page)',
+          borderColor: 'var(--accent)',
         }}
       />
     </div>
@@ -1431,11 +1428,8 @@ function MeasurementLabel({
       }}
     >
       <div
-        className="text-white text-[11px] font-medium tracking-[0.3px] whitespace-nowrap"
-        style={{
-          textShadow:
-            '0 0 4px rgba(0,0,0,0.9), 0 1px 2px rgba(0,0,0,0.8)',
-        }}
+        className="text-[11px] font-medium tracking-[0.3px] whitespace-nowrap"
+        style={{ color: 'var(--accent)' }}
       >
         {text}
       </div>
