@@ -84,7 +84,7 @@ function FilterPill({ label, onClick }: { label: string; onClick?: () => void })
       onClick={onClick}
       className="flex-1 flex items-center gap-1 p-2 rounded border border-[#4c3d7b] text-white cursor-pointer hover:border-[#6e48f2] transition-colors"
     >
-      <span className="flex-1 text-left font-satoshi font-medium text-sm">{label}</span>
+      <span className="flex-1 text-left font-ibm-plex-sans font-medium text-sm">{label}</span>
       <ChevronDownIcon />
     </button>
   );
@@ -96,7 +96,7 @@ function Badge({ label, border, bg, text }: { label: string; border: string; bg:
       className="flex h-5 items-center px-2 rounded-[34px] border"
       style={{ borderColor: border, backgroundColor: bg }}
     >
-      <span className="font-satoshi font-medium text-xs leading-none" style={{ color: text }}>
+      <span className="font-ibm-plex-sans font-medium text-xs leading-none" style={{ color: text }}>
         {label}
       </span>
     </div>
@@ -115,8 +115,8 @@ function ClassBadge({ label }: { label: string }) {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col items-start min-w-0">
-      <span className="font-satoshi font-normal text-xs text-[#bbb0dc]">{label}</span>
-      <span className="font-satoshi font-medium text-sm text-white truncate">{value}</span>
+      <span className="font-ibm-plex-sans font-normal text-xs text-[#bbb0dc]">{label}</span>
+      <span className="font-ibm-plex-sans font-medium text-sm text-white truncate">{value}</span>
     </div>
   );
 }
@@ -146,10 +146,10 @@ function TargetCard({ target, active, onSelect, onMore }: TargetCardProps) {
             <ShipIcon />
           </div>
           <div className="flex flex-col gap-1 flex-1 min-w-0">
-            <span className="font-satoshi font-bold text-base text-white tracking-[0.1px] leading-5 truncate">
+            <span className="font-ibm-plex-sans font-bold text-base text-white tracking-[0.1px] leading-5 truncate">
               {target.name}
             </span>
-            <span className="font-satoshi font-normal text-xs text-[#bbb0dc] truncate">
+            <span className="font-ibm-plex-sans font-normal text-xs text-[#bbb0dc] truncate">
               {target.coordinates}
             </span>
           </div>
@@ -214,7 +214,7 @@ export default function TargetsList({
       >
         <div className="flex flex-col gap-4 w-full shrink-0">
           <div className="flex items-center gap-1.5 w-full">
-            <h2 className="flex-1 font-satoshi font-bold text-[22px] text-white leading-[1.5]">
+            <h2 className="flex-1 font-ibm-plex-sans font-bold text-[22px] text-white leading-[1.5]">
               Targets List
             </h2>
             <button

@@ -80,7 +80,7 @@ function FilterPill({ label, onClick }: { label: string; onClick?: () => void })
       onClick={onClick}
       className="flex-1 flex items-center gap-1 p-2 rounded border border-[#4c3d7b] text-white cursor-pointer hover:border-[#6e48f2] transition-colors"
     >
-      <span className="flex-1 text-left font-satoshi font-medium text-sm">{label}</span>
+      <span className="flex-1 text-left font-ibm-plex-sans font-medium text-sm">{label}</span>
       <ChevronDownIcon />
     </button>
   );
@@ -92,7 +92,7 @@ function Badge({ label, border, bg, text }: { label: string; border: string; bg:
       className="flex h-5 items-center px-2 rounded-[34px] border"
       style={{ borderColor: border, backgroundColor: bg }}
     >
-      <span className="font-satoshi font-medium text-xs leading-none" style={{ color: text }}>
+      <span className="font-ibm-plex-sans font-medium text-xs leading-none" style={{ color: text }}>
         {label}
       </span>
     </div>
@@ -103,7 +103,7 @@ function ProgressBar({ value }: { value: number }) {
   const clamped = Math.max(0, Math.min(100, value));
   return (
     <div className="flex flex-col gap-4 w-full">
-      <span className="font-satoshi font-medium text-sm text-white">{Math.round(clamped)}% To complete</span>
+      <span className="font-ibm-plex-sans font-medium text-sm text-white">{Math.round(clamped)}% To complete</span>
       <div className="h-[11.4px] w-full rounded-[32.33px] bg-[rgba(122,86,246,0.2)] overflow-hidden">
         <div
           className="h-full rounded-[20px]"
@@ -168,7 +168,7 @@ function CameraCard({ camera, active, onSelect, onMore }: CameraCardProps) {
           <div className="flex items-center p-2 rounded-[30px] bg-[rgba(122,86,246,0.2)] text-white shrink-0">
             <CameraIcon />
           </div>
-          <span className="font-satoshi font-bold text-base text-white tracking-[0.1px] leading-5 truncate">
+          <span className="font-ibm-plex-sans font-bold text-base text-white tracking-[0.1px] leading-5 truncate">
             {camera.name}
           </span>
         </div>
@@ -229,7 +229,7 @@ export default function CamerasList({
       >
         <div className="flex flex-col gap-4 w-full shrink-0">
           <div className="flex items-center gap-1.5 w-full">
-            <h2 className="flex-1 font-satoshi font-bold text-[22px] text-white leading-[1.5]">
+            <h2 className="flex-1 font-ibm-plex-sans font-bold text-[22px] text-white leading-[1.5]">
               Cameras List
             </h2>
             <button

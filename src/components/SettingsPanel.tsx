@@ -14,7 +14,7 @@ export default function SettingsPanel() {
     <div className="absolute top-[110px] left-1/2 -translate-x-1/2 z-30">
       <GlassPanel padding="16px">
         <div className="flex flex-col gap-3 min-w-[260px]">
-          <span className="font-satoshi font-bold text-white text-sm tracking-[0.25px]">
+          <span className="font-ibm-plex-sans font-bold text-white text-sm tracking-[0.25px]">
             UI Size
           </span>
           <div className="flex items-center gap-2">
@@ -22,7 +22,7 @@ export default function SettingsPanel() {
               <button
                 key={opt.value}
                 onClick={() => setSize(opt.value)}
-                className={`flex-1 px-3 py-2 rounded-lg text-sm tracking-[0.25px] transition-all cursor-pointer font-satoshi ${
+                className={`flex-1 px-3 py-2 rounded-lg text-sm tracking-[0.25px] transition-all cursor-pointer font-ibm-plex-sans ${
                   size === opt.value
                     ? 'text-white font-bold'
                     : 'text-[#dee3e7] font-medium hover:text-white'

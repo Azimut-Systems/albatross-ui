@@ -2,8 +2,7 @@
 @import "mapbox-gl/dist/mapbox-gl.css";
 
 @theme {
-  --font-satoshi: 'Satoshi', sans-serif;
-  --font-montserrat: 'Montserrat', sans-serif;
+  --font-ibm-plex-sans: 'IBM Plex Sans', sans-serif;
 }
 
 html, body, #root {
@@ -12,6 +11,7 @@ html, body, #root {
   padding: 0;
   overflow: hidden;
   background: #12111b;
+  font-family: 'IBM Plex Sans', sans-serif;
   user-select: none;
   -webkit-user-select: none;
 }

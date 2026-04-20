@@ -140,7 +140,7 @@ function StatusBadge({ status }: { status: TargetStatus }) {
         style={{ backgroundColor: s.text }}
       />
       <span
-        className="font-satoshi font-semibold text-[10px] leading-none tracking-wide uppercase"
+        className="font-ibm-plex-sans font-semibold text-[10px] leading-none tracking-wide uppercase"
         style={{ color: s.text }}
       >
         {status}
@@ -183,7 +183,7 @@ function TabButton({
     <button
       type="button"
       onClick={onClick}
-      className={`relative h-7 px-0 mr-5 font-satoshi font-semibold text-[13px] tracking-wide cursor-pointer transition-colors ${
+      className={`relative h-7 px-0 mr-5 font-ibm-plex-sans font-semibold text-[13px] tracking-wide cursor-pointer transition-colors ${
         active ? 'text-white' : 'text-[#9a8fc0] hover:text-[rgba(255,255,255,0.85)]'
       }`}
     >
@@ -198,8 +198,8 @@ function TabButton({
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex-1 flex flex-col gap-1 items-start bg-[rgba(93,52,165,0.08)] border border-[rgba(255,255,255,0.04)] rounded-lg px-3 py-2.5 min-w-0">
-      <span className="font-satoshi font-normal text-[11px] text-[#9a8fc0] tracking-wide uppercase">{label}</span>
-      <span className="font-satoshi font-medium text-sm text-white truncate w-full">{value}</span>
+      <span className="font-ibm-plex-sans font-normal text-[11px] text-[#9a8fc0] tracking-wide uppercase">{label}</span>
+      <span className="font-ibm-plex-sans font-medium text-sm text-white truncate w-full">{value}</span>
     </div>
   );
 }
@@ -207,7 +207,7 @@ function Field({ label, value }: { label: string; value: string }) {
 function AlertRow({ title, time }: { title: string; time: string }) {
   return (
     <div className="flex items-center gap-3 bg-[rgba(122,86,246,0.12)] border border-[rgba(255,255,255,0.04)] rounded-lg pl-3.5 pr-2 py-2.5 w-full">
-      <div className="flex flex-1 flex-col min-w-0 font-satoshi">
+      <div className="flex flex-1 flex-col min-w-0 font-ibm-plex-sans">
         <span className="font-medium text-sm text-white truncate">{title}</span>
         <span className="font-normal text-[11px] text-[#9a8fc0] truncate">{time}</span>
       </div>
@@ -216,7 +216,7 @@ function AlertRow({ title, time }: { title: string; time: string }) {
           className="inline-flex h-[18px] items-center px-1.5 rounded-full"
           style={{ backgroundColor: 'rgba(18,169,111,0.18)' }}
         >
-          <span className="font-satoshi font-medium text-[10px] leading-none text-[#2eb07e] tracking-wide uppercase">Auto</span>
+          <span className="font-ibm-plex-sans font-medium text-[10px] leading-none text-[#2eb07e] tracking-wide uppercase">Auto</span>
         </div>
         <IconButton label="Alert actions">
           <MoreIcon />
@@ -230,7 +230,7 @@ function VisualRecognition() {
   return (
     <section className="flex flex-col gap-4">
       <div className="flex items-center gap-1">
-        <h3 className="flex-1 font-satoshi font-bold text-base text-white tracking-[0.1px] leading-5">
+        <h3 className="flex-1 font-ibm-plex-sans font-bold text-base text-white tracking-[0.1px] leading-5">
           Visual Recognition
         </h3>
         <IconButton label="Download image">
@@ -243,10 +243,10 @@ function VisualRecognition() {
       <div className="flex flex-col gap-3 bg-[rgba(93,52,165,0.08)] border border-[rgba(255,255,255,0.04)] rounded-xl px-4 py-4">
         <div className="flex items-start gap-4">
           <div className="flex-1 flex flex-col gap-0.5">
-            <span className="font-satoshi font-semibold text-[22px] text-white tracking-[-0.4px] tabular-nums leading-none">
+            <span className="font-ibm-plex-sans font-semibold text-[22px] text-white tracking-[-0.4px] tabular-nums leading-none">
               82%
             </span>
-            <span className="font-satoshi font-normal text-xs text-[#9a8fc0] tracking-[-0.1px]">
+            <span className="font-ibm-plex-sans font-normal text-xs text-[#9a8fc0] tracking-[-0.1px]">
               Confidence Score
             </span>
           </div>
@@ -259,7 +259,7 @@ function VisualRecognition() {
             </IconButton>
           </div>
         </div>
-        <span className="font-satoshi font-normal text-[11px] text-[#9a8fc0] tracking-wide tabular-nums">
+        <span className="font-ibm-plex-sans font-normal text-[11px] text-[#9a8fc0] tracking-wide tabular-nums">
           Live Detection Image · 01/04/26, 10:44:13
         </span>
         <div
@@ -281,7 +281,7 @@ function PositionHistory() {
   return (
     <section className="flex flex-col gap-4 w-full">
       <div className="flex items-center gap-1">
-        <h3 className="flex-1 font-satoshi font-bold text-base text-white tracking-[0.1px] leading-5">
+        <h3 className="flex-1 font-ibm-plex-sans font-bold text-base text-white tracking-[0.1px] leading-5">
           Position History
         </h3>
         <button
@@ -289,7 +289,7 @@ function PositionHistory() {
           className="flex items-center gap-1 px-2 py-1.5 rounded text-[#bbb0dc] cursor-pointer hover:bg-[rgba(255,255,255,0.1)] transition-colors"
         >
           <OpenViewIcon />
-          <span className="font-satoshi font-bold text-sm tracking-[0.1px]">Open View</span>
+          <span className="font-ibm-plex-sans font-bold text-sm tracking-[0.1px]">Open View</span>
         </button>
       </div>
       <div
@@ -355,7 +355,7 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
             </div>
             <div className="flex flex-1 flex-col gap-2 min-w-0">
               <div className="flex items-center gap-0.5 w-full">
-                <h2 className="flex-1 font-satoshi font-bold text-lg text-white leading-tight tracking-[-0.2px] truncate">
+                <h2 className="flex-1 font-ibm-plex-sans font-bold text-lg text-white leading-tight tracking-[-0.2px] truncate">
                   {target.name}
                 </h2>
                 <IconButton label="Track target">
@@ -395,7 +395,7 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
 
         <section className="flex flex-col gap-4 shrink-0">
           <div className="flex items-center gap-1">
-            <h3 className="flex-1 font-satoshi font-bold text-base text-white tracking-[0.1px] leading-5">
+            <h3 className="flex-1 font-ibm-plex-sans font-bold text-base text-white tracking-[0.1px] leading-5">
               Alerts
             </h3>
             <button
@@ -403,7 +403,7 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
               className="flex items-center gap-1 px-2 py-1.5 rounded text-[#bbb0dc] cursor-pointer hover:bg-[rgba(255,255,255,0.1)] transition-colors"
             >
               <HistoryIcon />
-              <span className="font-satoshi font-bold text-sm tracking-[0.1px]">History</span>
+              <span className="font-ibm-plex-sans font-bold text-sm tracking-[0.1px]">History</span>
             </button>
           </div>
           <div className="flex flex-col gap-4 w-full">
@@ -413,7 +413,7 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
                 value={alertInput}
                 onChange={(e) => setAlertInput(e.target.value)}
                 placeholder="Add your input…"
-                className="flex-1 min-w-0 bg-transparent border-none outline-none font-satoshi font-medium text-sm text-white placeholder:text-[#9a8fc0]"
+                className="flex-1 min-w-0 bg-transparent border-none outline-none font-ibm-plex-sans font-medium text-sm text-white placeholder:text-[#9a8fc0]"
               />
               <button
                 type="button"

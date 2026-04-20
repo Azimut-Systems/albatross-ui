@@ -41,8 +41,8 @@ export default function GlassShowcase() {
               <ShieldIcon />
             </div>
             <div>
-              <div className="text-white font-satoshi font-bold text-sm">System Status</div>
-              <div className="text-[#9ca3af] font-satoshi text-xs mt-0.5">All systems operational</div>
+              <div className="text-white font-ibm-plex-sans font-bold text-sm">System Status</div>
+              <div className="text-[#9ca3af] font-ibm-plex-sans text-xs mt-0.5">All systems operational</div>
             </div>
             <div className="ml-8 w-2 h-2 rounded-full bg-green-400" />
           </div>
@@ -53,20 +53,20 @@ export default function GlassShowcase() {
           <GlassPanel padding="16px" cornerRadius={20}>
             <div className="flex flex-col items-center gap-2 px-4 py-1">
               <ChartIcon />
-              <div className="text-white font-satoshi font-bold text-2xl">24</div>
-              <div className="text-[#9ca3af] font-satoshi text-xs">Active Vessels</div>
+              <div className="text-white font-ibm-plex-sans font-bold text-2xl">24</div>
+              <div className="text-[#9ca3af] font-ibm-plex-sans text-xs">Active Vessels</div>
             </div>
           </GlassPanel>
 
           {/* Tall card */}
           <GlassPanel padding="16px" cornerRadius={20}>
             <div className="flex flex-col gap-3 px-2 py-1 min-w-[140px]">
-              <div className="text-white font-satoshi font-bold text-sm">Connections</div>
+              <div className="text-white font-ibm-plex-sans font-bold text-sm">Connections</div>
               {['AIS Feed', 'Radar', 'Camera'].map((label) => (
                 <div key={label} className="flex items-center justify-between gap-6">
                   <div className="flex items-center gap-2">
                     <WifiIcon />
-                    <span className="text-[#dee3e7] font-satoshi text-xs">{label}</span>
+                    <span className="text-[#dee3e7] font-ibm-plex-sans text-xs">{label}</span>
                   </div>
                   <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
                 </div>
