@@ -145,7 +145,7 @@ function Badge({ label, border, bg, text }: { label: string; border: string; bg:
       className="flex h-5 items-center px-2 rounded-[34px] border"
       style={{ borderColor: border, backgroundColor: bg }}
     >
-      <span className="font-satoshi font-medium text-xs leading-none" style={{ color: text }}>
+      <span className="font-ibm-plex-sans font-medium text-xs leading-none" style={{ color: text }}>
         {label}
       </span>
     </div>
@@ -155,8 +155,8 @@ function Badge({ label, border, bg, text }: { label: string; border: string; bg:
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex-1 flex flex-col items-start bg-[rgba(93,52,165,0.1)] rounded-xl px-3 py-4 min-w-0">
-      <span className="font-satoshi font-normal text-xs text-[#bbb0dc]">{label}</span>
-      <span className="font-satoshi font-medium text-sm text-white truncate w-full">{value}</span>
+      <span className="font-ibm-plex-sans font-normal text-xs text-[#bbb0dc]">{label}</span>
+      <span className="font-ibm-plex-sans font-medium text-sm text-white truncate w-full">{value}</span>
     </div>
   );
 }
@@ -177,7 +177,7 @@ function MissionButton({
       className="flex items-center gap-1 px-2 py-1.5 rounded border border-[#4c3d7b] text-white cursor-pointer hover:bg-[rgba(255,255,255,0.05)] transition-colors"
     >
       <span className="flex items-center justify-center size-4">{icon}</span>
-      <span className="font-satoshi font-medium text-sm">{label}</span>
+      <span className="font-ibm-plex-sans font-medium text-sm">{label}</span>
     </button>
   );
 }
@@ -197,7 +197,7 @@ function MissionDetails({
   return (
     <section className="flex flex-col gap-4 w-full">
       <div className="flex items-center gap-1">
-        <h3 className="flex-1 font-satoshi font-bold text-base text-white tracking-[0.1px] leading-5">
+        <h3 className="flex-1 font-ibm-plex-sans font-bold text-base text-white tracking-[0.1px] leading-5">
           Mission Details
         </h3>
         <button
@@ -205,12 +205,12 @@ function MissionDetails({
           onClick={onLoad}
           className="flex items-center gap-1 text-[#bbb0dc] cursor-pointer hover:text-white transition-colors"
         >
-          <span className="font-satoshi font-bold text-sm tracking-[0.1px]">Load a mission</span>
+          <span className="font-ibm-plex-sans font-bold text-sm tracking-[0.1px]">Load a mission</span>
           <InfoIcon />
         </button>
       </div>
       <div className="flex flex-col gap-4 bg-[rgba(93,52,165,0.1)] rounded-xl px-4 py-5 w-full">
-        <span className="font-satoshi font-bold text-base text-white">
+        <span className="font-ibm-plex-sans font-bold text-base text-white">
           {Math.round(clamped)}% To complete
         </span>
         <div className="h-[11.4px] w-full rounded-[32.33px] bg-[rgba(122,86,246,0.2)] overflow-hidden">
@@ -236,7 +236,7 @@ function LiveCamera({ onSwap }: { onSwap?: () => void }) {
   return (
     <section className="flex flex-col gap-4 w-full">
       <div className="flex items-center gap-1">
-        <h3 className="flex-1 font-satoshi font-bold text-base text-white tracking-[0.1px] leading-5">
+        <h3 className="flex-1 font-ibm-plex-sans font-bold text-base text-white tracking-[0.1px] leading-5">
           Live Camera
         </h3>
         <button
@@ -245,7 +245,7 @@ function LiveCamera({ onSwap }: { onSwap?: () => void }) {
           className="flex items-center gap-1 px-2 py-1.5 rounded text-[#bbb0dc] cursor-pointer hover:bg-[rgba(255,255,255,0.1)] transition-colors"
         >
           <SwapIcon />
-          <span className="font-satoshi font-bold text-sm">Swap View</span>
+          <span className="font-ibm-plex-sans font-bold text-sm">Swap View</span>
         </button>
       </div>
       <div
@@ -301,7 +301,7 @@ export default function CameraCard({
             <CameraIllustration />
             <div className="flex flex-1 flex-col gap-3 min-w-0">
               <div className="flex items-center gap-1.5 w-full">
-                <h2 className="flex-1 font-satoshi font-bold text-[22px] text-white leading-[1.5] truncate">
+                <h2 className="flex-1 font-ibm-plex-sans font-bold text-[22px] text-white leading-[1.5] truncate">
                   {camera.name}
                 </h2>
                 <IconButton label="Bookmark camera">

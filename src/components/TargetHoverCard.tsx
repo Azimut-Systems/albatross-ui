@@ -163,12 +163,12 @@ export default function TargetHoverCard({
         <div className="flex flex-col flex-1 py-[14px] px-[12px] gap-[14px] justify-between">
           <div className="flex flex-col gap-[3px]">
             <p
-              className="m-0 font-satoshi font-medium text-[18px] leading-none text-white whitespace-nowrap"
+              className="m-0 font-ibm-plex-sans font-medium text-[18px] leading-none text-white whitespace-nowrap"
               style={{ letterSpacing: '-0.36px' }}
             >
               {target.name}
             </p>
-            <p className="m-0 font-satoshi font-normal text-[14px] leading-[1.25] text-[#c4c4c4]">
+            <p className="m-0 font-ibm-plex-sans font-normal text-[14px] leading-[1.25] text-[#c4c4c4]">
               ID {target.externalId}
             </p>
           </div>
@@ -190,7 +190,7 @@ export default function TargetHoverCard({
               style={{ borderColor: statusStyle.border, backgroundColor: statusStyle.bg }}
             >
               <span
-                className="font-satoshi font-medium text-sm leading-none"
+                className="font-ibm-plex-sans font-medium text-sm leading-none"
                 style={{ color: statusStyle.text }}
               >
                 {target.status}

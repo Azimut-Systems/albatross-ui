@@ -102,7 +102,7 @@ export default function Header({
                   : undefined
               }
             >
-              <span className="font-satoshi">{item}</span>
+              <span className="font-ibm-plex-sans">{item}</span>
             </button>
           ))}
         </div>
