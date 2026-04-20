@@ -125,10 +125,8 @@ export default function Header({
               onClick={onClick}
               aria-label={label}
               aria-pressed={active ?? undefined}
-              className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${
-                active ? 'text-white' : 'hover:text-white'
-              }`}
-              style={active ? undefined : { color: 'var(--accent-muted)' }}
+              className="flex items-center p-3 rounded-lg cursor-pointer transition-colors"
+              style={{ color: active ? 'var(--accent)' : 'var(--accent-muted)' }}
             >
               <Icon />
             </button>
