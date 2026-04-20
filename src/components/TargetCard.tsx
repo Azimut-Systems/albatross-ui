@@ -34,7 +34,7 @@ function CloseIcon() {
 
 function ShipIcon() {
   return (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M3 17L5 11H19L21 17" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
       <path d="M3 17C3 17 5 20 12 20C19 20 21 17 21 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M7 11V7H17V11" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
@@ -132,10 +132,17 @@ function StatusBadge({ status }: { status: TargetStatus }) {
   const s = STATUS_STYLES[status];
   return (
     <div
-      className="inline-flex h-5 items-center px-2 rounded-[34px] border"
-      style={{ borderColor: s.border, backgroundColor: s.bg }}
+      className="inline-flex h-[18px] items-center gap-1.5 px-2 rounded-full"
+      style={{ backgroundColor: s.bg }}
     >
-      <span className="font-satoshi font-medium text-xs leading-none" style={{ color: s.text }}>
+      <span
+        className="inline-block size-1.5 rounded-full"
+        style={{ backgroundColor: s.text }}
+      />
+      <span
+        className="font-satoshi font-semibold text-[10px] leading-none tracking-wide uppercase"
+        style={{ color: s.text }}
+      >
         {status}
       </span>
     </div>
@@ -176,19 +183,22 @@ function TabButton({
     <button
       type="button"
       onClick={onClick}
-      className={`h-[26px] px-0 mr-4 font-satoshi font-bold text-sm tracking-[0.1px] cursor-pointer transition-colors ${
-        active ? 'text-white' : 'text-[rgba(255,255,255,0.6)] hover:text-[rgba(255,255,255,0.85)]'
+      className={`relative h-7 px-0 mr-5 font-satoshi font-semibold text-[13px] tracking-wide cursor-pointer transition-colors ${
+        active ? 'text-white' : 'text-[#9a8fc0] hover:text-[rgba(255,255,255,0.85)]'
       }`}
     >
       {label}
+      {active && (
+        <span className="absolute -bottom-px left-0 right-0 h-px bg-[#7a56f6]" />
+      )}
     </button>
   );
 }
 
 function Field({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex-1 flex flex-col items-start bg-[rgba(93,52,165,0.1)] rounded-xl px-3 py-4 min-w-0">
-      <span className="font-satoshi font-normal text-xs text-[#bbb0dc]">{label}</span>
+    <div className="flex-1 flex flex-col gap-1 items-start bg-[rgba(93,52,165,0.08)] border border-[rgba(255,255,255,0.04)] rounded-lg px-3 py-2.5 min-w-0">
+      <span className="font-satoshi font-normal text-[11px] text-[#9a8fc0] tracking-wide uppercase">{label}</span>
       <span className="font-satoshi font-medium text-sm text-white truncate w-full">{value}</span>
     </div>
   );
@@ -196,17 +206,17 @@ function Field({ label, value }: { label: string; value: string }) {
 
 function AlertRow({ title, time }: { title: string; time: string }) {
   return (
-    <div className="flex items-center gap-3 bg-[rgba(122,86,246,0.2)] rounded-lg px-4 py-3 w-full">
-      <div className="flex flex-1 items-center gap-1.5 min-w-0 font-satoshi font-medium text-sm">
-        <span className="text-white whitespace-nowrap">{title}</span>
-        <span className="text-[rgba(255,255,255,0.7)] whitespace-nowrap">{time}</span>
+    <div className="flex items-center gap-3 bg-[rgba(122,86,246,0.12)] border border-[rgba(255,255,255,0.04)] rounded-lg pl-3.5 pr-2 py-2.5 w-full">
+      <div className="flex flex-1 flex-col min-w-0 font-satoshi">
+        <span className="font-medium text-sm text-white truncate">{title}</span>
+        <span className="font-normal text-[11px] text-[#9a8fc0] truncate">{time}</span>
       </div>
-      <div className="flex items-center gap-1 shrink-0">
+      <div className="flex items-center gap-0.5 shrink-0">
         <div
-          className="inline-flex h-5 items-center px-2 rounded-[34px] border"
-          style={{ borderColor: '#12a96f', backgroundColor: 'rgba(18,169,111,0.2)' }}
+          className="inline-flex h-[18px] items-center px-1.5 rounded-full"
+          style={{ backgroundColor: 'rgba(18,169,111,0.18)' }}
         >
-          <span className="font-satoshi font-medium text-xs leading-none text-[#2eb07e]">Auto</span>
+          <span className="font-satoshi font-medium text-[10px] leading-none text-[#2eb07e] tracking-wide uppercase">Auto</span>
         </div>
         <IconButton label="Alert actions">
           <MoreIcon />
@@ -230,27 +240,27 @@ function VisualRecognition() {
           <ExpandIcon />
         </IconButton>
       </div>
-      <div className="flex flex-col gap-4 bg-[rgba(93,52,165,0.1)] rounded-xl px-4 py-5">
-        <div className="flex flex-col">
-          <div className="flex items-center gap-4">
-            <span className="flex-1 font-satoshi font-medium text-2xl text-white tracking-[-0.48px]">
+      <div className="flex flex-col gap-3 bg-[rgba(93,52,165,0.08)] border border-[rgba(255,255,255,0.04)] rounded-xl px-4 py-4">
+        <div className="flex items-start gap-4">
+          <div className="flex-1 flex flex-col gap-0.5">
+            <span className="font-satoshi font-semibold text-[22px] text-white tracking-[-0.4px] tabular-nums leading-none">
               82%
             </span>
-            <div className="flex items-center gap-2 text-[#bbb0dc]">
-              <IconButton label="Mark correct">
-                <ThumbUpIcon />
-              </IconButton>
-              <IconButton label="Mark incorrect">
-                <ThumbDownIcon />
-              </IconButton>
-            </div>
+            <span className="font-satoshi font-normal text-xs text-[#9a8fc0] tracking-[-0.1px]">
+              Confidence Score
+            </span>
           </div>
-          <span className="font-satoshi font-medium text-sm text-[#bbb0dc] tracking-[-0.28px]">
-            Confidence Score
-          </span>
+          <div className="flex items-center gap-1 text-[#9a8fc0]">
+            <IconButton label="Mark correct">
+              <ThumbUpIcon />
+            </IconButton>
+            <IconButton label="Mark incorrect">
+              <ThumbDownIcon />
+            </IconButton>
+          </div>
         </div>
-        <span className="font-satoshi font-normal text-xs text-center text-white tracking-[-0.24px]">
-          Live Detection Image | 01/04/26, 10:44:13
+        <span className="font-satoshi font-normal text-[11px] text-[#9a8fc0] tracking-wide tabular-nums">
+          Live Detection Image · 01/04/26, 10:44:13
         </span>
         <div
           className="relative h-[175px] w-full rounded-md overflow-hidden"
@@ -326,10 +336,10 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
       padding="24px"
     >
       <div
-        className="flex flex-col gap-8 w-[416px] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex flex-col gap-6 w-[416px] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         style={{ height: 'calc((100vh - 110px) / var(--ui-scale) - 110px)' }}
       >
-        <div className="flex flex-col gap-6 w-full shrink-0">
+        <div className="flex flex-col gap-5 w-full shrink-0">
           <div className="flex items-center justify-between w-full">
             <IconButton label="Back to list" onClick={onBack}>
               <BackIcon />
@@ -339,13 +349,13 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
             </IconButton>
           </div>
 
-          <div className="flex gap-4 items-center w-full">
-            <div className="flex items-center justify-center size-[56px] rounded-xl bg-[rgba(122,86,246,0.2)] text-white shrink-0">
+          <div className="flex gap-3 items-center w-full">
+            <div className="flex items-center justify-center size-11 rounded-lg bg-[rgba(122,86,246,0.15)] text-white shrink-0">
               <ShipIcon />
             </div>
-            <div className="flex flex-1 flex-col gap-3 min-w-0">
-              <div className="flex items-center gap-1.5 w-full">
-                <h2 className="flex-1 font-satoshi font-bold text-[22px] text-white leading-[1.5] truncate">
+            <div className="flex flex-1 flex-col gap-2 min-w-0">
+              <div className="flex items-center gap-0.5 w-full">
+                <h2 className="flex-1 font-satoshi font-bold text-lg text-white leading-tight tracking-[-0.2px] truncate">
                   {target.name}
                 </h2>
                 <IconButton label="Track target">
@@ -365,15 +375,17 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
           </div>
         </div>
 
+        <VisualRecognition />
+
         <section className="flex flex-col gap-4 shrink-0">
-          <div className="flex items-center h-[26px]">
+          <div className="flex items-center h-7 border-b border-[rgba(255,255,255,0.06)]">
             {(['EO', 'AIS', 'AID'] as const).map((t) => (
               <TabButton key={t} label={t} active={tab === t} onClick={() => setTab(t)} />
             ))}
           </div>
-          <div className="flex flex-col gap-3 w-full">
+          <div className="flex flex-col gap-2 w-full">
             {[0, 2, 4].map((i) => (
-              <div key={i} className="flex gap-3 items-center w-full">
+              <div key={i} className="flex gap-2 items-center w-full">
                 <Field label={fields[i][0]} value={fields[i][1]} />
                 <Field label={fields[i + 1][0]} value={fields[i + 1][1]} />
               </div>
@@ -395,17 +407,18 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
             </button>
           </div>
           <div className="flex flex-col gap-4 w-full">
-            <label className="flex items-center gap-3 border border-dashed border-[#7666b0] rounded-lg px-4 py-3 w-full">
+            <label className="flex items-center gap-2 bg-[rgba(93,52,165,0.08)] border border-[rgba(118,102,176,0.35)] rounded-lg px-3.5 py-2.5 w-full focus-within:border-[rgba(110,72,242,0.6)] transition-colors">
               <input
                 type="text"
                 value={alertInput}
                 onChange={(e) => setAlertInput(e.target.value)}
-                placeholder="Add Your input.."
-                className="flex-1 min-w-0 bg-transparent border-none outline-none font-satoshi font-medium text-sm text-white placeholder:text-[rgba(255,255,255,0.7)]"
+                placeholder="Add your input…"
+                className="flex-1 min-w-0 bg-transparent border-none outline-none font-satoshi font-medium text-sm text-white placeholder:text-[#9a8fc0]"
               />
               <button
                 type="button"
-                className="flex items-center justify-center size-6 rounded-full bg-[#6e48f2] cursor-pointer hover:bg-[#7a56f6] transition-colors"
+                className="flex items-center justify-center size-6 rounded-md bg-[rgba(110,72,242,0.9)] cursor-pointer hover:bg-[#7a56f6] transition-colors disabled:opacity-40"
+                disabled={alertInput.trim().length === 0}
                 aria-label="Submit alert input"
               >
                 <SendIcon />
@@ -416,8 +429,6 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
           </div>
         </section>
 
-        <VisualRecognition />
-        <PositionHistory />
       </div>
     </GlassPanel>
   );
