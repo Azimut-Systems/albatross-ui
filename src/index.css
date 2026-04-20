@@ -8,7 +8,7 @@
 :root {
   --accent: #6931F5;
   --accent-rgb: 105 49 245;
-  --accent-muted: color-mix(in srgb, var(--accent) 45%, white);
+  --accent-muted: oklch(from var(--accent) 75% 0.025 h);
   --bg-page: #12111b;
   --fg: #ffffff;
   --fg-rgb: 255 255 255;
@@ -18,7 +18,7 @@
 }
 
 :root[data-theme="light"] {
-  --accent-muted: color-mix(in srgb, var(--accent) 55%, black);
+  --accent-muted: oklch(from var(--accent) 52% 0.025 h);
   --bg-page: #f2f3f7;
   --fg: #12111b;
   --fg-rgb: 18 17 27;
