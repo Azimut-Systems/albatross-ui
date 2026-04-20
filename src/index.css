@@ -51,6 +51,9 @@ html, body, #root {
 :root[data-theme="light"] .text-\[\#dee3e7\] { color: var(--fg-muted); }
 :root[data-theme="light"] .hover\:text-white:hover { color: var(--fg); }
 :root[data-theme="light"] .bg-\[\#12111b\] { background-color: var(--bg-page); }
+:root[data-theme="light"] .text-\[\#9a8fc0\] { color: #5c4f8a; }
+:root[data-theme="light"] .text-\[rgba\(255\,255\,255\,0\.85\)\] { color: rgba(18, 17, 27, 0.7); }
+:root[data-theme="light"] .placeholder\:\text-\[\#9a8fc0\]::placeholder { color: #5c4f8a; }
 /* SVG icons that hardcode white fill/stroke */
 :root[data-theme="light"] svg [fill="white"],
 :root[data-theme="light"] svg[fill="white"] { fill: var(--fg); }
