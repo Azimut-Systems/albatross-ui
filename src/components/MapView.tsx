@@ -4,6 +4,8 @@ import GlassPanel from './GlassPanel';
 import PinContextMenu from './PinContextMenu';
 import PinIcon from './icons/PinIcon';
 import TargetContextMenu, {
+  MapContextMenu,
+  type MapContextMenuAction,
   type TargetContextMenuAction,
 } from './TargetContextMenu';
 import TargetHoverCard, { type TargetHoverCardData } from './TargetHoverCard';
@@ -439,6 +441,13 @@ type TargetMenuState = {
   screenY: number;
 };
 
+type MapMenuState = {
+  lng: number;
+  lat: number;
+  screenX: number;
+  screenY: number;
+};
+
 type ClusterMenuState = {
   vessels: Vessel[];
   screenX: number;
@@ -480,6 +489,7 @@ export default function MapView({
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [hover, setHover] = useState<HoverState | null>(null);
   const [targetMenu, setTargetMenu] = useState<TargetMenuState | null>(null);
+  const [mapMenu, setMapMenu] = useState<MapMenuState | null>(null);
   const [clusterMenu, setClusterMenu] = useState<ClusterMenuState | null>(null);
   const [historyVesselIds, setHistoryVesselIds] = useState<Set<string>>(
     () => new Set(),
@@ -654,6 +664,22 @@ export default function MapView({
         measureState.setSelectedMeasurement(null);
     });
 
+    map.on('contextmenu', (e) => {
+      const pinState = pinRef.current;
+      const measureState = measureRef.current;
+      if (pinState.mode !== 'off') return;
+      if (measureState.mode !== 'off') return;
+      e.preventDefault();
+      setHover(null);
+      setTargetMenu(null);
+      setMapMenu({
+        lng: e.lngLat.lng,
+        lat: e.lngLat.lat,
+        screenX: e.point.x,
+        screenY: e.point.y,
+      });
+    });
+
     map.on('mousemove', (e) => {
       setCursorLngLat({ lng: e.lngLat.lng, lat: e.lngLat.lat });
       setCursorScreen({ x: e.point.x, y: e.point.y });
@@ -778,12 +804,32 @@ export default function MapView({
     // 'clear-alert' — no-op in mock data.
   };
 
+  const handleMapMenuAction = (action: MapContextMenuAction) => {
+    setMapMenu(null);
+    setTargetMenu(null);
+    if (action === 'measure') {
+      if (measure.mode === 'off') measure.toggleMeasureMode();
+      return;
+    }
+    if (action === 'marker') {
+      if (pin.mode === 'off') pin.togglePinMode();
+      return;
+    }
+    // 'ptc' — placeholder, not yet implemented.
+  };
+
   // Close the context menu on outside click / escape.
   useEffect(() => {
-    if (!targetMenu) return;
-    const onDown = () => setTargetMenu(null);
+    if (!targetMenu && !mapMenu) return;
+    const onDown = () => {
+      setTargetMenu(null);
+      setMapMenu(null);
+    };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setTargetMenu(null);
+      if (e.key === 'Escape') {
+        setTargetMenu(null);
+        setMapMenu(null);
+      }
     };
     window.addEventListener('mousedown', onDown);
     window.addEventListener('keydown', onKey);
@@ -791,7 +837,7 @@ export default function MapView({
       window.removeEventListener('mousedown', onDown);
       window.removeEventListener('keydown', onKey);
     };
-  }, [targetMenu]);
+  }, [targetMenu, mapMenu]);
 
   const handleVesselClick = (vessel: Vessel, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -1147,6 +1193,17 @@ export default function MapView({
             );
             if (vessel) handleTargetMenuAction(vessel, action);
           }}
+          onMapAction={handleMapMenuAction}
+        />
+      )}
+      {mapMenu && (
+        <MapContextMenuOverlay
+          x={mapMenu.screenX}
+          y={mapMenu.screenY}
+          scale={scale}
+          onMouseDown={(e) => e.stopPropagation()}
+          onWheel={forwardWheelToMap}
+          onAction={handleMapMenuAction}
         />
       )}
       {hover && !hoverHiddenByCluster && pin.mode === 'off' && measure.mode === 'off' && (
@@ -1176,6 +1233,7 @@ function TargetContextMenuOverlay({
   y,
   scale,
   onAction,
+  onMapAction,
   onMouseDown,
   onWheel,
 }: {
@@ -1183,6 +1241,7 @@ function TargetContextMenuOverlay({
   y: number;
   scale: number;
   onAction: (action: TargetContextMenuAction) => void;
+  onMapAction: (action: MapContextMenuAction) => void;
   onMouseDown: (e: React.MouseEvent) => void;
   onWheel: (e: React.WheelEvent) => void;
 }) {
@@ -1200,12 +1259,12 @@ function TargetContextMenuOverlay({
     const margin = 8;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-    const openLeft = x + 12 + rect.width + margin > vw;
-    const openUp = y + 12 + rect.height + margin > vh;
+    const openLeft = x + 4 + rect.width + margin > vw;
+    const openUp = y + 4 + rect.height + margin > vh;
     setLayout({ openLeft, openUp, measured: true });
   }, [x, y, scale]);
 
-  const offset = 12;
+  const offset = 4;
   const left = layout.openLeft ? x - offset : x + offset;
   const top = layout.openUp ? y - offset : y + offset;
   const translate = `${layout.openLeft ? '-100%' : '0'}, ${layout.openUp ? '-100%' : '0'}`;
@@ -1227,9 +1286,70 @@ function TargetContextMenuOverlay({
       <div style={{ zoom: scale }}>
         <TargetContextMenu
           onAction={onAction}
+          onMapAction={onMapAction}
           openLeft={layout.openLeft}
           openUp={layout.openUp}
         />
+      </div>
+    </div>
+  );
+}
+
+function MapContextMenuOverlay({
+  x,
+  y,
+  scale,
+  onAction,
+  onMouseDown,
+  onWheel,
+}: {
+  x: number;
+  y: number;
+  scale: number;
+  onAction: (action: MapContextMenuAction) => void;
+  onMouseDown: (e: React.MouseEvent) => void;
+  onWheel: (e: React.WheelEvent) => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [layout, setLayout] = useState<{
+    openLeft: boolean;
+    openUp: boolean;
+    measured: boolean;
+  }>({ openLeft: false, openUp: false, measured: false });
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const margin = 8;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const openLeft = x + 4 + rect.width + margin > vw;
+    const openUp = y + 4 + rect.height + margin > vh;
+    setLayout({ openLeft, openUp, measured: true });
+  }, [x, y, scale]);
+
+  const offset = 4;
+  const left = layout.openLeft ? x - offset : x + offset;
+  const top = layout.openUp ? y - offset : y + offset;
+  const translate = `${layout.openLeft ? '-100%' : '0'}, ${layout.openUp ? '-100%' : '0'}`;
+
+  return (
+    <div
+      ref={ref}
+      className="absolute z-30"
+      style={{
+        left,
+        top,
+        transform: `translate(${translate})`,
+        visibility: layout.measured ? 'visible' : 'hidden',
+      }}
+      onMouseDown={onMouseDown}
+      onContextMenu={(e) => e.preventDefault()}
+      onWheel={onWheel}
+    >
+      <div style={{ zoom: scale }}>
+        <MapContextMenu onAction={onAction} />
       </div>
     </div>
   );

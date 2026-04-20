@@ -180,6 +180,47 @@ function RulerIcon({ className }: IconProps) {
   );
 }
 
+function MarkerIcon({ className }: IconProps) {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      className={className}
+    >
+      <path
+        d="M8 1.5c-2.5 0-4.5 2-4.5 4.5 0 3.2 4.5 8 4.5 8s4.5-4.8 4.5-8c0-2.5-2-4.5-4.5-4.5z"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinejoin="round"
+      />
+      <circle cx="8" cy="6" r="1.5" stroke="currentColor" strokeWidth="1.3" />
+    </svg>
+  );
+}
+
+function PtcIcon({ className }: IconProps) {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      className={className}
+    >
+      <path
+        d="M8 1.5v2.5M8 12v2.5M1.5 8h2.5M12 8h2.5"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+      />
+      <circle cx="8" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.3" />
+      <circle cx="8" cy="8" r="1" fill="currentColor" />
+    </svg>
+  );
+}
+
 function ChevronRightIcon({ className }: IconProps) {
   return (
     <svg
@@ -220,6 +261,8 @@ function ChevronLeftIcon({ className }: IconProps) {
   );
 }
 
+const MENU_ITEM_HEIGHT = 36;
+
 type MenuBoxProps = {
   children: React.ReactNode;
   width: number;
@@ -259,13 +302,14 @@ function MenuItem({
       type="button"
       onClick={onClick}
       onMouseEnter={onMouseEnter}
-      className={`flex items-center gap-[6px] w-full px-2 py-[10px] rounded text-white cursor-pointer transition-colors ${
+      style={{ color: active ? 'var(--accent-active-fg)' : 'var(--accent-muted)' }}
+      className={`flex items-center gap-[6px] w-full px-2 py-[10px] rounded cursor-pointer transition-colors ${
         reverse ? 'flex-row-reverse text-right' : 'text-left'
       } ${
         active ? 'bg-[rgb(var(--accent-rgb)/0.45)]' : 'hover:bg-[rgb(var(--accent-rgb)/0.35)]'
       }`}
     >
-      <div className={`flex flex-1 items-center gap-2 min-w-0 text-white ${reverse ? 'flex-row-reverse' : ''}`}>
+      <div className={`flex flex-1 items-center gap-2 min-w-0 ${reverse ? 'flex-row-reverse' : ''}`}>
         {icon}
         <span
           className={`text-[14px] ${active ? 'font-bold' : 'font-medium'}`}
@@ -287,13 +331,16 @@ export type TargetContextMenuAction =
   | 'measure'
   | 'highlight';
 
+export type MapContextMenuAction = 'ptc' | 'measure' | 'marker';
+
 type Props = {
   onAction: (action: TargetContextMenuAction) => void;
+  onMapAction: (action: MapContextMenuAction) => void;
   openLeft?: boolean;
   openUp?: boolean;
 };
 
-export default function TargetContextMenu({ onAction, openLeft, openUp }: Props) {
+export default function TargetContextMenu({ onAction, onMapAction, openLeft, openUp }: Props) {
   const [submenu, setSubmenu] = useState<'target' | 'map' | null>(null);
 
   const chevron = openLeft ? <ChevronLeftIcon /> : <ChevronRightIcon />;
@@ -319,17 +366,26 @@ export default function TargetContextMenu({ onAction, openLeft, openUp }: Props)
     </MenuBox>
   );
 
-  const submenuBox = submenu === 'target' && (
-    <MenuBox width={141}>
-      <MenuItem icon={<CrosshairIcon />} label="Track Target" onClick={() => onAction('track')} />
-      <MenuItem icon={<InvestigateIcon />} label="Investigate" onClick={() => onAction('investigate')} />
-      <MenuItem icon={<ClearAlertIcon />} label="Clear Alert" onClick={() => onAction('clear-alert')} />
-      <MenuItem icon={<FocusIcon />} label="Point Camera" onClick={() => onAction('point-camera')} />
-      <MenuItem icon={<RouteIcon />} label="History Path" onClick={() => onAction('history-path')} />
-      <MenuItem icon={<RulerIcon />} label="Measure" onClick={() => onAction('measure')} />
-      <MenuItem icon={<TargetIcon />} label="Highlight TGT" onClick={() => onAction('highlight')} />
-    </MenuBox>
-  );
+  const submenuBox =
+    submenu === 'target' ? (
+      <MenuBox width={141}>
+        <MenuItem icon={<CrosshairIcon />} label="Track Target" onClick={() => onAction('track')} />
+        <MenuItem icon={<InvestigateIcon />} label="Investigate" onClick={() => onAction('investigate')} />
+        <MenuItem icon={<ClearAlertIcon />} label="Clear Alert" onClick={() => onAction('clear-alert')} />
+        <MenuItem icon={<FocusIcon />} label="Point Camera" onClick={() => onAction('point-camera')} />
+        <MenuItem icon={<RouteIcon />} label="History Path" onClick={() => onAction('history-path')} />
+        <MenuItem icon={<RulerIcon />} label="Measure" onClick={() => onAction('measure')} />
+        <MenuItem icon={<TargetIcon />} label="Highlight TGT" onClick={() => onAction('highlight')} />
+      </MenuBox>
+    ) : submenu === 'map' ? (
+      <div style={openUp ? undefined : { marginTop: MENU_ITEM_HEIGHT }}>
+        <MenuBox width={120}>
+          <MenuItem icon={<PtcIcon />} label="PTC" onClick={() => onMapAction('ptc')} />
+          <MenuItem icon={<RulerIcon />} label="Measure" onClick={() => onMapAction('measure')} />
+          <MenuItem icon={<MarkerIcon />} label="Marker" onClick={() => onMapAction('marker')} />
+        </MenuBox>
+      </div>
+    ) : null;
 
   return (
     <div
@@ -337,6 +393,22 @@ export default function TargetContextMenu({ onAction, openLeft, openUp }: Props)
     >
       {rootBox}
       {submenuBox}
+    </div>
+  );
+}
+
+export function MapContextMenu({
+  onAction,
+}: {
+  onAction: (action: MapContextMenuAction) => void;
+}) {
+  return (
+    <div className="pointer-events-auto">
+      <MenuBox width={120}>
+        <MenuItem icon={<PtcIcon />} label="PTC" onClick={() => onAction('ptc')} />
+        <MenuItem icon={<RulerIcon />} label="Measure" onClick={() => onAction('measure')} />
+        <MenuItem icon={<MarkerIcon />} label="Marker" onClick={() => onAction('marker')} />
+      </MenuBox>
     </div>
   );
 }
