@@ -266,12 +266,21 @@ function VesselMarker({
 function VesselClusterMarker({
   count,
   onClick,
+  onMouseEnter,
+  onMouseLeave,
 }: {
   count: number;
   onClick: (e: React.MouseEvent) => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }) {
   return (
-    <div onClick={onClick} style={{ cursor: 'pointer' }}>
+    <div
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      style={{ cursor: 'pointer' }}
+    >
       <GlassPanel cornerRadius={31} padding="12px">
         <div
           className="flex items-center justify-center w-[36px] h-[36px]"
@@ -425,6 +434,12 @@ type TargetMenuState = {
   screenY: number;
 };
 
+type ClusterMenuState = {
+  vessels: Vessel[];
+  screenX: number;
+  screenY: number;
+};
+
 // Synthetic historical trail: points (lng/lat) back-extrapolated from the
 // vessel's current heading with a meandering wobble.
 function generateHistoryTrail(vessel: Vessel): LngLat[] {
@@ -460,6 +475,7 @@ export default function MapView({
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [hover, setHover] = useState<HoverState | null>(null);
   const [targetMenu, setTargetMenu] = useState<TargetMenuState | null>(null);
+  const [clusterMenu, setClusterMenu] = useState<ClusterMenuState | null>(null);
   const [historyVesselIds, setHistoryVesselIds] = useState<Set<string>>(
     () => new Set(),
   );
@@ -798,12 +814,57 @@ export default function MapView({
     if (measure.mode !== 'off') return;
     const map = mapRef.current;
     if (!map) return;
+    setClusterMenu(null);
     map.easeTo({
       center: [cluster.lng, cluster.lat],
       zoom: Math.min(map.getZoom() + 1.5, 20),
       duration: 350,
     });
   };
+
+  const clusterCloseTimerRef = useRef<number | null>(null);
+  const cancelClusterClose = () => {
+    if (clusterCloseTimerRef.current !== null) {
+      window.clearTimeout(clusterCloseTimerRef.current);
+      clusterCloseTimerRef.current = null;
+    }
+  };
+  const scheduleClusterClose = () => {
+    cancelClusterClose();
+    clusterCloseTimerRef.current = window.setTimeout(() => {
+      setClusterMenu(null);
+      clusterCloseTimerRef.current = null;
+    }, 150);
+  };
+  const handleClusterHoverEnter = (
+    cluster: Extract<VesselClusterItem, { kind: 'cluster' }>,
+  ) => {
+    if (pin.mode !== 'off') return;
+    if (measure.mode !== 'off') return;
+    cancelClusterClose();
+    setClusterMenu({
+      vessels: cluster.vessels,
+      screenX: cluster.x,
+      screenY: cluster.y,
+    });
+  };
+
+  // Close the cluster menu when the map pans/zooms — the cluster may no
+  // longer exist (vessels re-cluster or separate) once the viewport shifts.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const close = () => {
+      cancelClusterClose();
+      setClusterMenu(null);
+    };
+    map.on('movestart', close);
+    map.on('zoomstart', close);
+    return () => {
+      map.off('movestart', close);
+      map.off('zoomstart', close);
+    };
+  }, []);
 
   return (
     <>
@@ -923,6 +984,8 @@ export default function MapView({
             <VesselClusterMarker
               count={item.vessels.length}
               onClick={(e) => handleClusterClick(item, e)}
+              onMouseEnter={() => handleClusterHoverEnter(item)}
+              onMouseLeave={scheduleClusterClose}
             />
           </div>
         );
@@ -1045,6 +1108,21 @@ export default function MapView({
           );
         })}
       </svg>
+      {clusterMenu && (
+        <ClusterVesselMenuOverlay
+          x={clusterMenu.screenX}
+          y={clusterMenu.screenY}
+          scale={scale}
+          vessels={clusterMenu.vessels}
+          onSelect={(vesselId) => {
+            setClusterMenu(null);
+            onTargetOpen?.(vesselId);
+          }}
+          onMouseEnter={cancelClusterClose}
+          onMouseLeave={scheduleClusterClose}
+          onWheel={forwardWheelToMap}
+        />
+      )}
       {targetMenu && (
         <TargetContextMenuOverlay
           x={targetMenu.screenX}
@@ -1141,6 +1219,150 @@ function TargetContextMenuOverlay({
           openLeft={layout.openLeft}
           openUp={layout.openUp}
         />
+      </div>
+    </div>
+  );
+}
+
+function ClusterShipIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M3 17L5 11H19L21 17" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M3 17C3 17 5 20 12 20C19 20 21 17 21 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M7 11V7H17V11" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <line x1="12" y1="4" x2="12" y2="11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ClusterVesselRow({
+  vessel,
+  onClick,
+}: {
+  vessel: Vessel;
+  onClick: () => void;
+}) {
+  const style = vesselStyles[vessel.color];
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex items-center gap-3 w-full p-2 rounded-lg text-left cursor-pointer transition-colors bg-[rgba(93,52,165,0.1)] hover:bg-[rgba(93,52,165,0.3)]"
+    >
+      <div
+        className="flex items-center justify-center w-8 h-8 rounded-full shrink-0"
+        style={{ background: style.bg, border: `1px solid ${style.border}` }}
+      >
+        <div
+          className="w-3 h-3 rounded-full"
+          style={{ background: style.dot, border: '2px solid white' }}
+        />
+      </div>
+      <div className="flex flex-col min-w-0 flex-1 text-white">
+        <span className="font-satoshi font-bold text-sm truncate leading-tight">
+          {vessel.name}
+        </span>
+        <span className="font-satoshi font-normal text-xs text-[#bbb0dc] truncate">
+          {vessel.externalId}
+        </span>
+      </div>
+      <ClusterShipIcon />
+    </button>
+  );
+}
+
+function ClusterVesselMenu({
+  vessels,
+  onSelect,
+}: {
+  vessels: Vessel[];
+  onSelect: (vesselId: string) => void;
+}) {
+  return (
+    <GlassPanel cornerRadius={16} padding="12px">
+      <div className="flex flex-col w-[260px] gap-1">
+        <div className="px-1 pt-0.5 pb-1 font-satoshi font-bold text-[13px] text-[#bbb0dc] tracking-wide uppercase">
+          {vessels.length} Vessels
+        </div>
+        <div className="flex flex-col gap-1 max-h-[320px] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {vessels.map((v) => (
+            <ClusterVesselRow
+              key={v.id}
+              vessel={v}
+              onClick={() => onSelect(v.id)}
+            />
+          ))}
+        </div>
+      </div>
+    </GlassPanel>
+  );
+}
+
+function ClusterVesselMenuOverlay({
+  x,
+  y,
+  scale,
+  vessels,
+  onSelect,
+  onMouseEnter,
+  onMouseLeave,
+  onWheel,
+}: {
+  x: number;
+  y: number;
+  scale: number;
+  vessels: Vessel[];
+  onSelect: (vesselId: string) => void;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+  onWheel: (e: React.WheelEvent) => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [layout, setLayout] = useState<{
+    openLeft: boolean;
+    openUp: boolean;
+    measured: boolean;
+  }>({ openLeft: false, openUp: false, measured: false });
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const margin = 8;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const openLeft = x + 34 + rect.width + margin > vw;
+    const openUp = y + rect.height / 2 + margin > vh;
+    setLayout({ openLeft, openUp, measured: true });
+  }, [x, y, scale, vessels.length]);
+
+  // Keep a tight visual connection to the cluster bubble so the cursor can
+  // cross without triggering the close timer.
+  const offset = 34;
+  const left = layout.openLeft ? x - offset : x + offset;
+  const top = y;
+  const translate = `${layout.openLeft ? '-100%' : '0'}, ${
+    layout.openUp ? '-100%' : '-50%'
+  }`;
+
+  return (
+    <div
+      ref={ref}
+      className="absolute z-30"
+      style={{
+        left,
+        top,
+        transform: `translate(${translate})`,
+        visibility: layout.measured ? 'visible' : 'hidden',
+      }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onMouseDown={(e) => e.stopPropagation()}
+      onContextMenu={(e) => e.preventDefault()}
+      onWheel={onWheel}
+    >
+      <div style={{ zoom: scale }}>
+        <ClusterVesselMenu vessels={vessels} onSelect={onSelect} />
       </div>
     </div>
   );
