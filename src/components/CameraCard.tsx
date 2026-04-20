@@ -319,6 +319,8 @@ export default function CameraCard({
           </div>
         </div>
 
+        <LiveCamera onSwap={onSwapView} />
+
         <MissionDetails
           completion={camera.completion}
           onLoad={onLoadMission}
@@ -336,8 +338,6 @@ export default function CameraCard({
             <Field label="Next Run" value="28/01/26, 10:48:02" />
           </div>
         </section>
-
-        <LiveCamera onSwap={onSwapView} />
       </div>
     </GlassPanel>
   );
