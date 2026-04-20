@@ -294,7 +294,7 @@ type Props = {
 };
 
 export default function TargetContextMenu({ onAction, openLeft, openUp }: Props) {
-  const [submenu, setSubmenu] = useState<'target' | 'map' | null>('target');
+  const [submenu, setSubmenu] = useState<'target' | 'map' | null>(null);
 
   const chevron = openLeft ? <ChevronLeftIcon /> : <ChevronRightIcon />;
 
