@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import GlassPanel from './GlassPanel';
 import { useUISize, type UISize } from '../contexts/UISizeContext';
 import { useAccentColor, accentPresets } from '../contexts/AccentColorContext';
@@ -8,12 +9,23 @@ const sizeOptions: { label: string; value: UISize }[] = [
   { label: 'Large', value: 'large' },
 ];
 
-export default function SettingsPanel() {
+export default function SettingsPanel({ onClose }: { onClose?: () => void }) {
   const { size, setSize } = useUISize();
   const { hex, setAccent } = useAccentColor();
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleMouseDown(e: MouseEvent) {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        onClose?.();
+      }
+    }
+    document.addEventListener('mousedown', handleMouseDown);
+    return () => document.removeEventListener('mousedown', handleMouseDown);
+  }, [onClose]);
 
   return (
-    <div className="absolute top-[110px] left-1/2 -translate-x-1/2 z-30">
+    <div ref={panelRef} className="absolute top-[110px] left-1/2 -translate-x-1/2 z-30">
       <GlassPanel padding="16px">
         <div className="flex flex-col gap-4 min-w-[300px]">
           <div className="flex flex-col gap-3">

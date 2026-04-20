@@ -113,7 +113,7 @@ function AppShell() {
             }}
           />
         )}
-        {activeNav === 'Settings' && <SettingsPanel />}
+        {activeNav === 'Settings' && <SettingsPanel onClose={() => setActiveNav('Map')} />}
       </div>
       <PinCursor />
       <MeasureCursor />
