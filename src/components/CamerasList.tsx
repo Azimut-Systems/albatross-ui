@@ -33,7 +33,7 @@ const STATUS_STYLES: Record<CameraStatus, { border: string; bg: string; text: st
 
 const ACTIVITY_STYLES: Record<CameraActivity, { border: string; bg: string; text: string }> = {
   Idle: { border: '#ef835d', bg: 'rgba(239,131,93,0.2)', text: '#ef835d' },
-  Active: { border: '#6931f5', bg: 'rgba(105,49,245,0.2)', text: '#a88cff' },
+  Active: { border: 'var(--accent)', bg: 'rgb(var(--accent-rgb) / 0.2)', text: 'var(--accent)' },
 };
 
 function SearchIcon() {
@@ -78,7 +78,7 @@ function FilterPill({ label, onClick }: { label: string; onClick?: () => void })
     <button
       type="button"
       onClick={onClick}
-      className="flex-1 flex items-center gap-1 p-2 rounded border border-[#4c3d7b] text-white cursor-pointer hover:border-[#6e48f2] transition-colors"
+      className="flex-1 flex items-center gap-1 p-2 rounded border border-[rgb(var(--accent-rgb)/0.5)] text-white cursor-pointer hover:border-[var(--accent)] transition-colors"
     >
       <span className="flex-1 text-left font-ibm-plex-sans font-medium text-sm">{label}</span>
       <ChevronDownIcon />
@@ -104,13 +104,16 @@ function ProgressBar({ value }: { value: number }) {
   return (
     <div className="flex flex-col gap-4 w-full">
       <span className="font-ibm-plex-sans font-medium text-sm text-white">{Math.round(clamped)}% To complete</span>
-      <div className="h-[11.4px] w-full rounded-[32.33px] bg-[rgba(122,86,246,0.2)] overflow-hidden">
+      <div
+        className="h-[11.4px] w-full rounded-[32.33px] overflow-hidden"
+        style={{ background: 'rgb(var(--accent-rgb) / 0.2)' }}
+      >
         <div
           className="h-full rounded-[20px]"
           style={{
             width: `${clamped}%`,
             backgroundImage:
-              'linear-gradient(90deg, rgba(105,49,245,0.7) 0%, rgba(105,49,245,0.7) 100%), linear-gradient(171deg, rgba(56,78,231,0.3) 5.66%, rgba(30,191,245,0.3) 98.95%)',
+              'linear-gradient(90deg, rgb(var(--accent-rgb) / 0.7) 0%, rgb(var(--accent-rgb) / 0.7) 100%), linear-gradient(171deg, rgba(56,78,231,0.3) 5.66%, rgba(30,191,245,0.3) 98.95%)',
           }}
         />
       </div>
@@ -128,11 +131,11 @@ function CameraThumbnail({ url }: { url?: string }) {
           className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(135deg, rgba(105,49,245,0.35), rgba(30,191,245,0.25) 60%, rgba(12,11,25,0.6))',
+              'linear-gradient(135deg, rgb(var(--accent-rgb) / 0.35), rgba(30,191,245,0.25) 60%, rgba(12,11,25,0.6))',
           }}
         />
       )}
-      <div className="absolute inset-0 bg-[rgba(105,49,245,0.1)]" />
+      <div className="absolute inset-0" style={{ background: 'rgb(var(--accent-rgb) / 0.1)' }} />
       <div className="absolute top-3 right-5">
         <svg width="19" height="19" viewBox="0 0 19 19" fill="none" aria-hidden="true" className="text-white/80">
           <path d="M4 4H8M4 4V8M4 4L8 8M15 4H11M15 4V8M15 4L11 8M4 15H8M4 15V11M4 15L8 11M15 15H11M15 15V11M15 15L11 11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
@@ -159,13 +162,13 @@ function CameraCard({ camera, active, onSelect, onMore }: CameraCardProps) {
       aria-pressed={active}
       className={`flex flex-col gap-5 p-4 rounded-xl w-full text-left cursor-pointer transition-colors ${
         active
-          ? 'bg-[rgba(93,52,165,0.3)] border border-[rgba(110,72,242,0.5)]'
-          : 'bg-[rgba(93,52,165,0.1)] border border-transparent hover:bg-[rgba(93,52,165,0.2)]'
+          ? 'bg-[rgb(var(--accent-rgb)/0.3)] border border-[rgb(var(--accent-rgb)/0.5)]'
+          : 'bg-[rgb(var(--accent-rgb)/0.1)] border border-transparent hover:bg-[rgb(var(--accent-rgb)/0.2)]'
       }`}
     >
       <div className="flex gap-3 items-center w-full">
         <div className="flex flex-1 gap-3 items-center min-w-0">
-          <div className="flex items-center p-2 rounded-[30px] bg-[rgba(122,86,246,0.2)] text-white shrink-0">
+          <div className="flex items-center p-2 rounded-[30px] bg-[rgb(var(--accent-rgb)/0.2)] text-white shrink-0">
             <CameraIcon />
           </div>
           <span className="font-ibm-plex-sans font-bold text-base text-white tracking-[0.1px] leading-5 truncate">
@@ -199,7 +202,7 @@ function CameraCard({ camera, active, onSelect, onMore }: CameraCardProps) {
         </div>
       </div>
 
-      <div className="h-px w-full bg-[rgba(110,72,242,0.3)]" />
+      <div className="h-px w-full bg-[rgb(var(--accent-rgb)/0.3)]" />
 
       <ProgressBar value={camera.completion} />
 

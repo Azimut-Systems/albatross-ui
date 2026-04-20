@@ -30,7 +30,7 @@ function StatusTooltip() {
         {status.variant === 'keycap' ? (
           <div className="flex items-center gap-1 text-white text-xs font-medium tracking-[0.25px]">
             <span>{status.prefix}</span>
-            <span className="inline-flex items-center justify-center min-w-[22px] h-[18px] px-1 rounded-[4px] bg-[rgba(105,49,245,0.45)] border border-[rgba(255,255,255,0.15)] text-[11px] font-semibold">
+            <span className="inline-flex items-center justify-center min-w-[22px] h-[18px] px-1 rounded-[4px] bg-[rgb(var(--accent-rgb)/0.45)] border border-[rgba(255,255,255,0.15)] text-[11px] font-semibold">
               {status.key}
             </span>
             <span>{status.suffix}</span>
@@ -77,8 +77,8 @@ export default function ToolsBar() {
             onClick={handleMeasureClick}
             className={`flex items-center p-[10px] rounded-lg cursor-pointer transition-colors ${
               measureActive
-                ? 'bg-[rgba(105,49,245,0.55)]'
-                : 'hover:bg-[rgba(122,86,246,0.2)]'
+                ? 'bg-[rgb(var(--accent-rgb)/0.55)]'
+                : 'hover:bg-[rgb(var(--accent-rgb)/0.2)]'
             }`}
           >
             <RulerIcon />
@@ -90,8 +90,8 @@ export default function ToolsBar() {
             onClick={handlePinClick}
             className={`flex items-center p-[10px] rounded-lg cursor-pointer transition-colors ${
               pinActive
-                ? 'bg-[rgba(105,49,245,0.55)]'
-                : 'hover:bg-[rgba(122,86,246,0.2)]'
+                ? 'bg-[rgb(var(--accent-rgb)/0.55)]'
+                : 'hover:bg-[rgb(var(--accent-rgb)/0.2)]'
             }`}
           >
             <PinIcon />
@@ -99,7 +99,7 @@ export default function ToolsBar() {
           <button
             type="button"
             aria-label="Layers"
-            className="flex items-center p-[10px] rounded-lg cursor-pointer hover:bg-[rgba(122,86,246,0.2)] transition-colors"
+            className="flex items-center p-[10px] rounded-lg cursor-pointer hover:bg-[rgb(var(--accent-rgb)/0.2)] transition-colors"
           >
             <LayersIcon />
           </button>

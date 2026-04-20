@@ -48,7 +48,7 @@ export default function GlassPanel({
         cornerRadius={cornerRadius}
         padding="0px"
         style={{
-          background: 'rgba(105,49,245,0.075)',
+          background: 'rgb(var(--accent-rgb)/0.075)',
           borderRadius: cornerRadius,
           ...style,
         }}

@@ -37,7 +37,7 @@ export default function GlassShowcase() {
         {/* Wide card */}
         <GlassPanel padding="16px" cornerRadius={20}>
           <div className="flex items-center gap-4 px-2">
-            <div className="w-10 h-10 rounded-full bg-[rgba(105,49,245,0.3)] flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-[rgb(var(--accent-rgb)/0.3)] flex items-center justify-center">
               <ShieldIcon />
             </div>
             <div>

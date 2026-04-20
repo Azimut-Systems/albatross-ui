@@ -18,7 +18,7 @@ const STATUS_STYLES: Record<CameraStatus, { border: string; bg: string; text: st
 
 const ACTIVITY_STYLES: Record<CameraActivity, { border: string; bg: string; text: string }> = {
   Idle: { border: '#ef835d', bg: 'rgba(239,131,93,0.2)', text: '#ef835d' },
-  Active: { border: '#6931f5', bg: 'rgba(105,49,245,0.2)', text: '#a88cff' },
+  Active: { border: 'var(--accent)', bg: 'rgb(var(--accent-rgb) / 0.2)', text: 'var(--accent)' },
 };
 
 function BackIcon() {
@@ -101,8 +101,8 @@ function ExpandIcon() {
 function CameraIllustration() {
   return (
     <div className="relative w-[56px] h-[56px] shrink-0">
-      <div className="absolute top-0 right-0 w-7 h-7 rounded bg-[rgba(122,86,246,0.35)]" />
-      <div className="absolute bottom-0 left-0 w-7 h-7 rounded bg-[rgba(122,86,246,0.35)]" />
+      <div className="absolute top-0 right-0 w-7 h-7 rounded bg-[rgb(var(--accent-rgb)/0.35)]" />
+      <div className="absolute bottom-0 left-0 w-7 h-7 rounded bg-[rgb(var(--accent-rgb)/0.35)]" />
       <svg
         className="absolute inset-0 m-auto text-white"
         width="40"
@@ -154,7 +154,7 @@ function Badge({ label, border, bg, text }: { label: string; border: string; bg:
 
 function Field({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex-1 flex flex-col items-start bg-[rgba(93,52,165,0.1)] rounded-xl px-3 py-4 min-w-0">
+    <div className="flex-1 flex flex-col items-start bg-[rgb(var(--accent-rgb)/0.1)] rounded-xl px-3 py-4 min-w-0">
       <span className="font-ibm-plex-sans font-normal text-xs text-[#bbb0dc]">{label}</span>
       <span className="font-ibm-plex-sans font-medium text-sm text-white truncate w-full">{value}</span>
     </div>
@@ -174,7 +174,7 @@ function MissionButton({
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-1 px-2 py-1.5 rounded border border-[#4c3d7b] text-white cursor-pointer hover:bg-[rgba(255,255,255,0.05)] transition-colors"
+      className="flex items-center gap-1 px-2 py-1.5 rounded border border-[rgb(var(--accent-rgb)/0.5)] text-white cursor-pointer hover:bg-[rgba(255,255,255,0.05)] transition-colors"
     >
       <span className="flex items-center justify-center size-4">{icon}</span>
       <span className="font-ibm-plex-sans font-medium text-sm">{label}</span>
@@ -209,17 +209,20 @@ function MissionDetails({
           <InfoIcon />
         </button>
       </div>
-      <div className="flex flex-col gap-4 bg-[rgba(93,52,165,0.1)] rounded-xl px-4 py-5 w-full">
+      <div className="flex flex-col gap-4 bg-[rgb(var(--accent-rgb)/0.1)] rounded-xl px-4 py-5 w-full">
         <span className="font-ibm-plex-sans font-bold text-base text-white">
           {Math.round(clamped)}% To complete
         </span>
-        <div className="h-[11.4px] w-full rounded-[32.33px] bg-[rgba(122,86,246,0.2)] overflow-hidden">
+        <div
+          className="h-[11.4px] w-full rounded-[32.33px] overflow-hidden"
+          style={{ background: 'rgb(var(--accent-rgb) / 0.2)' }}
+        >
           <div
             className="h-full rounded-[20px]"
             style={{
               width: `${clamped}%`,
               backgroundImage:
-                'linear-gradient(90deg, rgba(105,49,245,0.7) 0%, rgba(105,49,245,0.7) 100%), linear-gradient(171deg, rgba(56,78,231,0.3) 5.66%, rgba(30,191,245,0.3) 98.95%)',
+                'linear-gradient(90deg, rgb(var(--accent-rgb) / 0.7) 0%, rgb(var(--accent-rgb) / 0.7) 100%), linear-gradient(171deg, rgba(56,78,231,0.3) 5.66%, rgba(30,191,245,0.3) 98.95%)',
             }}
           />
         </div>
@@ -252,10 +255,10 @@ function LiveCamera({ onSwap }: { onSwap?: () => void }) {
         className="relative h-[283px] w-full overflow-hidden rounded-[8.48px] border border-black"
         style={{
           background:
-            'linear-gradient(135deg, rgba(30,191,245,0.35), rgba(105,49,245,0.35) 55%, rgba(12,11,25,0.75))',
+            'linear-gradient(135deg, rgba(30,191,245,0.35), rgb(var(--accent-rgb) / 0.35) 55%, rgba(12,11,25,0.75))',
         }}
       >
-        <div className="absolute inset-0 bg-[rgba(105,49,245,0.1)]" />
+        <div className="absolute inset-0" style={{ background: 'rgb(var(--accent-rgb) / 0.1)' }} />
         <div className="absolute left-0 right-0 top-3 flex items-center justify-between px-5 text-white/80">
           <CompassIcon />
           <ExpandIcon />

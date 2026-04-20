@@ -82,7 +82,7 @@ function FilterPill({ label, onClick }: { label: string; onClick?: () => void })
     <button
       type="button"
       onClick={onClick}
-      className="flex-1 flex items-center gap-1 p-2 rounded border border-[#4c3d7b] text-white cursor-pointer hover:border-[#6e48f2] transition-colors"
+      className="flex-1 flex items-center gap-1 p-2 rounded border border-[rgb(var(--accent-rgb)/0.5)] text-white cursor-pointer hover:border-[var(--accent)] transition-colors"
     >
       <span className="flex-1 text-left font-ibm-plex-sans font-medium text-sm">{label}</span>
       <ChevronDownIcon />
@@ -136,13 +136,13 @@ function TargetCard({ target, active, onSelect, onMore }: TargetCardProps) {
       aria-pressed={active}
       className={`flex flex-col gap-5 p-4 rounded-xl w-full text-left cursor-pointer transition-colors ${
         active
-          ? 'bg-[rgba(93,52,165,0.3)] border border-[rgba(110,72,242,0.5)]'
-          : 'bg-[rgba(93,52,165,0.1)] border border-transparent hover:bg-[rgba(93,52,165,0.2)]'
+          ? 'bg-[rgb(var(--accent-rgb)/0.3)] border border-[rgb(var(--accent-rgb)/0.5)]'
+          : 'bg-[rgb(var(--accent-rgb)/0.1)] border border-transparent hover:bg-[rgb(var(--accent-rgb)/0.2)]'
       }`}
     >
       <div className="flex gap-3 items-center w-full">
         <div className="flex flex-1 gap-3 items-center min-w-0">
-          <div className="flex items-center p-2 rounded-[30px] bg-[rgba(122,86,246,0.2)] text-white shrink-0">
+          <div className="flex items-center p-2 rounded-[30px] bg-[rgb(var(--accent-rgb)/0.2)] text-white shrink-0">
             <ShipIcon />
           </div>
           <div className="flex flex-col gap-1 flex-1 min-w-0">
@@ -181,7 +181,7 @@ function TargetCard({ target, active, onSelect, onMore }: TargetCardProps) {
         </div>
       </div>
 
-      <div className="h-px w-full bg-[rgba(110,72,242,0.3)]" />
+      <div className="h-px w-full bg-[rgb(var(--accent-rgb)/0.3)]" />
 
       <div className="grid grid-cols-4 gap-2 w-full">
         <Stat label="Heading" value={target.heading} />

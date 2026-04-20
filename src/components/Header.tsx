@@ -37,9 +37,9 @@ function BellIcon() {
 function AzimutLogo() {
   return (
     <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="40" height="40" rx="8" fill="#6931F5" />
+      <rect width="40" height="40" rx="8" fill="var(--accent)" />
       <path d="M12 28L20 12L28 28H12Z" fill="white" fillOpacity="0.9" />
-      <circle cx="20" cy="22" r="3" fill="#6931F5" />
+      <circle cx="20" cy="22" r="3" fill="var(--accent)" />
     </svg>
   );
 }
@@ -97,7 +97,7 @@ export default function Header({
                 activeNav === item
                   ? {
                       backgroundImage:
-                        'linear-gradient(90deg, rgba(105,49,245,0.35) 0%, rgba(105,49,245,0.35) 100%), linear-gradient(107deg, rgba(56,78,231,0.15) 5.66%, rgba(30,191,245,0.15) 98.96%)',
+                        'linear-gradient(90deg, rgb(var(--accent-rgb) / 0.35) 0%, rgb(var(--accent-rgb) / 0.35) 100%), linear-gradient(107deg, rgba(56,78,231,0.15) 5.66%, rgba(30,191,245,0.15) 98.96%)',
                     }
                   : undefined
               }
@@ -116,8 +116,8 @@ export default function Header({
             style={
               active
                 ? {
-                    border: '1px solid #6e48f2',
-                    background: 'rgba(110,72,242,0.15)',
+                    border: '1px solid var(--accent)',
+                    background: 'rgb(var(--accent-rgb) / 0.15)',
                   }
                 : undefined
             }

@@ -189,7 +189,7 @@ function TabButton({
     >
       {label}
       {active && (
-        <span className="absolute -bottom-px left-0 right-0 h-px bg-[#7a56f6]" />
+        <span className="absolute -bottom-px left-0 right-0 h-px bg-[var(--accent)]" />
       )}
     </button>
   );
@@ -197,7 +197,7 @@ function TabButton({
 
 function Field({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex-1 flex flex-col gap-1 items-start bg-[rgba(93,52,165,0.08)] border border-[rgba(255,255,255,0.04)] rounded-lg px-3 py-2.5 min-w-0">
+    <div className="flex-1 flex flex-col gap-1 items-start bg-[rgb(var(--accent-rgb)/0.08)] border border-[rgba(255,255,255,0.04)] rounded-lg px-3 py-2.5 min-w-0">
       <span className="font-ibm-plex-sans font-normal text-[11px] text-[#9a8fc0] tracking-wide uppercase">{label}</span>
       <span className="font-ibm-plex-sans font-medium text-sm text-white truncate w-full">{value}</span>
     </div>
@@ -206,7 +206,7 @@ function Field({ label, value }: { label: string; value: string }) {
 
 function AlertRow({ title, time }: { title: string; time: string }) {
   return (
-    <div className="flex items-center gap-3 bg-[rgba(122,86,246,0.12)] border border-[rgba(255,255,255,0.04)] rounded-lg pl-3.5 pr-2 py-2.5 w-full">
+    <div className="flex items-center gap-3 bg-[rgb(var(--accent-rgb)/0.12)] border border-[rgba(255,255,255,0.04)] rounded-lg pl-3.5 pr-2 py-2.5 w-full">
       <div className="flex flex-1 flex-col min-w-0 font-ibm-plex-sans">
         <span className="font-medium text-sm text-white truncate">{title}</span>
         <span className="font-normal text-[11px] text-[#9a8fc0] truncate">{time}</span>
@@ -240,7 +240,7 @@ function VisualRecognition() {
           <ExpandIcon />
         </IconButton>
       </div>
-      <div className="flex flex-col gap-3 bg-[rgba(93,52,165,0.08)] border border-[rgba(255,255,255,0.04)] rounded-xl px-4 py-4">
+      <div className="flex flex-col gap-3 bg-[rgb(var(--accent-rgb)/0.08)] border border-[rgba(255,255,255,0.04)] rounded-xl px-4 py-4">
         <div className="flex items-start gap-4">
           <div className="flex-1 flex flex-col gap-0.5">
             <span className="font-ibm-plex-sans font-semibold text-[22px] text-white tracking-[-0.4px] tabular-nums leading-none">
@@ -266,7 +266,7 @@ function VisualRecognition() {
           className="relative h-[175px] w-full rounded-md overflow-hidden"
           style={{
             backgroundImage:
-              'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.55) 100%), linear-gradient(135deg, rgba(30,191,245,0.45), rgba(105,49,245,0.35) 60%, rgba(12,11,25,0.75))',
+              'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.55) 100%), linear-gradient(135deg, rgba(30,191,245,0.45), rgb(var(--accent-rgb)/0.35) 60%, rgba(12,11,25,0.75))',
           }}
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_60%,rgba(114,84,237,0.25),transparent_60%)]" />
@@ -350,7 +350,7 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
           </div>
 
           <div className="flex gap-3 items-center w-full">
-            <div className="flex items-center justify-center size-11 rounded-lg bg-[rgba(122,86,246,0.15)] text-white shrink-0">
+            <div className="flex items-center justify-center size-11 rounded-lg bg-[rgb(var(--accent-rgb)/0.15)] text-white shrink-0">
               <ShipIcon />
             </div>
             <div className="flex flex-1 flex-col gap-2 min-w-0">
@@ -407,7 +407,7 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
             </button>
           </div>
           <div className="flex flex-col gap-4 w-full">
-            <label className="flex items-center gap-2 bg-[rgba(93,52,165,0.08)] border border-[rgba(118,102,176,0.35)] rounded-lg px-3.5 py-2.5 w-full focus-within:border-[rgba(110,72,242,0.6)] transition-colors">
+            <label className="flex items-center gap-2 bg-[rgb(var(--accent-rgb)/0.08)] border border-[rgb(var(--accent-rgb)/0.35)] rounded-lg px-3.5 py-2.5 w-full focus-within:border-[rgb(var(--accent-rgb)/0.6)] transition-colors">
               <input
                 type="text"
                 value={alertInput}
@@ -417,7 +417,7 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
               />
               <button
                 type="button"
-                className="flex items-center justify-center size-6 rounded-md bg-[rgba(110,72,242,0.9)] cursor-pointer hover:bg-[#7a56f6] transition-colors disabled:opacity-40"
+                className="flex items-center justify-center size-6 rounded-md bg-[rgb(var(--accent-rgb)/0.9)] cursor-pointer hover:bg-[var(--accent)] transition-colors disabled:opacity-40"
                 disabled={alertInput.trim().length === 0}
                 aria-label="Submit alert input"
               >

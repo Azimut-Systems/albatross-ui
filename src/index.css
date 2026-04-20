@@ -5,6 +5,11 @@
   --font-ibm-plex-sans: 'IBM Plex Sans', sans-serif;
 }
 
+:root {
+  --accent: #6931F5;
+  --accent-rgb: 105 49 245;
+}
+
 html, body, #root {
   height: 100%;
   margin: 0;

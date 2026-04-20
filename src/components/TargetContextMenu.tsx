@@ -262,7 +262,7 @@ function MenuItem({
       className={`flex items-center gap-[6px] w-full px-2 py-[10px] rounded text-white cursor-pointer transition-colors ${
         reverse ? 'flex-row-reverse text-right' : 'text-left'
       } ${
-        active ? 'bg-[rgba(93,52,165,0.45)]' : 'hover:bg-[rgba(93,52,165,0.35)]'
+        active ? 'bg-[rgb(var(--accent-rgb)/0.45)]' : 'hover:bg-[rgb(var(--accent-rgb)/0.35)]'
       }`}
     >
       <div className={`flex flex-1 items-center gap-2 min-w-0 text-white ${reverse ? 'flex-row-reverse' : ''}`}>

@@ -112,7 +112,7 @@ function IconButton({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[rgba(187,176,220,0.14)] cursor-pointer hover:bg-[rgba(187,176,220,0.24)] transition-colors"
+      className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[rgb(var(--accent-rgb)/0.14)] cursor-pointer hover:bg-[rgb(var(--accent-rgb)/0.24)] transition-colors"
     >
       {children}
     </button>
@@ -135,7 +135,7 @@ export default function TargetHoverCard({
       className={className}
       cornerRadius={10}
       padding="0px"
-      style={{ background: 'rgba(54,12,198,0.1)', ...style }}
+      style={{ background: 'rgb(var(--accent-rgb)/0.1)', ...style }}
     >
       <div
         className="flex rounded-[10px] overflow-hidden min-h-[125px] cursor-pointer"
@@ -153,11 +153,11 @@ export default function TargetHoverCard({
               className="absolute inset-0"
               style={{
                 background:
-                  'linear-gradient(135deg, rgba(30,191,245,0.35), rgba(105,49,245,0.25) 60%, rgba(12,11,25,0.6))',
+                  'linear-gradient(135deg, rgba(30,191,245,0.35), rgb(var(--accent-rgb)/0.25) 60%, rgba(12,11,25,0.6))',
               }}
             />
           )}
-          <div className="absolute inset-0 bg-[rgba(54,12,198,0.19)]" />
+          <div className="absolute inset-0 bg-[rgb(var(--accent-rgb)/0.19)]" />
         </div>
 
         <div className="flex flex-col flex-1 py-[14px] px-[12px] gap-[14px] justify-between">

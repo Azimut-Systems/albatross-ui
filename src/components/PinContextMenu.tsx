@@ -28,7 +28,7 @@ export default function PinContextMenu({ onMove, onDelete }: PinContextMenuProps
         <button
           type="button"
           onClick={onMove}
-          className="flex items-center gap-2 px-3 py-2 rounded-md text-white text-xs font-medium tracking-[0.25px] cursor-pointer hover:bg-[rgba(105,49,245,0.55)] transition-colors text-left"
+          className="flex items-center gap-2 px-3 py-2 rounded-md text-white text-xs font-medium tracking-[0.25px] cursor-pointer hover:bg-[rgb(var(--accent-rgb)/0.55)] transition-colors text-left"
         >
           <MoveIcon />
           <span>Move</span>
@@ -36,7 +36,7 @@ export default function PinContextMenu({ onMove, onDelete }: PinContextMenuProps
         <button
           type="button"
           onClick={onDelete}
-          className="flex items-center gap-2 px-3 py-2 rounded-md text-white text-xs font-medium tracking-[0.25px] cursor-pointer hover:bg-[rgba(105,49,245,0.55)] transition-colors text-left"
+          className="flex items-center gap-2 px-3 py-2 rounded-md text-white text-xs font-medium tracking-[0.25px] cursor-pointer hover:bg-[rgb(var(--accent-rgb)/0.55)] transition-colors text-left"
         >
           <TrashIcon />
           <span>Delete</span>
