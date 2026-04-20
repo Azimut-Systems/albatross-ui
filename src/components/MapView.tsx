@@ -1262,7 +1262,7 @@ function ClusterVesselRow({
         <span className="font-ibm-plex-sans font-bold text-sm truncate leading-tight">
           {vessel.name}
         </span>
-        <span className="font-ibm-plex-sans font-normal text-xs text-[#bbb0dc] truncate">
+        <span className="font-ibm-plex-sans font-normal text-xs text-[var(--accent-muted)] truncate">
           {vessel.externalId}
         </span>
       </div>
@@ -1281,7 +1281,7 @@ function ClusterVesselMenu({
   return (
     <GlassPanel cornerRadius={16} padding="12px">
       <div className="flex flex-col w-[260px] gap-1">
-        <div className="px-1 pt-0.5 pb-1 font-ibm-plex-sans font-bold text-[13px] text-[#bbb0dc] tracking-wide uppercase">
+        <div className="px-1 pt-0.5 pb-1 font-ibm-plex-sans font-bold text-[13px] text-[var(--accent-muted)] tracking-wide uppercase">
           {vessels.length} Vessels
         </div>
         <div className="flex flex-col gap-1 max-h-[320px] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

@@ -155,7 +155,7 @@ function Badge({ label, border, bg, text }: { label: string; border: string; bg:
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex-1 flex flex-col items-start bg-[rgb(var(--accent-rgb)/0.1)] rounded-xl px-3 py-4 min-w-0">
-      <span className="font-ibm-plex-sans font-normal text-xs text-[#bbb0dc]">{label}</span>
+      <span className="font-ibm-plex-sans font-normal text-xs text-[var(--accent-muted)]">{label}</span>
       <span className="font-ibm-plex-sans font-medium text-sm text-white truncate w-full">{value}</span>
     </div>
   );
@@ -203,7 +203,7 @@ function MissionDetails({
         <button
           type="button"
           onClick={onLoad}
-          className="flex items-center gap-1 text-[#bbb0dc] cursor-pointer hover:text-white transition-colors"
+          className="flex items-center gap-1 text-[var(--accent-muted)] cursor-pointer hover:text-white transition-colors"
         >
           <span className="font-ibm-plex-sans font-bold text-sm tracking-[0.1px]">Load a mission</span>
           <InfoIcon />
@@ -245,7 +245,7 @@ function LiveCamera({ onSwap }: { onSwap?: () => void }) {
         <button
           type="button"
           onClick={onSwap}
-          className="flex items-center gap-1 px-2 py-1.5 rounded text-[#bbb0dc] cursor-pointer hover:bg-[rgba(255,255,255,0.1)] transition-colors"
+          className="flex items-center gap-1 px-2 py-1.5 rounded text-[var(--accent-muted)] cursor-pointer hover:bg-[rgba(255,255,255,0.1)] transition-colors"
         >
           <SwapIcon />
           <span className="font-ibm-plex-sans font-bold text-sm">Swap View</span>

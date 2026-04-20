@@ -286,7 +286,7 @@ function PositionHistory() {
         </h3>
         <button
           type="button"
-          className="flex items-center gap-1 px-2 py-1.5 rounded text-[#bbb0dc] cursor-pointer hover:bg-[rgba(255,255,255,0.1)] transition-colors"
+          className="flex items-center gap-1 px-2 py-1.5 rounded text-[var(--accent-muted)] cursor-pointer hover:bg-[rgba(255,255,255,0.1)] transition-colors"
         >
           <OpenViewIcon />
           <span className="font-ibm-plex-sans font-bold text-sm tracking-[0.1px]">Open View</span>
@@ -400,7 +400,7 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
             </h3>
             <button
               type="button"
-              className="flex items-center gap-1 px-2 py-1.5 rounded text-[#bbb0dc] cursor-pointer hover:bg-[rgba(255,255,255,0.1)] transition-colors"
+              className="flex items-center gap-1 px-2 py-1.5 rounded text-[var(--accent-muted)] cursor-pointer hover:bg-[rgba(255,255,255,0.1)] transition-colors"
             >
               <HistoryIcon />
               <span className="font-ibm-plex-sans font-bold text-sm tracking-[0.1px]">History</span>

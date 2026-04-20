@@ -25,7 +25,7 @@ const STATUS_STYLES: Record<TargetHoverCardStatus, { border: string; bg: string;
   Inactive: { border: '#ff3646', bg: 'rgba(255,54,70,0.2)', text: '#ff3646' },
 };
 
-const ICON_COLOR = '#BBB0DC';
+const ICON_COLOR = 'var(--accent-muted)';
 const ICON_STROKE_WIDTH = 1.33;
 
 function ShareIcon() {

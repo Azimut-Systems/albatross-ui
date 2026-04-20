@@ -115,7 +115,7 @@ function ClassBadge({ label }: { label: string }) {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col items-start min-w-0">
-      <span className="font-ibm-plex-sans font-normal text-xs text-[#bbb0dc]">{label}</span>
+      <span className="font-ibm-plex-sans font-normal text-xs text-[var(--accent-muted)]">{label}</span>
       <span className="font-ibm-plex-sans font-medium text-sm text-white truncate">{value}</span>
     </div>
   );
@@ -149,7 +149,7 @@ function TargetCard({ target, active, onSelect, onMore }: TargetCardProps) {
             <span className="font-ibm-plex-sans font-bold text-base text-white tracking-[0.1px] leading-5 truncate">
               {target.name}
             </span>
-            <span className="font-ibm-plex-sans font-normal text-xs text-[#bbb0dc] truncate">
+            <span className="font-ibm-plex-sans font-normal text-xs text-[var(--accent-muted)] truncate">
               {target.coordinates}
             </span>
           </div>
