@@ -13,6 +13,7 @@
   --fg: #ffffff;
   --fg-rgb: 255 255 255;
   --fg-muted: #dee3e7;
+  --accent-active-fg: #ffffff;
   color-scheme: dark;
 }
 
@@ -22,6 +23,7 @@
   --fg: #12111b;
   --fg-rgb: 18 17 27;
   --fg-muted: #3b3b47;
+  --accent-active-fg: var(--accent);
   color-scheme: light;
 }
 

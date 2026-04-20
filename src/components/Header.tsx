@@ -94,7 +94,7 @@ export default function Header({
               style={
                 activeNav === item
                   ? {
-                      color: 'var(--accent)',
+                      color: 'var(--accent-active-fg)',
                       backgroundImage:
                         'linear-gradient(90deg, rgb(var(--accent-rgb) / 0.35) 0%, rgb(var(--accent-rgb) / 0.35) 100%), linear-gradient(107deg, rgba(56,78,231,0.15) 5.66%, rgba(30,191,245,0.15) 98.96%)',
                     }
@@ -127,7 +127,7 @@ export default function Header({
               aria-label={label}
               aria-pressed={active ?? undefined}
               className="flex items-center p-3 rounded-lg cursor-pointer transition-colors"
-              style={{ color: active ? 'var(--accent)' : 'var(--accent-muted)' }}
+              style={{ color: active ? 'var(--accent-active-fg)' : 'var(--accent-muted)' }}
             >
               <Icon />
             </button>
