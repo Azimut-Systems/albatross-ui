@@ -11,9 +11,9 @@ import type { PinStatus } from '../contexts/PinModeContext';
 function LayersIcon() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="white" strokeWidth="1.5" strokeLinejoin="round" />
-      <path d="M2 12L12 17L22 12" stroke="white" strokeWidth="1.5" strokeLinejoin="round" />
-      <path d="M2 17L12 22L22 17" stroke="white" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -80,6 +80,7 @@ export default function ToolsBar() {
                 ? 'bg-[rgb(var(--accent-rgb)/0.55)]'
                 : 'hover:bg-[rgb(var(--accent-rgb)/0.2)]'
             }`}
+            style={measureActive ? undefined : { color: 'var(--accent-muted)' }}
           >
             <RulerIcon />
           </button>
@@ -93,6 +94,7 @@ export default function ToolsBar() {
                 ? 'bg-[rgb(var(--accent-rgb)/0.55)]'
                 : 'hover:bg-[rgb(var(--accent-rgb)/0.2)]'
             }`}
+            style={pinActive ? undefined : { color: 'var(--accent-muted)' }}
           >
             <PinIcon />
           </button>
@@ -100,6 +102,7 @@ export default function ToolsBar() {
             type="button"
             aria-label="Layers"
             className="flex items-center p-[10px] rounded-lg cursor-pointer hover:bg-[rgb(var(--accent-rgb)/0.2)] transition-colors"
+            style={{ color: 'var(--accent-muted)' }}
           >
             <LayersIcon />
           </button>

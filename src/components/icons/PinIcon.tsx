@@ -6,7 +6,7 @@ type PinIconProps = {
 
 export default function PinIcon({
   size = 24,
-  color = 'white',
+  color = 'currentColor',
   strokeWidth = 1.5,
 }: PinIconProps) {
   return (
