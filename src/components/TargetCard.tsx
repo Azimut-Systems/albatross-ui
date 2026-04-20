@@ -263,7 +263,7 @@ function VisualRecognition() {
         <span className="font-ibm-plex-sans font-normal text-[11px] tracking-wide tabular-nums" style={{ color: 'var(--accent-muted)' }}>
           Live Detection Image · 01/04/26, 10:44:13
         </span>
-        <div className="w-full rounded-md overflow-hidden">
+        <div className="w-full rounded-xl overflow-hidden">
           <img
             src="/target-image.jpg"
             alt="Live detection image"
