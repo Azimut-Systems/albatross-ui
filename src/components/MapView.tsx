@@ -1,4 +1,12 @@
-import { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { createPortal } from 'react-dom';
 import mapboxgl from 'mapbox-gl';
 import GlassPanel from './GlassPanel';
 import PinContextMenu from './PinContextMenu';
@@ -431,8 +439,6 @@ type HoverState = {
   target: TargetHoverCardData;
   lng: number;
   lat: number;
-  screenX: number;
-  screenY: number;
 };
 
 type TargetMenuState = {
@@ -478,6 +484,91 @@ function generateHistoryTrail(vessel: Vessel): LngLat[] {
   return points;
 }
 
+// Wraps mapboxgl.Marker so React content stays pixel-locked to a lng/lat as
+// the map pans and zooms. Mapbox applies the transform directly to the
+// marker element, so we never pay a React re-render for position updates.
+function MapMarker({
+  map,
+  lng,
+  lat,
+  anchor = 'center',
+  offset,
+  zIndex,
+  style,
+  onClick,
+  onContextMenu,
+  onMouseEnter,
+  onMouseLeave,
+  onMouseDown,
+  onWheel,
+  children,
+}: {
+  map: mapboxgl.Map;
+  lng: number;
+  lat: number;
+  anchor?: mapboxgl.Anchor;
+  offset?: [number, number];
+  zIndex?: number;
+  style?: React.CSSProperties;
+  onClick?: (e: React.MouseEvent) => void;
+  onContextMenu?: (e: React.MouseEvent) => void;
+  onMouseEnter?: (e: React.MouseEvent) => void;
+  onMouseLeave?: (e: React.MouseEvent) => void;
+  onMouseDown?: (e: React.MouseEvent) => void;
+  onWheel?: (e: React.WheelEvent) => void;
+  children: React.ReactNode;
+}) {
+  const elRef = useRef<HTMLDivElement | null>(null);
+  if (!elRef.current) {
+    elRef.current = document.createElement('div');
+  }
+  const markerRef = useRef<mapboxgl.Marker | null>(null);
+
+  useEffect(() => {
+    const el = elRef.current;
+    if (!el) return;
+    const marker = new mapboxgl.Marker({
+      element: el,
+      anchor,
+      offset,
+    })
+      .setLngLat([lng, lat])
+      .addTo(map);
+    markerRef.current = marker;
+    return () => {
+      marker.remove();
+      markerRef.current = null;
+    };
+    // Marker element is stable; anchor/offset are set-and-forget per mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map]);
+
+  useEffect(() => {
+    markerRef.current?.setLngLat([lng, lat]);
+  }, [lng, lat]);
+
+  useEffect(() => {
+    const el = elRef.current;
+    if (!el) return;
+    el.style.zIndex = zIndex != null ? String(zIndex) : '';
+  }, [zIndex]);
+
+  return createPortal(
+    <div
+      onClick={onClick}
+      onContextMenu={onContextMenu}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onMouseDown={onMouseDown}
+      onWheel={onWheel}
+      style={style}
+    >
+      {children}
+    </div>,
+    elRef.current,
+  );
+}
+
 export default function MapView({
   onTargetOpen,
   onCameraOpen,
@@ -487,6 +578,7 @@ export default function MapView({
 }) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
+  const [map, setMap] = useState<mapboxgl.Map | null>(null);
   const [hover, setHover] = useState<HoverState | null>(null);
   const [targetMenu, setTargetMenu] = useState<TargetMenuState | null>(null);
   const [mapMenu, setMapMenu] = useState<MapMenuState | null>(null);
@@ -511,16 +603,9 @@ export default function MapView({
   const historyTrailsRef = useRef<Record<string, LngLat[]>>({});
 
   const [hoveredPinId, setHoveredPinId] = useState<string | null>(null);
-  const [, setMapRenderTick] = useState(0);
-  const [pinScreenPositions, setPinScreenPositions] = useState<
-    Record<string, { x: number; y: number }>
-  >({});
-  const [cameraScreenPositions, setCameraScreenPositions] = useState<
-    Record<string, { x: number; y: number }>
-  >({});
-  const [vesselScreenPositions, setVesselScreenPositions] = useState<
-    Record<string, { x: number; y: number }>
-  >({});
+  // SVG overlays (measurement lines, history trails) still work in screen
+  // space — mapbox doesn't have a native concept of "a line between two
+  // lng/lats in CSS pixels", so we project each frame the overlay is active.
   const [measurementScreenPositions, setMeasurementScreenPositions] = useState<
     Record<string, { start: { x: number; y: number }; end: { x: number; y: number } }>
   >({});
@@ -541,48 +626,33 @@ export default function MapView({
   // as DOM siblings, so wheel events over them never reach mapbox's zoom
   // handler. Drive the map zoom directly instead, centered on the cursor.
   const forwardWheelToMap = useCallback((e: React.WheelEvent) => {
-    const map = mapRef.current;
-    if (!map) return;
+    const m = mapRef.current;
+    if (!m) return;
     e.preventDefault();
-    const rect = map.getContainer().getBoundingClientRect();
+    const rect = m.getContainer().getBoundingClientRect();
     const px: [number, number] = [e.clientX - rect.left, e.clientY - rect.top];
     const lineDelta = e.deltaMode === 1 ? e.deltaY * 40 : e.deltaY;
-    map.easeTo({
-      zoom: map.getZoom() - lineDelta * 0.003,
-      around: map.unproject(px),
+    m.easeTo({
+      zoom: m.getZoom() - lineDelta * 0.003,
+      around: m.unproject(px),
       duration: 80,
     });
   }, []);
 
-  const recomputeScreenPositions = useCallback(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    const pinPositions: Record<string, { x: number; y: number }> = {};
-    pinRef.current.pins.forEach((p) => {
-      const pt = map.project([p.lng, p.lat]);
-      pinPositions[p.id] = { x: pt.x, y: pt.y };
-    });
-    setPinScreenPositions(pinPositions);
-    const camPositions: Record<string, { x: number; y: number }> = {};
-    mockCameras.forEach((c) => {
-      const pt = map.project([c.lng, c.lat]);
-      camPositions[c.id] = { x: pt.x, y: pt.y };
-    });
-    setCameraScreenPositions(camPositions);
-    const vesselPositions: Record<string, { x: number; y: number }> = {};
-    mockVessels.forEach((v) => {
-      const pt = map.project([v.lng, v.lat]);
-      vesselPositions[v.id] = { x: pt.x, y: pt.y };
-    });
-    setVesselScreenPositions(vesselPositions);
+  // Project measurement / history / pending-start coords into screen space.
+  // Only runs while at least one of those overlays is visible — see the
+  // effect below that binds the map move listener conditionally.
+  const recomputeSVGPositions = useCallback(() => {
+    const m = mapRef.current;
+    if (!m) return;
     const measurementPositions: Record<
       string,
       { start: { x: number; y: number }; end: { x: number; y: number } }
     > = {};
-    measureRef.current.measurements.forEach((m) => {
-      const s = map.project([m.start.lng, m.start.lat]);
-      const e = map.project([m.end.lng, m.end.lat]);
-      measurementPositions[m.id] = {
+    measureRef.current.measurements.forEach((mm) => {
+      const s = m.project([mm.start.lng, mm.start.lat]);
+      const e = m.project([mm.end.lng, mm.end.lat]);
+      measurementPositions[mm.id] = {
         start: { x: s.x, y: s.y },
         end: { x: e.x, y: e.y },
       };
@@ -593,35 +663,32 @@ export default function MapView({
       const trail = historyTrailsRef.current[vid];
       if (!trail) return;
       historyPaths[vid] = trail.map((pt) => {
-        const p = map.project([pt.lng, pt.lat]);
+        const p = m.project([pt.lng, pt.lat]);
         return { x: p.x, y: p.y };
       });
     });
     setHistoryScreenPaths(historyPaths);
     const pending = measureRef.current.pendingStart;
     if (pending) {
-      const pt = map.project([pending.lng, pending.lat]);
+      const pt = m.project([pending.lng, pending.lat]);
       setPendingStartScreen({ x: pt.x, y: pt.y });
     } else {
       setPendingStartScreen(null);
     }
   }, []);
 
-  // Keep this alias for call sites that reference pin positions only.
-  const recomputePinScreenPositions = recomputeScreenPositions;
-
   // Swap map style when theme changes.
   useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    map.setStyle(MAP_STYLES[theme]);
+    const m = mapRef.current;
+    if (!m) return;
+    m.setStyle(MAP_STYLES[theme]);
   }, [theme]);
 
   // Initialize map once.
   useEffect(() => {
     if (!mapContainer.current || mapRef.current) return;
 
-    const map = new mapboxgl.Map({
+    const mapInstance = new mapboxgl.Map({
       container: mapContainer.current,
       style: MAP_STYLES[theme],
       center: [34.6430, 31.8240],
@@ -631,19 +698,10 @@ export default function MapView({
       attributionControl: false,
     });
 
-    mapRef.current = map;
-    setMapRenderTick((t) => t + 1);
+    mapRef.current = mapInstance;
+    setMap(mapInstance);
 
-    const updateHoverPos = () => {
-      setHover((prev) => {
-        if (!prev) return prev;
-        const p = map.project([prev.lng, prev.lat]);
-        return { ...prev, screenX: p.x, screenY: p.y };
-      });
-      recomputeScreenPositions();
-    };
-
-    map.on('click', (e) => {
+    mapInstance.on('click', (e) => {
       const pinState = pinRef.current;
       const measureState = measureRef.current;
       if (pinState.mode === 'placing') {
@@ -664,7 +722,7 @@ export default function MapView({
         measureState.setSelectedMeasurement(null);
     });
 
-    map.on('contextmenu', (e) => {
+    mapInstance.on('contextmenu', (e) => {
       const pinState = pinRef.current;
       const measureState = measureRef.current;
       if (pinState.mode !== 'off') return;
@@ -680,39 +738,49 @@ export default function MapView({
       });
     });
 
-    map.on('mousemove', (e) => {
+    mapInstance.on('mousemove', (e) => {
       setCursorLngLat({ lng: e.lngLat.lng, lat: e.lngLat.lat });
       setCursorScreen({ x: e.point.x, y: e.point.y });
     });
-    map.on('mouseout', () => {
+    mapInstance.on('mouseout', () => {
       setCursorLngLat(null);
       setCursorScreen(null);
     });
 
-    const updateZoom = () => setMapZoom(map.getZoom());
-    map.on('move', updateHoverPos);
-    map.on('zoom', updateHoverPos);
-    map.on('zoom', updateZoom);
-    map.on('load', () => {
-      recomputeScreenPositions();
-      updateZoom();
-    });
+    const updateZoom = () => setMapZoom(mapInstance.getZoom());
+    mapInstance.on('zoom', updateZoom);
+    mapInstance.on('load', updateZoom);
 
     return () => {
-      map.remove();
+      mapInstance.remove();
       mapRef.current = null;
+      setMap(null);
     };
-  }, [recomputeScreenPositions]);
+  }, []);
 
-  // Recompute screen positions whenever pins, measurements, or pending start change.
+  // Project SVG overlay coords only while something needs them. When off,
+  // no per-frame work runs on pan, so mapbox markers carry the whole cost.
   useEffect(() => {
-    recomputeScreenPositions();
+    const m = mapRef.current;
+    if (!m) return;
+    const active =
+      measure.measurements.length > 0 ||
+      historyVesselIds.size > 0 ||
+      measure.pendingStart != null;
+    if (!active) return;
+    const handler = () => recomputeSVGPositions();
+    handler();
+    m.on('move', handler);
+    m.on('zoom', handler);
+    return () => {
+      m.off('move', handler);
+      m.off('zoom', handler);
+    };
   }, [
-    pin.pins,
     measure.measurements,
     measure.pendingStart,
     historyVesselIds,
-    recomputeScreenPositions,
+    recomputeSVGPositions,
   ]);
 
   // Map cursor reflects pin or measure mode.
@@ -743,9 +811,21 @@ export default function MapView({
   const previewEndLngLat =
     measure.mode === 'awaiting-end' && cursorLngLat ? cursorLngLat : null;
 
-  // Group vessels whose projected screen positions overlap. Radius is a bit
-  // larger than the marker diameter so visibly-touching icons collapse.
-  const vesselItems = clusterVessels(mockVessels, vesselScreenPositions, 36);
+  // Group vessels whose projected screen positions overlap. Cluster
+  // composition only depends on zoom — panning translates every vessel by
+  // the same pixel offset, so inter-vessel distances are invariant. Memoize
+  // on mapZoom so panning is completely free of React work here.
+  const vesselItems = useMemo<VesselClusterItem[]>(() => {
+    if (!map) return [];
+    const positions: Record<string, { x: number; y: number }> = {};
+    mockVessels.forEach((v) => {
+      const pt = map.project([v.lng, v.lat]);
+      positions[v.id] = { x: pt.x, y: pt.y };
+    });
+    return clusterVessels(mockVessels, positions, 36);
+    // mapZoom drives the recomputation even though project() reads from map.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map, mapZoom]);
   const clusteredVesselIds = new Set<string>();
   vesselItems.forEach((it) => {
     if (it.kind === 'cluster') it.vessels.forEach((v) => clusteredVesselIds.add(v.id));
@@ -843,9 +923,6 @@ export default function MapView({
     e.stopPropagation();
     if (pin.mode !== 'off') return;
     if (measure.mode !== 'off') return;
-    const map = mapRef.current;
-    if (!map) return;
-    const p = map.project([vessel.lng, vessel.lat]);
     setHover((prev) => {
       if (prev?.vesselId === vessel.id) return null;
       return {
@@ -858,8 +935,6 @@ export default function MapView({
         },
         lng: vessel.lng,
         lat: vessel.lat,
-        screenX: p.x,
-        screenY: p.y,
       };
     });
   };
@@ -871,12 +946,12 @@ export default function MapView({
     e.stopPropagation();
     if (pin.mode !== 'off') return;
     if (measure.mode !== 'off') return;
-    const map = mapRef.current;
-    if (!map) return;
+    const m = mapRef.current;
+    if (!m) return;
     setClusterMenu(null);
-    map.easeTo({
+    m.easeTo({
       center: [cluster.lng, cluster.lat],
-      zoom: Math.min(map.getZoom() + 1.5, 20),
+      zoom: Math.min(m.getZoom() + 1.5, 20),
       duration: 350,
     });
   };
@@ -900,18 +975,22 @@ export default function MapView({
   ) => {
     if (pin.mode !== 'off') return;
     if (measure.mode !== 'off') return;
+    const m = mapRef.current;
+    if (!m) return;
+    // Re-project on hover: cluster.x/y in the memo was recorded at compute
+    // time and is stale after the user has panned since then.
+    const pt = m.project([cluster.lng, cluster.lat]);
     cancelClusterClose();
     setClusterMenu({
       vessels: cluster.vessels,
-      screenX: cluster.x,
-      screenY: cluster.y,
+      screenX: pt.x,
+      screenY: pt.y,
     });
   };
 
   // Close the cluster menu when the map pans/zooms — the cluster may no
   // longer exist (vessels re-cluster or separate) once the viewport shifts.
   useEffect(() => {
-    const map = mapRef.current;
     if (!map) return;
     const close = () => {
       cancelClusterClose();
@@ -923,7 +1002,7 @@ export default function MapView({
       map.off('movestart', close);
       map.off('zoomstart', close);
     };
-  }, []);
+  }, [map]);
 
   return (
     <>
@@ -965,77 +1044,68 @@ export default function MapView({
       </svg>
       {/* Fixed cameras (infrastructure, not tied to pin mode). Hidden when
           zoomed out so they don't clutter the overview. */}
-      {mapZoom >= 13 && mockCameras.map((c) => {
-        const pos = cameraScreenPositions[c.id];
-        if (!pos) return null;
-        return (
-          <div
-            key={c.id}
-            className="absolute z-10 cursor-pointer"
-            style={{
-              left: pos.x,
-              top: pos.y,
-              transform: 'translate(-50%, -50%)',
-            }}
-            onWheel={forwardWheelToMap}
-            onClick={(e) => {
-              e.stopPropagation();
-              onCameraOpen?.(c.id);
-            }}
-            role="button"
-            tabIndex={0}
-          >
-            <CameraMarker />
-          </div>
-        );
-      })}
+      {map && mapZoom >= 13 && mockCameras.map((c) => (
+        <MapMarker
+          key={c.id}
+          map={map}
+          lng={c.lng}
+          lat={c.lat}
+          zIndex={10}
+          style={{ cursor: 'pointer' }}
+          onWheel={forwardWheelToMap}
+          onClick={(e) => {
+            e.stopPropagation();
+            onCameraOpen?.(c.id);
+          }}
+        >
+          <CameraMarker />
+        </MapMarker>
+      ))}
       {/* Vessels: individual markers, or a count bubble when they overlap on screen. */}
-      {vesselItems.map((item) => {
+      {map && vesselItems.map((item) => {
         if (item.kind === 'single') {
           return (
-            <div
+            <MapMarker
               key={item.id}
-              className="absolute z-10"
-              style={{
-                left: item.x,
-                top: item.y,
-                transform: 'translate(-50%, -50%)',
-              }}
+              map={map}
+              lng={item.vessel.lng}
+              lat={item.vessel.lat}
+              zIndex={10}
               onWheel={forwardWheelToMap}
             >
-              <VesselMarker
-                vessel={item.vessel}
-                onClick={(e) => handleVesselClick(item.vessel, e)}
-                onContextMenu={(e) => handleVesselContextMenu(item.vessel, e)}
-              />
-              {highlightedVesselIds.has(item.vessel.id) && (
-                <div
-                  className="absolute pointer-events-none"
-                  style={{
-                    left: '50%',
-                    top: '50%',
-                    width: 58,
-                    height: 58,
-                    transform: 'translate(-50%, -50%)',
-                    borderRadius: '50%',
-                    border: '2px solid rgba(255,255,255,0.95)',
-                    boxShadow:
-                      '0 0 0 3px rgba(255,255,255,0.25), 0 0 10px rgba(255,255,255,0.6)',
-                  }}
+              <div className="relative">
+                <VesselMarker
+                  vessel={item.vessel}
+                  onClick={(e) => handleVesselClick(item.vessel, e)}
+                  onContextMenu={(e) => handleVesselContextMenu(item.vessel, e)}
                 />
-              )}
-            </div>
+                {highlightedVesselIds.has(item.vessel.id) && (
+                  <div
+                    className="absolute pointer-events-none"
+                    style={{
+                      left: '50%',
+                      top: '50%',
+                      width: 58,
+                      height: 58,
+                      transform: 'translate(-50%, -50%)',
+                      borderRadius: '50%',
+                      border: '2px solid rgba(255,255,255,0.95)',
+                      boxShadow:
+                        '0 0 0 3px rgba(255,255,255,0.25), 0 0 10px rgba(255,255,255,0.6)',
+                    }}
+                  />
+                )}
+              </div>
+            </MapMarker>
           );
         }
         return (
-          <div
+          <MapMarker
             key={item.id}
-            className="absolute z-10"
-            style={{
-              left: item.x,
-              top: item.y,
-              transform: 'translate(-50%, -50%)',
-            }}
+            map={map}
+            lng={item.lng}
+            lat={item.lat}
+            zIndex={10}
             onWheel={forwardWheelToMap}
           >
             <VesselClusterMarker
@@ -1044,26 +1114,22 @@ export default function MapView({
               onMouseEnter={() => handleClusterHoverEnter(item)}
               onMouseLeave={scheduleClusterClose}
             />
-          </div>
+          </MapMarker>
         );
       })}
       {/* User-placed pins. Interactive in pin mode. */}
-      {pin.pins.map((p) => {
-        const pos = pinScreenPositions[p.id];
-        if (!pos) return null;
+      {map && pin.pins.map((p) => {
         const dimmed = pin.mode === 'moving' && pin.movingPinId === p.id;
         const isSelected = pin.selectedPinId === p.id;
         const showHint =
           pin.mode !== 'off' && hoveredPinId === p.id && !isSelected;
         return (
-          <div
+          <MapMarker
             key={p.id}
-            className="absolute z-10"
-            style={{
-              left: pos.x,
-              top: pos.y,
-              transform: 'translate(-50%, -50%)',
-            }}
+            map={map}
+            lng={p.lng}
+            lat={p.lat}
+            zIndex={10}
             onWheel={forwardWheelToMap}
           >
             <div className="relative">
@@ -1097,7 +1163,7 @@ export default function MapView({
                 </div>
               )}
             </div>
-          </div>
+          </MapMarker>
         );
       })}
       {/* Committed measurements (only visible while the tool is active — cleared on exit). */}
@@ -1206,15 +1272,15 @@ export default function MapView({
           onAction={handleMapMenuAction}
         />
       )}
-      {hover && !hoverHiddenByCluster && pin.mode === 'off' && measure.mode === 'off' && (
-        <div
-          className="absolute z-20"
-          style={{
-            left: hover.screenX,
-            top: hover.screenY + 15,
-            transform: 'translate(-50%, -100%)',
-            paddingBottom: 30,
-          }}
+      {hover && map && !hoverHiddenByCluster && pin.mode === 'off' && measure.mode === 'off' && (
+        <MapMarker
+          map={map}
+          lng={hover.lng}
+          lat={hover.lat}
+          anchor="bottom"
+          offset={[0, -15]}
+          zIndex={20}
+          style={{ paddingBottom: 30 }}
           onWheel={forwardWheelToMap}
         >
           <TargetHoverCard
@@ -1222,7 +1288,7 @@ export default function MapView({
             style={{ zoom: scale }}
             onOpen={() => { onTargetOpen?.(hover.vesselId); setHover(null); }}
           />
-        </div>
+        </MapMarker>
       )}
     </>
   );
