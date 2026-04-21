@@ -18,7 +18,7 @@ type FieldProps = {
 function Field({ label, value, variant = 'compact' }: FieldProps) {
   if (variant === 'roomy') {
     return (
-      <div className="flex-1 flex flex-col items-start bg-[var(--surface-accent-subtle)] rounded-xl px-3 py-4 min-w-0">
+      <div className="flex-1 flex flex-col items-start bg-[var(--surface-accent-subtle)] border-shadow rounded-xl px-3 py-4 min-w-0">
         <span className="font-ibm-plex-sans font-normal text-xs text-[var(--accent-muted)]">
           {label}
         </span>

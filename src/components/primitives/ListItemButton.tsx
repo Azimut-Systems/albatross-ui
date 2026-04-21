@@ -23,7 +23,7 @@ export default function ListItemButton({
       className={`flex flex-col gap-5 p-4 rounded-xl w-full text-left cursor-pointer active:scale-[0.96] ${
         active
           ? 'bg-[var(--surface-accent-strong)] border border-[var(--border-accent)]'
-          : 'bg-[var(--surface-accent-subtle)] border border-transparent hover:bg-[var(--surface-accent-medium)]'
+          : 'bg-[var(--surface-accent-subtle)] border-shadow border border-transparent hover:bg-[var(--surface-accent-medium)]'
       } ${className}`}
       style={{
         transitionProperty: 'background-color, border-color, scale',

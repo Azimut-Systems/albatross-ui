@@ -92,7 +92,7 @@ function MissionDetails({
           </button>
         }
       />
-      <div className="flex flex-col gap-4 bg-[var(--surface-accent-subtle)] rounded-xl px-4 py-5 w-full">
+      <div className="flex flex-col gap-4 bg-[var(--surface-accent-subtle)] border-shadow rounded-xl px-4 py-5 w-full">
         <span className="font-ibm-plex-sans font-bold text-base text-white tabular-nums">
           {Math.round(clamped)}% To complete
         </span>
