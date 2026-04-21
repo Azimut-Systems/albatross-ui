@@ -1,4 +1,4 @@
-import {
+import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -603,24 +603,56 @@ export default function MapView({
   const historyTrailsRef = useRef<Record<string, LngLat[]>>({});
 
   const [hoveredPinId, setHoveredPinId] = useState<string | null>(null);
-  // SVG overlays (measurement lines, history trails) still work in screen
-  // space — mapbox doesn't have a native concept of "a line between two
-  // lng/lats in CSS pixels", so we project each frame the overlay is active.
-  const [measurementScreenPositions, setMeasurementScreenPositions] = useState<
-    Record<string, { start: { x: number; y: number }; end: { x: number; y: number } }>
-  >({});
-  const [historyScreenPaths, setHistoryScreenPaths] = useState<
-    Record<string, { x: number; y: number }[]>
-  >({});
-  const [pendingStartScreen, setPendingStartScreen] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
+  // SVG line elements are updated imperatively on map.move/zoom so there is
+  // no React setState lag. Endpoint dots and labels use MapMarker instead.
+  const measureLineRefs = useRef<Record<string, SVGLineElement | null>>({});
+  const pendingLineRef = useRef<SVGLineElement | null>(null);
+  const historyPathRefs = useRef<Record<string, [SVGPathElement | null, SVGPathElement | null]>>({});
+  const cursorScreenRef = useRef<{ x: number; y: number } | null>(null);
   const [cursorLngLat, setCursorLngLat] = useState<LngLat | null>(null);
-  const [cursorScreen, setCursorScreen] = useState<{ x: number; y: number } | null>(
-    null,
-  );
   const [mapZoom, setMapZoom] = useState<number>(14);
+
+  const updateSVGImperative = useCallback(() => {
+    const m = mapRef.current;
+    if (!m) return;
+    measureRef.current.measurements.forEach((mm) => {
+      const el = measureLineRefs.current[mm.id];
+      if (!el) return;
+      const s = m.project([mm.start.lng, mm.start.lat]);
+      const e = m.project([mm.end.lng, mm.end.lat]);
+      el.setAttribute('x1', String(s.x));
+      el.setAttribute('y1', String(s.y));
+      el.setAttribute('x2', String(e.x));
+      el.setAttribute('y2', String(e.y));
+    });
+    const pending = measureRef.current.pendingStart;
+    const cursor = cursorScreenRef.current;
+    const pLine = pendingLineRef.current;
+    if (pLine) {
+      if (pending && cursor) {
+        const s = m.project([pending.lng, pending.lat]);
+        pLine.setAttribute('x1', String(s.x));
+        pLine.setAttribute('y1', String(s.y));
+        pLine.setAttribute('x2', String(cursor.x));
+        pLine.setAttribute('y2', String(cursor.y));
+        pLine.style.display = '';
+      } else {
+        pLine.style.display = 'none';
+      }
+    }
+    historyIdsRef.current.forEach((vid) => {
+      const trail = historyTrailsRef.current[vid];
+      const paths = historyPathRefs.current[vid];
+      if (!trail || !paths) return;
+      const d = trail
+        .map((pt, i) => {
+          const p = m.project([pt.lng, pt.lat]);
+          return `${i === 0 ? 'M' : 'L'}${p.x} ${p.y}`;
+        })
+        .join(' ');
+      paths.forEach((path) => path?.setAttribute('d', d));
+    });
+  }, []);
 
   // Overlay markers (cameras, vessels, pins) sit in front of the map canvas
   // as DOM siblings, so wheel events over them never reach mapbox's zoom
@@ -639,43 +671,6 @@ export default function MapView({
     });
   }, []);
 
-  // Project measurement / history / pending-start coords into screen space.
-  // Only runs while at least one of those overlays is visible — see the
-  // effect below that binds the map move listener conditionally.
-  const recomputeSVGPositions = useCallback(() => {
-    const m = mapRef.current;
-    if (!m) return;
-    const measurementPositions: Record<
-      string,
-      { start: { x: number; y: number }; end: { x: number; y: number } }
-    > = {};
-    measureRef.current.measurements.forEach((mm) => {
-      const s = m.project([mm.start.lng, mm.start.lat]);
-      const e = m.project([mm.end.lng, mm.end.lat]);
-      measurementPositions[mm.id] = {
-        start: { x: s.x, y: s.y },
-        end: { x: e.x, y: e.y },
-      };
-    });
-    setMeasurementScreenPositions(measurementPositions);
-    const historyPaths: Record<string, { x: number; y: number }[]> = {};
-    historyIdsRef.current.forEach((vid) => {
-      const trail = historyTrailsRef.current[vid];
-      if (!trail) return;
-      historyPaths[vid] = trail.map((pt) => {
-        const p = m.project([pt.lng, pt.lat]);
-        return { x: p.x, y: p.y };
-      });
-    });
-    setHistoryScreenPaths(historyPaths);
-    const pending = measureRef.current.pendingStart;
-    if (pending) {
-      const pt = m.project([pending.lng, pending.lat]);
-      setPendingStartScreen({ x: pt.x, y: pt.y });
-    } else {
-      setPendingStartScreen(null);
-    }
-  }, []);
 
   // Swap map style when theme changes.
   useEffect(() => {
@@ -740,14 +735,18 @@ export default function MapView({
 
     mapInstance.on('mousemove', (e) => {
       setCursorLngLat({ lng: e.lngLat.lng, lat: e.lngLat.lat });
-      setCursorScreen({ x: e.point.x, y: e.point.y });
+      cursorScreenRef.current = { x: e.point.x, y: e.point.y };
+      updateSVGImperative();
     });
     mapInstance.on('mouseout', () => {
       setCursorLngLat(null);
-      setCursorScreen(null);
+      cursorScreenRef.current = null;
+      if (pendingLineRef.current) pendingLineRef.current.style.display = 'none';
     });
 
     const updateZoom = () => setMapZoom(mapInstance.getZoom());
+    mapInstance.on('move', updateSVGImperative);
+    mapInstance.on('zoom', updateSVGImperative);
     mapInstance.on('zoom', updateZoom);
     mapInstance.on('load', updateZoom);
 
@@ -758,30 +757,12 @@ export default function MapView({
     };
   }, []);
 
-  // Project SVG overlay coords only while something needs them. When off,
-  // no per-frame work runs on pan, so mapbox markers carry the whole cost.
+  // When measurement data or history changes, do a one-shot imperative
+  // update so SVG elements are populated immediately (the map.move listener
+  // in the init effect keeps them in sync while panning/zooming).
   useEffect(() => {
-    const m = mapRef.current;
-    if (!m) return;
-    const active =
-      measure.measurements.length > 0 ||
-      historyVesselIds.size > 0 ||
-      measure.pendingStart != null;
-    if (!active) return;
-    const handler = () => recomputeSVGPositions();
-    handler();
-    m.on('move', handler);
-    m.on('zoom', handler);
-    return () => {
-      m.off('move', handler);
-      m.off('zoom', handler);
-    };
-  }, [
-    measure.measurements,
-    measure.pendingStart,
-    historyVesselIds,
-    recomputeSVGPositions,
-  ]);
+    updateSVGImperative();
+  }, [measure.measurements, measure.pendingStart, historyVesselIds, updateSVGImperative]);
 
   // Map cursor reflects pin or measure mode.
   useEffect(() => {
@@ -805,9 +786,6 @@ export default function MapView({
     };
   }, [pin.mode]);
 
-  // Preview end-point: while awaiting end click, follow cursor. Otherwise null.
-  const previewEndScreen =
-    measure.mode === 'awaiting-end' && cursorScreen ? cursorScreen : null;
   const previewEndLngLat =
     measure.mode === 'awaiting-end' && cursorLngLat ? cursorLngLat : null;
 
@@ -1007,40 +985,29 @@ export default function MapView({
   return (
     <>
       <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
-      {/* Measurement lines (SVG overlay). */}
+      {/* Measurement lines — populated imperatively on move/zoom via refs. */}
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none"
         style={{ zIndex: 9 }}
       >
-        {measure.measurements.map((m) => {
-          const pos = measurementScreenPositions[m.id];
-          if (!pos) return null;
-          return (
-            <line
-              key={m.id}
-              x1={pos.start.x}
-              y1={pos.start.y}
-              x2={pos.end.x}
-              y2={pos.end.y}
-              stroke="var(--accent)"
-              strokeWidth={1.5}
-              strokeDasharray="5 4"
-              strokeLinecap="round"
-            />
-          );
-        })}
-        {pendingStartScreen && previewEndScreen && (
+        {measure.measurements.map((m) => (
           <line
-            x1={pendingStartScreen.x}
-            y1={pendingStartScreen.y}
-            x2={previewEndScreen.x}
-            y2={previewEndScreen.y}
+            key={m.id}
+            ref={(el) => { measureLineRefs.current[m.id] = el; }}
             stroke="var(--accent)"
             strokeWidth={1.5}
             strokeDasharray="5 4"
             strokeLinecap="round"
           />
-        )}
+        ))}
+        <line
+          ref={(el) => { pendingLineRef.current = el; }}
+          style={{ display: 'none' }}
+          stroke="var(--accent)"
+          strokeWidth={1.5}
+          strokeDasharray="5 4"
+          strokeLinecap="round"
+        />
       </svg>
       {/* Fixed cameras (infrastructure, not tied to pin mode). Hidden when
           zoomed out so they don't clutter the overview. */}
@@ -1166,70 +1133,59 @@ export default function MapView({
           </MapMarker>
         );
       })}
-      {/* Committed measurements (only visible while the tool is active — cleared on exit). */}
-      {measure.measurements.map((m) => {
-        const pos = measurementScreenPositions[m.id];
-        if (!pos) return null;
-        return (
-          <div key={m.id}>
-            <MeasurementEndpoint pos={pos.start} />
-            <MeasurementEndpoint pos={pos.end} />
-            <MeasurementLabel
-              start={pos.start}
-              end={pos.end}
-              text={formatMeasurement(m.start, m.end)}
-            />
-          </div>
-        );
-      })}
-      {/* Pending measurement: start dot, live end dot under cursor, live label. */}
-      {pendingStartScreen && (
-        <MeasurementEndpoint pos={pendingStartScreen} />
+      {/* Committed measurement endpoint dots + labels (MapMarkers, lag-free). */}
+      {map && measure.measurements.map((m) => (
+        <React.Fragment key={m.id}>
+          <MeasurementEndpoint map={map} lng={m.start.lng} lat={m.start.lat} />
+          <MeasurementEndpoint map={map} lng={m.end.lng} lat={m.end.lat} />
+          <MeasurementLabel map={map} startLngLat={m.start} endLngLat={m.end} text={formatMeasurement(m.start, m.end)} />
+        </React.Fragment>
+      ))}
+      {/* Pending start dot. */}
+      {map && measure.pendingStart && (
+        <MeasurementEndpoint map={map} lng={measure.pendingStart.lng} lat={measure.pendingStart.lat} />
       )}
-      {pendingStartScreen &&
-        previewEndScreen &&
-        measure.pendingStart &&
-        previewEndLngLat && (
-          <>
-            <MeasurementEndpoint pos={previewEndScreen} />
-            <MeasurementLabel
-              start={pendingStartScreen}
-              end={previewEndScreen}
-              text={formatMeasurement(measure.pendingStart, previewEndLngLat)}
-            />
-          </>
-        )}
-      {/* History paths: wavy trail behind the vessel. */}
+      {/* Preview end dot + live label. */}
+      {map && measure.pendingStart && previewEndLngLat && (
+        <>
+          <MeasurementEndpoint map={map} lng={previewEndLngLat.lng} lat={previewEndLngLat.lat} />
+          <MeasurementLabel
+            map={map}
+            startLngLat={measure.pendingStart}
+            endLngLat={previewEndLngLat}
+            text={formatMeasurement(measure.pendingStart, previewEndLngLat)}
+          />
+        </>
+      )}
+      {/* History paths — populated imperatively on move/zoom via refs. */}
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none"
         style={{ zIndex: 8 }}
       >
-        {Object.entries(historyScreenPaths).map(([vid, pts]) => {
-          if (pts.length < 2) return null;
-          const d = pts
-            .map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x} ${p.y}`)
-            .join(' ');
-          return (
-            <g key={vid}>
-              <path
-                d={d}
-                fill="none"
-                stroke="rgba(255,255,255,0.3)"
-                strokeWidth={5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d={d}
-                fill="none"
-                stroke="white"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </g>
-          );
-        })}
+        {Array.from(historyVesselIds).map((vid) => (
+          <g key={vid}>
+            <path
+              ref={(el) => {
+                (historyPathRefs.current[vid] ??= [null, null])[0] = el;
+              }}
+              fill="none"
+              stroke="rgba(255,255,255,0.3)"
+              strokeWidth={5}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              ref={(el) => {
+                (historyPathRefs.current[vid] ??= [null, null])[1] = el;
+              }}
+              fill="none"
+              stroke="white"
+              strokeWidth={1.5}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </g>
+        ))}
       </svg>
       {clusterMenu && (
         <ClusterVesselMenuOverlay
@@ -1568,59 +1524,70 @@ function ClusterVesselMenuOverlay({
   );
 }
 
-function MeasurementEndpoint({ pos }: { pos: { x: number; y: number } }) {
+function MeasurementEndpoint({
+  map,
+  lng,
+  lat,
+}: {
+  map: mapboxgl.Map;
+  lng: number;
+  lat: number;
+}) {
   return (
-    <div
-      className="absolute z-10 pointer-events-none"
-      style={{
-        left: pos.x,
-        top: pos.y,
-        transform: 'translate(-50%, -50%)',
-      }}
-    >
+    <MapMarker map={map} lng={lng} lat={lat} anchor="center" zIndex={10}>
       <div
-        className="w-[10px] h-[10px] rounded-full border-2"
-        style={{
-          background: 'var(--bg-page)',
-          borderColor: 'var(--accent)',
-        }}
+        className="w-[10px] h-[10px] rounded-full border-2 pointer-events-none"
+        style={{ background: 'var(--bg-page)', borderColor: 'var(--accent)' }}
       />
-    </div>
+    </MapMarker>
   );
 }
 
 function MeasurementLabel({
-  start,
-  end,
+  map,
+  startLngLat,
+  endLngLat,
   text,
 }: {
-  start: { x: number; y: number };
-  end: { x: number; y: number };
+  map: mapboxgl.Map;
+  startLngLat: LngLat;
+  endLngLat: LngLat;
   text: string;
 }) {
-  const midX = (start.x + end.x) / 2;
-  const midY = (start.y + end.y) / 2;
-  let angle =
-    (Math.atan2(end.y - start.y, end.x - start.x) * 180) / Math.PI;
-  // Keep text upright: flip if line reads right-to-left.
-  if (angle > 90) angle -= 180;
-  else if (angle < -90) angle += 180;
+  const labelRef = useRef<HTMLDivElement>(null);
+  const midLng = (startLngLat.lng + endLngLat.lng) / 2;
+  const midLat = (startLngLat.lat + endLngLat.lat) / 2;
+
+  const updateAngle = useCallback(() => {
+    const el = labelRef.current;
+    if (!el) return;
+    const s = map.project([startLngLat.lng, startLngLat.lat]);
+    const e = map.project([endLngLat.lng, endLngLat.lat]);
+    let angle = (Math.atan2(e.y - s.y, e.x - s.x) * 180) / Math.PI;
+    if (angle > 90) angle -= 180;
+    else if (angle < -90) angle += 180;
+    el.style.transform = `rotate(${angle}deg) translateY(-14px)`;
+  }, [map, startLngLat, endLngLat]);
+
+  useEffect(() => {
+    updateAngle();
+    map.on('move', updateAngle);
+    map.on('zoom', updateAngle);
+    return () => {
+      map.off('move', updateAngle);
+      map.off('zoom', updateAngle);
+    };
+  }, [map, updateAngle]);
+
   return (
-    <div
-      className="absolute z-20 pointer-events-none"
-      style={{
-        left: midX,
-        top: midY,
-        transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-14px)`,
-        transformOrigin: 'center',
-      }}
-    >
+    <MapMarker map={map} lng={midLng} lat={midLat} anchor="center" zIndex={20}>
       <div
-        className="text-[11px] font-medium tracking-[0.3px] whitespace-nowrap"
-        style={{ color: 'var(--accent)' }}
+        ref={labelRef}
+        className="pointer-events-none whitespace-nowrap text-[11px] font-medium tracking-[0.3px]"
+        style={{ color: 'var(--accent)', transformOrigin: 'center' }}
       >
         {text}
       </div>
-    </div>
+    </MapMarker>
   );
 }

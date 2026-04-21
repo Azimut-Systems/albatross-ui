@@ -37,6 +37,7 @@ const MOCK_CAMERAS: Camera[] = Array.from({ length: 7 }, (_, i) => ({
   status: 'Connected',
   activity: 'Idle',
   completion: 75,
+  thumbnailUrl: '/live-camera.jpeg',
 }));
 
 function AppShell() {

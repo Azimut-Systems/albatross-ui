@@ -123,7 +123,7 @@ function ProgressBar({ value }: { value: number }) {
 
 function CameraThumbnail({ url }: { url?: string }) {
   return (
-    <div className="relative w-full h-[220px] overflow-hidden rounded-[8.48px] border border-black">
+    <div className="relative w-full h-[220px] overflow-hidden rounded-[8.48px]">
       {url ? (
         <img src={url} alt="" className="absolute inset-0 w-full h-full object-cover" />
       ) : (
