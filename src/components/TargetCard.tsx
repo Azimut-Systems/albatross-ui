@@ -29,7 +29,7 @@ type TargetCardProps = {
   onClose?: () => void;
 };
 
-type Tab = 'EO' | 'AIS' | 'AID';
+type Tab = 'AID' | 'AIS';
 
 function TabButton({
   label,
@@ -199,7 +199,7 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
 
         <section className="flex flex-col gap-4 shrink-0">
           <div className="flex items-center h-7 border-b border-[rgba(255,255,255,0.06)]">
-            {(['EO', 'AIS', 'AID'] as const).map((t) => (
+            {(['AID', 'AIS'] as const).map((t) => (
               <TabButton key={t} label={t} active={tab === t} onClick={() => setTab(t)} />
             ))}
           </div>
