@@ -1,20 +1,7 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
+import { UISizeContext, type UISize } from './useUISize';
+import { uiSizeToScale } from './uiSizeToScale';
 
-export type UISize = 'small' | 'medium' | 'large';
-
-export const uiSizeToScale: Record<UISize, number> = {
-  small: 0.8,
-  medium: 1,
-  large: 1.15,
-};
-
-type UISizeContextValue = {
-  size: UISize;
-  setSize: (size: UISize) => void;
-  scale: number;
-};
-
-const UISizeContext = createContext<UISizeContextValue | null>(null);
 const STORAGE_KEY = 'albatross:uiSize';
 
 export function UISizeProvider({ children }: { children: ReactNode }) {
@@ -33,10 +20,4 @@ export function UISizeProvider({ children }: { children: ReactNode }) {
       {children}
     </UISizeContext.Provider>
   );
-}
-
-export function useUISize() {
-  const ctx = useContext(UISizeContext);
-  if (!ctx) throw new Error('useUISize must be used within UISizeProvider');
-  return ctx;
 }

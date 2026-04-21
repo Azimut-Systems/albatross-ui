@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { usePinMode } from '../contexts/PinModeContext';
+import { usePinMode } from '../contexts/usePinMode';
 import PinIcon from './icons/PinIcon';
 
 export default function PinCursor() {
@@ -8,7 +8,6 @@ export default function PinCursor() {
 
   useEffect(() => {
     if (mode === 'off') {
-      setPos(null);
       document.body.style.cursor = '';
       return;
     }

@@ -1,39 +1,40 @@
+import type { ComponentType } from 'react';
 import GlassPanel from './GlassPanel';
 import { BellIcon, CameraIcon, TargetRadarIcon } from './icons';
+import type { IconProps } from './icons';
+import { useNav, type NavItem } from '../contexts/useNav';
 
-const navItems = ['Map', 'Archive', 'Fleet', 'Settings'] as const;
+const navItems: readonly NavItem[] = ['Map', 'Archive', 'Fleet', 'Settings'] as const;
 
-type HeaderProps = {
-  activeNav: string;
-  onNavChange: (item: string) => void;
-  targetsOpen?: boolean;
-  onTargetsToggle?: () => void;
-  camerasOpen?: boolean;
-  onCamerasToggle?: () => void;
-};
+export default function Header() {
+  const {
+    activeNav,
+    setActiveNav,
+    targetsOpen,
+    toggleTargets,
+    camerasOpen,
+    toggleCameras,
+  } = useNav();
 
-export default function Header({
-  activeNav,
-  onNavChange,
-  targetsOpen,
-  onTargetsToggle,
-  camerasOpen,
-  onCamerasToggle,
-}: HeaderProps) {
-  const utilityButtons = [
+  const utilityButtons: Array<{
+    Icon: ComponentType<IconProps>;
+    label: string;
+    active?: boolean;
+    onClick?: () => void;
+  }> = [
     {
       Icon: TargetRadarIcon,
       label: 'Toggle targets list',
       active: targetsOpen,
-      onClick: onTargetsToggle,
+      onClick: toggleTargets,
     },
     {
       Icon: CameraIcon,
       label: 'Toggle cameras list',
       active: camerasOpen,
-      onClick: onCamerasToggle,
+      onClick: toggleCameras,
     },
-    { Icon: BellIcon, label: 'Notifications', active: undefined, onClick: undefined },
+    { Icon: BellIcon, label: 'Notifications' },
   ];
 
   return (
@@ -46,7 +47,7 @@ export default function Header({
           {navItems.map((item) => (
             <button
               key={item}
-              onClick={() => onNavChange(item)}
+              onClick={() => setActiveNav(item)}
               className={`flex items-center px-[14px] py-[14px] text-sm tracking-[0.25px] transition-colors cursor-pointer ${
                 activeNav === item ? 'font-bold' : 'font-medium'
               }`}

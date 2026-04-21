@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react';
 import GlassPanel from './GlassPanel';
-import { useUISize, type UISize } from '../contexts/UISizeContext';
-import { useAccentColor, accentPresets } from '../contexts/AccentColorContext';
-import { useTheme, type Theme } from '../contexts/ThemeContext';
+import { useUISize, type UISize } from '../contexts/useUISize';
+import { useAccentColor } from '../contexts/useAccentColor';
+import { accentPresets } from '../contexts/accentPresets';
+import { useTheme, type Theme } from '../contexts/useTheme';
 
 const sizeOptions: { label: string; value: UISize }[] = [
   { label: 'Small', value: 'small' },

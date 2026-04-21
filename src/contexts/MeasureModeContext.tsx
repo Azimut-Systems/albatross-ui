@@ -1,27 +1,17 @@
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useRef,
   useState,
   type ReactNode,
 } from 'react';
-
-export type MeasureMode = 'off' | 'awaiting-start' | 'awaiting-end';
-
-export type LngLat = { lng: number; lat: number };
-
-export type Measurement = {
-  id: string;
-  start: LngLat;
-  end: LngLat;
-};
-
-export type MeasureStatus =
-  | { variant: 'keycap'; prefix: string; key: string; suffix: string }
-  | { variant: 'text'; text: string }
-  | null;
+import {
+  MeasureModeContext,
+  type LngLat,
+  type MeasureMode,
+  type MeasureStatus,
+  type Measurement,
+} from './useMeasureMode';
 
 const EXIT_STATUS: MeasureStatus = {
   variant: 'keycap',
@@ -34,21 +24,6 @@ const DELETED_STATUS: MeasureStatus = {
   variant: 'text',
   text: 'Measurement has been deleted successfully',
 };
-
-type MeasureModeContextValue = {
-  mode: MeasureMode;
-  measurements: Measurement[];
-  pendingStart: LngLat | null;
-  selectedMeasurementId: string | null;
-  status: MeasureStatus;
-  toggleMeasureMode: () => void;
-  exitMeasureMode: () => void;
-  setSelectedMeasurement: (id: string | null) => void;
-  placePoint: (lng: number, lat: number) => void;
-  deleteMeasurement: (id: string) => void;
-};
-
-const MeasureModeContext = createContext<MeasureModeContextValue | null>(null);
 
 export function MeasureModeProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<MeasureMode>('off');
@@ -68,7 +43,9 @@ export function MeasureModeProvider({ children }: { children: ReactNode }) {
   };
 
   const modeRef = useRef<MeasureMode>('off');
-  modeRef.current = mode;
+  useEffect(() => {
+    modeRef.current = mode;
+  }, [mode]);
 
   const flashStatus = useCallback((next: MeasureStatus, durationMs = 2200) => {
     clearToastTimer();
@@ -175,11 +152,4 @@ export function MeasureModeProvider({ children }: { children: ReactNode }) {
       {children}
     </MeasureModeContext.Provider>
   );
-}
-
-export function useMeasureMode() {
-  const ctx = useContext(MeasureModeContext);
-  if (!ctx)
-    throw new Error('useMeasureMode must be used within MeasureModeProvider');
-  return ctx;
 }

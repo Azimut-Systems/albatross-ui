@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import { memo, type ButtonHTMLAttributes, type ReactNode } from 'react';
 
 type IconButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> & {
   children: ReactNode;
@@ -9,7 +9,7 @@ type IconButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'>
  * Standard icon-only button. Inherits color from parent via `currentColor`.
  * Always requires `label` for accessibility (becomes aria-label).
  */
-export default function IconButton({
+function IconButton({
   children,
   label,
   className = '',
@@ -27,3 +27,5 @@ export default function IconButton({
     </button>
   );
 }
+
+export default memo(IconButton);

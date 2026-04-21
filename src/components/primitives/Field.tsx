@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 type FieldProps = {
   label: string;
   value: string;
@@ -13,7 +15,7 @@ type FieldProps = {
  * patterns in the cards — consolidated here so typography and background
  * changes happen in one place.
  */
-export default function Field({ label, value, variant = 'compact' }: FieldProps) {
+function Field({ label, value, variant = 'compact' }: FieldProps) {
   if (variant === 'roomy') {
     return (
       <div className="flex-1 flex flex-col items-start bg-[var(--surface-accent-subtle)] rounded-xl px-3 py-4 min-w-0">
@@ -40,3 +42,5 @@ export default function Field({ label, value, variant = 'compact' }: FieldProps)
     </div>
   );
 }
+
+export default memo(Field);

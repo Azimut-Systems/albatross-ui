@@ -1,25 +1,16 @@
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useRef,
   useState,
   type ReactNode,
 } from 'react';
-
-export type PinMode = 'off' | 'placing' | 'moving';
-
-export type Pin = {
-  id: string;
-  lng: number;
-  lat: number;
-};
-
-export type PinStatus =
-  | { variant: 'keycap'; prefix: string; key: string; suffix: string }
-  | { variant: 'text'; text: string }
-  | null;
+import {
+  PinModeContext,
+  type Pin,
+  type PinMode,
+  type PinStatus,
+} from './usePinMode';
 
 const INITIAL_PINS: Pin[] = [];
 
@@ -42,23 +33,6 @@ const DELETED_STATUS: PinStatus = {
   text: 'Pin has been deleted successfully',
 };
 
-type PinModeContextValue = {
-  mode: PinMode;
-  pins: Pin[];
-  movingPinId: string | null;
-  selectedPinId: string | null;
-  status: PinStatus;
-  togglePinMode: () => void;
-  exitPinMode: () => void;
-  setSelectedPin: (id: string | null) => void;
-  addPin: (lng: number, lat: number) => void;
-  startMovePin: (id: string) => void;
-  commitMovePin: (lng: number, lat: number) => void;
-  deletePin: (id: string) => void;
-};
-
-const PinModeContext = createContext<PinModeContextValue | null>(null);
-
 export function PinModeProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<PinMode>('off');
   const [pins, setPins] = useState<Pin[]>(INITIAL_PINS);
@@ -75,7 +49,9 @@ export function PinModeProvider({ children }: { children: ReactNode }) {
   };
 
   const modeRef = useRef<PinMode>('off');
-  modeRef.current = mode;
+  useEffect(() => {
+    modeRef.current = mode;
+  }, [mode]);
 
   const flashStatus = useCallback((next: PinStatus, durationMs = 2200) => {
     clearToastTimer();
@@ -182,10 +158,4 @@ export function PinModeProvider({ children }: { children: ReactNode }) {
       {children}
     </PinModeContext.Provider>
   );
-}
-
-export function usePinMode() {
-  const ctx = useContext(PinModeContext);
-  if (!ctx) throw new Error('usePinMode must be used within PinModeProvider');
-  return ctx;
 }

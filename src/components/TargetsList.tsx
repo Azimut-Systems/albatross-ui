@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import CardPanel from './CardPanel';
 import { SearchIcon, ShipIcon } from './icons';
 import {
@@ -49,7 +50,12 @@ type TargetRowProps = {
   onMore?: (id: string) => void;
 };
 
-function TargetRow({ target, active, onSelect, onMore }: TargetRowProps) {
+const TargetRow = memo(function TargetRow({
+  target,
+  active,
+  onSelect,
+  onMore,
+}: TargetRowProps) {
   return (
     <ListItemButton active={active} onClick={() => onSelect?.(target.id)}>
       <div className="flex gap-3 items-center w-full">
@@ -88,7 +94,7 @@ function TargetRow({ target, active, onSelect, onMore }: TargetRowProps) {
       </div>
     </ListItemButton>
   );
-}
+});
 
 export default function TargetsList({
   targets,

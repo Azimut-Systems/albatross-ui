@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import GlassPanel from './GlassPanel';
 
 type IconProps = { className?: string };
@@ -345,13 +345,26 @@ export default function TargetContextMenu({ onAction, onMapAction, openLeft, ope
 
   const chevron = openLeft ? <ChevronLeftIcon /> : <ChevronRightIcon />;
 
+  const onTargetHover = useCallback(() => setSubmenu('target'), []);
+  const onMapHover = useCallback(() => setSubmenu('map'), []);
+  const onTrack = useCallback(() => onAction('track'), [onAction]);
+  const onInvestigate = useCallback(() => onAction('investigate'), [onAction]);
+  const onClearAlert = useCallback(() => onAction('clear-alert'), [onAction]);
+  const onPointCamera = useCallback(() => onAction('point-camera'), [onAction]);
+  const onHistoryPath = useCallback(() => onAction('history-path'), [onAction]);
+  const onMeasure = useCallback(() => onAction('measure'), [onAction]);
+  const onHighlight = useCallback(() => onAction('highlight'), [onAction]);
+  const onPtc = useCallback(() => onMapAction('ptc'), [onMapAction]);
+  const onMapMeasure = useCallback(() => onMapAction('measure'), [onMapAction]);
+  const onMarker = useCallback(() => onMapAction('marker'), [onMapAction]);
+
   const rootBox = (
     <MenuBox width={136}>
       <MenuItem
         icon={<TargetIcon />}
         label="Target"
         active={submenu === 'target'}
-        onMouseEnter={() => setSubmenu('target')}
+        onMouseEnter={onTargetHover}
         trailing={chevron}
         reverse={openLeft}
       />
@@ -359,7 +372,7 @@ export default function TargetContextMenu({ onAction, onMapAction, openLeft, ope
         icon={<MapIcon />}
         label="Map"
         active={submenu === 'map'}
-        onMouseEnter={() => setSubmenu('map')}
+        onMouseEnter={onMapHover}
         trailing={chevron}
         reverse={openLeft}
       />
@@ -369,20 +382,20 @@ export default function TargetContextMenu({ onAction, onMapAction, openLeft, ope
   const submenuBox =
     submenu === 'target' ? (
       <MenuBox width={141}>
-        <MenuItem icon={<CrosshairIcon />} label="Track Target" onClick={() => onAction('track')} />
-        <MenuItem icon={<InvestigateIcon />} label="Investigate" onClick={() => onAction('investigate')} />
-        <MenuItem icon={<ClearAlertIcon />} label="Clear Alert" onClick={() => onAction('clear-alert')} />
-        <MenuItem icon={<FocusIcon />} label="Point Camera" onClick={() => onAction('point-camera')} />
-        <MenuItem icon={<RouteIcon />} label="History Path" onClick={() => onAction('history-path')} />
-        <MenuItem icon={<RulerIcon />} label="Measure" onClick={() => onAction('measure')} />
-        <MenuItem icon={<TargetIcon />} label="Highlight TGT" onClick={() => onAction('highlight')} />
+        <MenuItem icon={<CrosshairIcon />} label="Track Target" onClick={onTrack} />
+        <MenuItem icon={<InvestigateIcon />} label="Investigate" onClick={onInvestigate} />
+        <MenuItem icon={<ClearAlertIcon />} label="Clear Alert" onClick={onClearAlert} />
+        <MenuItem icon={<FocusIcon />} label="Point Camera" onClick={onPointCamera} />
+        <MenuItem icon={<RouteIcon />} label="History Path" onClick={onHistoryPath} />
+        <MenuItem icon={<RulerIcon />} label="Measure" onClick={onMeasure} />
+        <MenuItem icon={<TargetIcon />} label="Highlight TGT" onClick={onHighlight} />
       </MenuBox>
     ) : submenu === 'map' ? (
       <div style={openUp ? undefined : { marginTop: MENU_ITEM_HEIGHT }}>
         <MenuBox width={120}>
-          <MenuItem icon={<PtcIcon />} label="PTC" onClick={() => onMapAction('ptc')} />
-          <MenuItem icon={<RulerIcon />} label="Measure" onClick={() => onMapAction('measure')} />
-          <MenuItem icon={<MarkerIcon />} label="Marker" onClick={() => onMapAction('marker')} />
+          <MenuItem icon={<PtcIcon />} label="PTC" onClick={onPtc} />
+          <MenuItem icon={<RulerIcon />} label="Measure" onClick={onMapMeasure} />
+          <MenuItem icon={<MarkerIcon />} label="Marker" onClick={onMarker} />
         </MenuBox>
       </div>
     ) : null;

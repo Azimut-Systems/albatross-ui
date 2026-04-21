@@ -1,7 +1,7 @@
 import LiquidGlass from 'liquid-glass-react';
 import { useEffect } from 'react';
 import type { ReactNode, CSSProperties } from 'react';
-import { useUISize } from '../contexts/UISizeContext';
+import { useUISize } from '../contexts/useUISize';
 
 type GlassPanelProps = {
   children: ReactNode;

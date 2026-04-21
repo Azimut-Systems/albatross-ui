@@ -1,10 +1,12 @@
+import { memo } from 'react';
+
 type StatProps = {
   label: string;
   value: string;
 };
 
 /** Stacked label + value, no background. Used in list-item cards. */
-export default function Stat({ label, value }: StatProps) {
+function Stat({ label, value }: StatProps) {
   return (
     <div className="flex flex-col items-start min-w-0">
       <span className="font-ibm-plex-sans font-normal text-xs text-[var(--accent-muted)]">
@@ -16,3 +18,5 @@ export default function Stat({ label, value }: StatProps) {
     </div>
   );
 }
+
+export default memo(Stat);

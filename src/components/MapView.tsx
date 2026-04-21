@@ -17,10 +17,11 @@ import TargetContextMenu, {
   type TargetContextMenuAction,
 } from './TargetContextMenu';
 import TargetHoverCard, { type TargetHoverCardData } from './TargetHoverCard';
-import { useUISize } from '../contexts/UISizeContext';
-import { usePinMode } from '../contexts/PinModeContext';
-import { useMeasureMode, type LngLat } from '../contexts/MeasureModeContext';
-import { useTheme } from '../contexts/ThemeContext';
+import { useUISize } from '../contexts/useUISize';
+import { usePinMode } from '../contexts/usePinMode';
+import { useMeasureMode, type LngLat } from '../contexts/useMeasureMode';
+import { useTheme } from '../contexts/useTheme';
+import { useNav } from '../contexts/useNav';
 
 const MAP_STYLES = {
   dark: 'mapbox://styles/mapbox/dark-v11',
@@ -592,13 +593,16 @@ function MapMarker({
   );
 }
 
-export default function MapView({
-  onTargetOpen,
-  onCameraOpen,
-}: {
-  onTargetOpen?: (vesselId: string) => void;
-  onCameraOpen?: (cameraId: string) => void;
-}) {
+export default function MapView() {
+  const nav = useNav();
+  const onTargetOpen = useCallback((vesselId: string) => {
+    nav.setActiveTargetId(vesselId);
+    if (!nav.targetsOpen) nav.toggleTargets();
+  }, [nav]);
+  const onCameraOpen = useCallback((cameraId: string) => {
+    nav.setActiveCameraId(cameraId);
+    if (!nav.camerasOpen) nav.toggleCameras();
+  }, [nav]);
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [map, setMap] = useState<mapboxgl.Map | null>(null);
@@ -624,6 +628,11 @@ export default function MapView({
   const historyIdsRef = useRef(historyVesselIds);
   historyIdsRef.current = historyVesselIds;
   const historyTrailsRef = useRef<Record<string, LngLat[]>>({});
+  // `theme` is only read for the map's initial style; a separate effect swaps
+  // the style on change. Keep a ref so the init effect doesn't depend on it
+  // (which would destroy/recreate the map on every theme toggle).
+  const themeRef = useRef(theme);
+  themeRef.current = theme;
 
   const [hoveredPinId, setHoveredPinId] = useState<string | null>(null);
   // SVG line elements are updated imperatively on map.move/zoom so there is
@@ -708,7 +717,7 @@ export default function MapView({
 
     const mapInstance = new mapboxgl.Map({
       container: mapContainer.current,
-      style: MAP_STYLES[theme],
+      style: MAP_STYLES[themeRef.current],
       center: [34.6430, 31.8240],
       zoom: 14,
       pitch: 0,
@@ -779,7 +788,7 @@ export default function MapView({
       mapRef.current = null;
       setMap(null);
     };
-  }, []);
+  }, [updateSVGImperative]);
 
   // Spin the globe when zoomed out and idle for a while.
   useEffect(() => {

@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { BadgeTone } from '../../design/tokens';
 
 type BadgeProps = {
@@ -11,7 +12,7 @@ type BadgeProps = {
  * Label chip colored by a semantic tone. Never accept raw colors — always a
  * tone from `design/tokens.ts`, so a palette change propagates everywhere.
  */
-export default function Badge({ label, tone, variant = 'solid' }: BadgeProps) {
+function Badge({ label, tone, variant = 'solid' }: BadgeProps) {
   const showBorder = variant === 'solid';
   return (
     <div
@@ -30,3 +31,5 @@ export default function Badge({ label, tone, variant = 'solid' }: BadgeProps) {
     </div>
   );
 }
+
+export default memo(Badge);

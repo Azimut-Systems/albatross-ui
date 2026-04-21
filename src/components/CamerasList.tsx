@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import CardPanel from './CardPanel';
 import { CameraIcon, SearchIcon } from './icons';
 import {
@@ -89,7 +90,12 @@ type CameraRowProps = {
   onMore?: (id: string) => void;
 };
 
-function CameraRow({ camera, active, onSelect, onMore }: CameraRowProps) {
+const CameraRow = memo(function CameraRow({
+  camera,
+  active,
+  onSelect,
+  onMore,
+}: CameraRowProps) {
   return (
     <ListItemButton active={active} onClick={() => onSelect?.(camera.id)}>
       <div className="flex gap-3 items-center w-full">
@@ -120,7 +126,7 @@ function CameraRow({ camera, active, onSelect, onMore }: CameraRowProps) {
       <CameraThumbnail url={camera.thumbnailUrl} />
     </ListItemButton>
   );
-}
+});
 
 export default function CamerasList({
   cameras,

@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { BadgeTone } from '../../design/tokens';
 
 type StatusDotBadgeProps = {
@@ -9,7 +10,7 @@ type StatusDotBadgeProps = {
  * Compact pill with a leading colored dot — used for target statuses in the
  * target card header (distinct from the bordered list-item Badge).
  */
-export default function StatusDotBadge({ label, tone }: StatusDotBadgeProps) {
+function StatusDotBadge({ label, tone }: StatusDotBadgeProps) {
   return (
     <div
       className="inline-flex h-[18px] items-center gap-1.5 px-2 rounded-full"
@@ -28,3 +29,5 @@ export default function StatusDotBadge({ label, tone }: StatusDotBadgeProps) {
     </div>
   );
 }
+
+export default memo(StatusDotBadge);

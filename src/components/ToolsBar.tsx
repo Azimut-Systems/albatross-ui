@@ -1,12 +1,12 @@
 import GlassPanel from './GlassPanel';
 import PinIcon from './icons/PinIcon';
 import RulerIcon from './icons/RulerIcon';
-import { usePinMode } from '../contexts/PinModeContext';
+import { usePinMode } from '../contexts/usePinMode';
 import {
   useMeasureMode,
   type MeasureStatus,
-} from '../contexts/MeasureModeContext';
-import type { PinStatus } from '../contexts/PinModeContext';
+} from '../contexts/useMeasureMode';
+import type { PinStatus } from '../contexts/usePinMode';
 
 function LayersIcon() {
   return (

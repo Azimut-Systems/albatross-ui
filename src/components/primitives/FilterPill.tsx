@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { ChevronDownIcon } from '../icons';
 
 type FilterPillProps = {
@@ -6,7 +7,7 @@ type FilterPillProps = {
 };
 
 /** Filter dropdown trigger — used in TargetsList and CamerasList headers. */
-export default function FilterPill({ label, onClick }: FilterPillProps) {
+function FilterPill({ label, onClick }: FilterPillProps) {
   return (
     <button
       type="button"
@@ -20,3 +21,5 @@ export default function FilterPill({ label, onClick }: FilterPillProps) {
     </button>
   );
 }
+
+export default memo(FilterPill);
