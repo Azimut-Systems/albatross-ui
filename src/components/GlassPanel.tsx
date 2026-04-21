@@ -52,6 +52,7 @@ export default function GlassPanel({
         style={{
           background: 'rgb(var(--accent-rgb)/0.075)',
           borderRadius: cornerRadius,
+          lineHeight: 0,
           ...style,
         }}
       >
