@@ -13,6 +13,8 @@ type GlassPanelProps = {
   style?: CSSProperties;
   /** Additional class on the outer wrapper */
   className?: string;
+  /** When true, the glass shape shows an accent ring + tint (see .glass-wrapper[data-active] in index.css). */
+  active?: boolean;
 };
 
 /**
@@ -28,6 +30,7 @@ export default function GlassPanel({
   padding = '8px',
   style,
   className = '',
+  active = false,
 }: GlassPanelProps) {
   const { scale } = useUISize();
 
@@ -40,6 +43,7 @@ export default function GlassPanel({
   return (
     <div
       className={`glass-wrapper ${className}`}
+      data-active={active ? 'true' : undefined}
       style={{ zoom: 1 / scale } as CSSProperties}
     >
       <LiquidGlass

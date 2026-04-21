@@ -81,7 +81,7 @@ export default function Header() {
       {/* Right: Utility Buttons */}
       <div className="flex items-center gap-2">
         {utilityButtons.map(({ Icon, label, active, onClick }) => (
-          <GlassPanel key={label}>
+          <GlassPanel key={label} active={active}>
             <button
               type="button"
               onClick={onClick}
@@ -91,13 +91,7 @@ export default function Header() {
               style={{
                 borderRadius: 'var(--glass-inner-radius)',
                 color: active ? 'var(--accent-active-fg)' : 'var(--accent-muted)',
-                backgroundColor: active
-                  ? 'rgb(var(--accent-rgb) / 0.2)'
-                  : 'transparent',
-                boxShadow: active
-                  ? 'inset 0 0 0 1px var(--accent)'
-                  : 'inset 0 0 0 1px transparent',
-                transitionProperty: 'color, background-color, box-shadow, scale',
+                transitionProperty: 'color, scale',
                 transitionDuration: '220ms',
                 transitionTimingFunction: 'cubic-bezier(0.2, 0, 0, 1)',
               }}
