@@ -44,7 +44,7 @@ function TabButton({
     <button
       type="button"
       onClick={onClick}
-      className={`relative h-7 px-0 mr-5 font-ibm-plex-sans font-semibold text-[13px] tracking-wide cursor-pointer transition-colors ${
+      className={`relative h-7 px-0 mr-5 font-ibm-plex-sans font-semibold text-[13px] tracking-wide cursor-pointer active:scale-[0.96] [transition-property:color,scale] [transition-duration:140ms] [transition-timing-function:cubic-bezier(0.2,0,0,1)] ${
         active ? 'text-white' : 'hover:text-white'
       }`}
       style={active ? undefined : { color: 'var(--accent-muted)' }}
@@ -63,7 +63,7 @@ function StatusBadge({ status }: { status: TargetStatus }) {
 
 function AlertRow({ title, time }: { title: string; time: string }) {
   return (
-    <div className="flex items-center gap-3 bg-[rgb(var(--accent-rgb)/0.12)] border border-[var(--border-soft)] rounded-lg pl-3.5 pr-2 py-2.5 w-full">
+    <div className="flex items-center gap-3 bg-[rgb(var(--accent-rgb)/0.12)] border-shadow rounded-lg pl-3.5 pr-2 py-2.5 w-full">
       <div className="flex flex-1 flex-col min-w-0 font-ibm-plex-sans">
         <span className="font-medium text-sm text-white truncate">{title}</span>
         <span className="font-normal text-[11px] truncate" style={{ color: 'var(--accent-muted)' }}>
@@ -106,7 +106,7 @@ function VisualRecognition() {
           </>
         }
       />
-      <div className="flex flex-col gap-3 bg-[var(--surface-accent-soft)] border border-[var(--border-soft)] rounded-xl px-4 py-4">
+      <div className="flex flex-col gap-3 bg-[var(--surface-accent-soft)] border-shadow rounded-xl px-4 py-4">
         <div className="flex items-start gap-4">
           <div className="flex-1 flex flex-col gap-0.5">
             <span className="font-ibm-plex-sans font-semibold text-[22px] text-white tracking-[-0.4px] tabular-nums leading-none">
@@ -134,7 +134,7 @@ function VisualRecognition() {
         >
           Live Detection Image · 01/04/26, 10:44:13
         </span>
-        <div className="w-full rounded-xl overflow-hidden">
+        <div className="relative w-full rounded-xl overflow-hidden img-outline">
           <img src="/target-image.jpg" alt="Live detection image" className="w-full h-auto block" />
         </div>
       </div>
@@ -219,7 +219,7 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
             action={
               <button
                 type="button"
-                className="flex items-center gap-1 px-2 py-1.5 rounded text-[var(--accent-muted)] cursor-pointer hover:bg-[var(--hover-overlay)] transition-colors"
+                className="flex items-center gap-1 px-2 py-1.5 rounded text-[var(--accent-muted)] cursor-pointer hover:bg-[var(--hover-overlay)] active:scale-[0.96] [transition-property:background-color,color,scale] [transition-duration:140ms] [transition-timing-function:cubic-bezier(0.2,0,0,1)]"
               >
                 <HistoryIcon />
                 <span className="font-ibm-plex-sans font-bold text-sm tracking-[0.1px]">History</span>
@@ -227,7 +227,7 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
             }
           />
           <div className="flex flex-col gap-4 w-full">
-            <label className="flex items-center gap-2 bg-[var(--surface-accent-soft)] border border-[rgb(var(--accent-rgb)/0.35)] rounded-lg px-3.5 py-2.5 w-full focus-within:border-[rgb(var(--accent-rgb)/0.6)] transition-colors">
+            <label className="flex items-center gap-2 bg-[var(--surface-accent-soft)] border border-[rgb(var(--accent-rgb)/0.35)] rounded-lg px-3.5 py-2.5 w-full focus-within:border-[rgb(var(--accent-rgb)/0.6)] [transition-property:border-color] [transition-duration:140ms] [transition-timing-function:cubic-bezier(0.2,0,0,1)]">
               <input
                 type="text"
                 value={alertInput}
@@ -237,7 +237,7 @@ export default function TargetCard({ target, onBack, onClose }: TargetCardProps)
               />
               <button
                 type="button"
-                className="flex items-center justify-center size-6 rounded-md bg-[rgb(var(--accent-rgb)/0.9)] cursor-pointer hover:bg-[var(--accent)] transition-colors disabled:opacity-40 text-white"
+                className="flex items-center justify-center size-6 rounded-md bg-[rgb(var(--accent-rgb)/0.9)] cursor-pointer hover:bg-[var(--accent)] active:scale-[0.96] disabled:opacity-40 disabled:hover:bg-[rgb(var(--accent-rgb)/0.9)] disabled:active:scale-100 text-white [transition-property:background-color,scale] [transition-duration:140ms] [transition-timing-function:cubic-bezier(0.2,0,0,1)]"
                 disabled={alertInput.trim().length === 0}
                 aria-label="Submit alert input"
               >

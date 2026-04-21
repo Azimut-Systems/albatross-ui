@@ -20,11 +20,16 @@ export default function ListItemButton({
     <button
       type={type}
       aria-pressed={active}
-      className={`flex flex-col gap-5 p-4 rounded-xl w-full text-left cursor-pointer transition-colors ${
+      className={`flex flex-col gap-5 p-4 rounded-xl w-full text-left cursor-pointer active:scale-[0.96] ${
         active
           ? 'bg-[var(--surface-accent-strong)] border border-[var(--border-accent)]'
           : 'bg-[var(--surface-accent-subtle)] border border-transparent hover:bg-[var(--surface-accent-medium)]'
       } ${className}`}
+      style={{
+        transitionProperty: 'background-color, border-color, scale',
+        transitionDuration: '180ms',
+        transitionTimingFunction: 'cubic-bezier(0.2, 0, 0, 1)',
+      }}
       {...rest}
     >
       {children}

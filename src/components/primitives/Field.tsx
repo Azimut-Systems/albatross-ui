@@ -22,21 +22,21 @@ function Field({ label, value, variant = 'compact' }: FieldProps) {
         <span className="font-ibm-plex-sans font-normal text-xs text-[var(--accent-muted)]">
           {label}
         </span>
-        <span className="font-ibm-plex-sans font-medium text-sm text-white truncate w-full">
+        <span className="font-ibm-plex-sans font-medium text-sm text-white truncate w-full tabular-nums">
           {value}
         </span>
       </div>
     );
   }
   return (
-    <div className="flex-1 flex flex-col gap-1 items-start bg-[var(--surface-accent-soft)] border border-[var(--border-soft)] rounded-lg px-3 py-2.5 min-w-0">
+    <div className="flex-1 flex flex-col gap-1 items-start bg-[var(--surface-accent-soft)] border-shadow rounded-lg px-3 py-2.5 min-w-0">
       <span
         className="font-ibm-plex-sans font-normal text-[11px] tracking-wide uppercase"
         style={{ color: 'var(--accent-muted)' }}
       >
         {label}
       </span>
-      <span className="font-ibm-plex-sans font-medium text-sm text-white truncate w-full">
+      <span className="font-ibm-plex-sans font-medium text-sm text-white truncate w-full tabular-nums">
         {value}
       </span>
     </div>

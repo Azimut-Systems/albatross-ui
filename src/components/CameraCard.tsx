@@ -57,7 +57,7 @@ function MissionButton({
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-1 px-2 py-1.5 rounded border border-[var(--border-accent)] text-white cursor-pointer hover:bg-[rgba(255,255,255,0.05)] transition-colors"
+      className="flex items-center gap-1 px-2 py-1.5 rounded border border-[var(--border-accent)] text-white cursor-pointer hover:bg-[rgba(255,255,255,0.05)] active:scale-[0.96] [transition-property:background-color,border-color,scale] [transition-duration:140ms] [transition-timing-function:cubic-bezier(0.2,0,0,1)]"
     >
       <span className="flex items-center justify-center size-4">{icon}</span>
       <span className="font-ibm-plex-sans font-medium text-sm">{label}</span>
@@ -85,7 +85,7 @@ function MissionDetails({
           <button
             type="button"
             onClick={onLoad}
-            className="flex items-center gap-1 text-[var(--accent-muted)] cursor-pointer hover:text-white transition-colors"
+            className="flex items-center gap-1 text-[var(--accent-muted)] cursor-pointer hover:text-white active:scale-[0.96] [transition-property:color,scale] [transition-duration:140ms] [transition-timing-function:cubic-bezier(0.2,0,0,1)]"
           >
             <span className="font-ibm-plex-sans font-bold text-sm tracking-[0.1px]">Load a mission</span>
             <InfoIcon />
@@ -93,7 +93,7 @@ function MissionDetails({
         }
       />
       <div className="flex flex-col gap-4 bg-[var(--surface-accent-subtle)] rounded-xl px-4 py-5 w-full">
-        <span className="font-ibm-plex-sans font-bold text-base text-white">
+        <span className="font-ibm-plex-sans font-bold text-base text-white tabular-nums">
           {Math.round(clamped)}% To complete
         </span>
         <div
@@ -127,14 +127,14 @@ function LiveCamera({ onSwap }: { onSwap?: () => void }) {
           <button
             type="button"
             onClick={onSwap}
-            className="flex items-center gap-1 px-2 py-1.5 rounded text-[var(--accent-muted)] cursor-pointer hover:bg-[var(--hover-overlay)] transition-colors"
+            className="flex items-center gap-1 px-2 py-1.5 rounded text-[var(--accent-muted)] cursor-pointer hover:bg-[var(--hover-overlay)] active:scale-[0.96] [transition-property:background-color,color,scale] [transition-duration:140ms] [transition-timing-function:cubic-bezier(0.2,0,0,1)]"
           >
             <SwapIcon />
             <span className="font-ibm-plex-sans font-bold text-sm">Swap View</span>
           </button>
         }
       />
-      <div className="relative h-[283px] w-full overflow-hidden rounded-[8.48px]">
+      <div className="relative h-[283px] w-full overflow-hidden rounded-[8.48px] img-outline">
         <img
           src="/live-camera.jpeg"
           alt="Live camera feed"

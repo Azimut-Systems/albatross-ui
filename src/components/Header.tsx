@@ -44,27 +44,37 @@ export default function Header() {
       {/* Center: Navigation Menu */}
       <GlassPanel className="absolute left-1/2 -translate-x-1/2">
         <div className="flex items-center gap-2">
-          {navItems.map((item) => (
-            <button
-              key={item}
-              onClick={() => setActiveNav(item)}
-              className={`flex items-center px-[14px] py-[14px] text-sm tracking-[0.25px] transition-colors cursor-pointer ${
-                activeNav === item ? 'font-bold' : 'font-medium'
-              }`}
-              style={
-                activeNav === item
-                  ? {
-                      borderRadius: 'var(--glass-inner-radius)',
-                      color: 'var(--accent-active-fg)',
-                      backgroundImage:
-                        'linear-gradient(90deg, rgb(var(--accent-rgb) / 0.35) 0%, rgb(var(--accent-rgb) / 0.35) 100%), linear-gradient(107deg, rgba(56,78,231,0.15) 5.66%, rgba(30,191,245,0.15) 98.96%)',
-                    }
-                  : { borderRadius: 'var(--glass-inner-radius)', color: 'var(--accent-muted)' }
-              }
-            >
-              <span className="font-ibm-plex-sans">{item}</span>
-            </button>
-          ))}
+          {navItems.map((item) => {
+            const active = activeNav === item;
+            const baseStyle = {
+              borderRadius: 'var(--glass-inner-radius)',
+              transitionProperty: 'color, background-color, scale',
+              transitionDuration: '160ms',
+              transitionTimingFunction: 'cubic-bezier(0.2, 0, 0, 1)',
+            } as React.CSSProperties;
+            return (
+              <button
+                key={item}
+                onClick={() => setActiveNav(item)}
+                aria-pressed={active}
+                className={`flex items-center px-[14px] py-[14px] text-sm tracking-[0.25px] cursor-pointer active:scale-[0.96] ${
+                  active ? 'font-bold' : 'font-medium'
+                }`}
+                style={
+                  active
+                    ? {
+                        ...baseStyle,
+                        color: 'var(--accent-active-fg)',
+                        backgroundImage:
+                          'linear-gradient(90deg, rgb(var(--accent-rgb) / 0.35) 0%, rgb(var(--accent-rgb) / 0.35) 100%), linear-gradient(107deg, rgba(56,78,231,0.15) 5.66%, rgba(30,191,245,0.15) 98.96%)',
+                      }
+                    : { ...baseStyle, color: 'var(--accent-muted)' }
+                }
+              >
+                <span className="font-ibm-plex-sans">{item}</span>
+              </button>
+            );
+          })}
         </div>
       </GlassPanel>
 
@@ -87,10 +97,13 @@ export default function Header() {
               onClick={onClick}
               aria-label={label}
               aria-pressed={active ?? undefined}
-              className="flex items-center p-3 cursor-pointer transition-colors"
+              className="flex items-center p-3 cursor-pointer active:scale-[0.96]"
               style={{
                 borderRadius: 'var(--glass-inner-radius)',
                 color: active ? 'var(--accent-active-fg)' : 'var(--accent-muted)',
+                transitionProperty: 'color, background-color, scale',
+                transitionDuration: '160ms',
+                transitionTimingFunction: 'cubic-bezier(0.2, 0, 0, 1)',
               }}
             >
               <Icon />

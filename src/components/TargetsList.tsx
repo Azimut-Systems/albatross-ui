@@ -120,7 +120,7 @@ export default function TargetsList({
               type="button"
               onClick={onSearch}
               aria-label="Search targets"
-              className="flex items-center px-1 py-1.5 rounded text-white cursor-pointer hover:bg-[var(--hover-overlay)]"
+              className="relative flex items-center px-1 py-1.5 rounded text-white cursor-pointer hover:bg-[var(--hover-overlay)] active:scale-[0.96] before:absolute before:inset-[-8px] before:content-[''] [transition-property:background-color,scale] [transition-duration:140ms] [transition-timing-function:cubic-bezier(0.2,0,0,1)]"
             >
               <SearchIcon />
             </button>

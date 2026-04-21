@@ -110,9 +110,12 @@ function IconButton({
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick?.();
+      }}
       aria-label={label}
-      className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[rgb(var(--accent-rgb)/0.14)] cursor-pointer hover:bg-[rgb(var(--accent-rgb)/0.24)] transition-colors"
+      className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[rgb(var(--accent-rgb)/0.14)] cursor-pointer hover:bg-[rgb(var(--accent-rgb)/0.24)] active:scale-[0.96] [transition-property:background-color,scale] [transition-duration:140ms] [transition-timing-function:cubic-bezier(0.2,0,0,1)]"
     >
       {children}
     </button>
@@ -141,7 +144,7 @@ export default function TargetHoverCard({
         className="flex rounded-[10px] overflow-hidden min-h-[125px] cursor-pointer"
         onClick={onOpen}
       >
-        <div className="relative w-[150px] shrink-0">
+        <div className="relative w-[150px] shrink-0 img-outline">
           {target.thumbnailUrl ? (
             <img
               src={target.thumbnailUrl}

@@ -27,7 +27,12 @@ export default function ListMoreHandle({ label, onActivate }: ListMoreHandleProp
           onActivate();
         }
       }}
-      className="flex items-center p-1 rounded text-white cursor-pointer hover:bg-[var(--hover-overlay)]"
+      className="relative flex items-center p-1 rounded text-white cursor-pointer hover:bg-[var(--hover-overlay)] active:scale-[0.96] before:absolute before:inset-[-10px] before:content-['']"
+      style={{
+        transitionProperty: 'background-color, scale',
+        transitionDuration: '140ms',
+        transitionTimingFunction: 'cubic-bezier(0.2, 0, 0, 1)',
+      }}
     >
       <MoreIcon />
     </span>

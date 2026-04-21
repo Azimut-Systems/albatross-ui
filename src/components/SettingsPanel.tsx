@@ -45,7 +45,7 @@ export default function SettingsPanel({ onClose }: { onClose?: () => void }) {
                 <button
                   key={opt.value}
                   onClick={() => setTheme(opt.value)}
-                  className={`flex-1 px-3 py-2 rounded-lg text-sm tracking-[0.25px] transition-all cursor-pointer font-ibm-plex-sans ${
+                  className={`flex-1 px-3 py-2 rounded-lg text-sm tracking-[0.25px] cursor-pointer font-ibm-plex-sans active:scale-[0.96] [transition-property:color,background-color,scale] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.2,0,0,1)] ${
                     theme === opt.value
                       ? 'text-white font-bold'
                       : 'text-[#dee3e7] font-medium hover:text-white'
@@ -74,7 +74,7 @@ export default function SettingsPanel({ onClose }: { onClose?: () => void }) {
                 <button
                   key={opt.value}
                   onClick={() => setSize(opt.value)}
-                  className={`flex-1 px-3 py-2 rounded-lg text-sm tracking-[0.25px] transition-all cursor-pointer font-ibm-plex-sans ${
+                  className={`flex-1 px-3 py-2 rounded-lg text-sm tracking-[0.25px] cursor-pointer font-ibm-plex-sans active:scale-[0.96] [transition-property:color,background-color,scale] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.2,0,0,1)] ${
                     size === opt.value
                       ? 'text-white font-bold'
                       : 'text-[#dee3e7] font-medium hover:text-white'
@@ -105,14 +105,14 @@ export default function SettingsPanel({ onClose }: { onClose?: () => void }) {
                   <button
                     key={opt.hex}
                     onClick={() => setAccent(opt.hex)}
-                    className={`flex items-center gap-2 px-2 py-2 rounded-lg text-xs tracking-[0.25px] transition-all cursor-pointer font-ibm-plex-sans border ${
+                    className={`flex items-center gap-2 px-2 py-2 rounded-lg text-xs tracking-[0.25px] cursor-pointer font-ibm-plex-sans border active:scale-[0.96] [transition-property:color,border-color,scale] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.2,0,0,1)] ${
                       active
                         ? 'text-white font-bold border-white/60'
                         : 'text-[#dee3e7] font-medium border-white/10 hover:border-white/30'
                     }`}
                   >
                     <span
-                      className="w-4 h-4 rounded-full border border-white/20 shrink-0"
+                      className="w-4 h-4 rounded-full shrink-0 img-outline"
                       style={{ background: opt.hex }}
                     />
                     <span className="truncate">{opt.label}</span>
@@ -132,7 +132,7 @@ export default function SettingsPanel({ onClose }: { onClose?: () => void }) {
                 type="text"
                 value={hex}
                 onChange={(e) => setAccent(e.target.value)}
-                className="flex-1 px-2 py-1 bg-white/5 border border-white/10 rounded text-white text-xs font-mono outline-none focus:border-white/30"
+                className="flex-1 px-2 py-1 bg-white/5 border border-white/10 rounded text-white text-xs font-mono tabular-nums outline-none focus:border-white/30 [transition-property:border-color] [transition-duration:140ms] [transition-timing-function:cubic-bezier(0.2,0,0,1)]"
               />
             </label>
           </div>

@@ -302,8 +302,13 @@ function MenuItem({
       type="button"
       onClick={onClick}
       onMouseEnter={onMouseEnter}
-      style={{ color: active ? 'var(--accent-active-fg)' : 'var(--accent-muted)' }}
-      className={`flex items-center gap-[6px] w-full px-2 py-[10px] rounded cursor-pointer transition-colors ${
+      style={{
+        color: active ? 'var(--accent-active-fg)' : 'var(--accent-muted)',
+        transitionProperty: 'background-color, color, scale',
+        transitionDuration: '120ms',
+        transitionTimingFunction: 'cubic-bezier(0.2, 0, 0, 1)',
+      }}
+      className={`flex items-center gap-[6px] w-full px-2 py-[10px] rounded cursor-pointer active:scale-[0.97] ${
         reverse ? 'flex-row-reverse text-right' : 'text-left'
       } ${
         active ? 'bg-[rgb(var(--accent-rgb)/0.45)]' : 'hover:bg-[rgb(var(--accent-rgb)/0.35)]'

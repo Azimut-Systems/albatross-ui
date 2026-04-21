@@ -45,6 +45,41 @@ function StatusTooltip() {
   );
 }
 
+function ToolButton({
+  label,
+  active = false,
+  onClick,
+  children,
+}: {
+  label: string;
+  active?: boolean;
+  onClick?: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      aria-pressed={active}
+      onClick={onClick}
+      className={`flex items-center p-[10px] cursor-pointer active:scale-[0.96] ${
+        active
+          ? 'bg-[rgb(var(--accent-rgb)/0.55)]'
+          : 'hover:bg-[rgb(var(--accent-rgb)/0.2)]'
+      }`}
+      style={{
+        borderRadius: 'var(--glass-inner-radius)',
+        transitionProperty: 'background-color, color, scale',
+        transitionDuration: '160ms',
+        transitionTimingFunction: 'cubic-bezier(0.2, 0, 0, 1)',
+        ...(active ? {} : { color: 'var(--accent-muted)' }),
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
 export default function ToolsBar() {
   const { mode: pinMode, togglePinMode, exitPinMode } = usePinMode();
   const {
@@ -70,51 +105,19 @@ export default function ToolsBar() {
       <StatusTooltip />
       <GlassPanel>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            aria-label="Measure"
-            aria-pressed={measureActive}
+          <ToolButton
+            label="Measure"
+            active={measureActive}
             onClick={handleMeasureClick}
-            className={`flex items-center p-[10px] cursor-pointer transition-colors ${
-              measureActive
-                ? 'bg-[rgb(var(--accent-rgb)/0.55)]'
-                : 'hover:bg-[rgb(var(--accent-rgb)/0.2)]'
-            }`}
-            style={{
-              borderRadius: 'var(--glass-inner-radius)',
-              ...(measureActive ? {} : { color: 'var(--accent-muted)' }),
-            }}
           >
             <RulerIcon />
-          </button>
-          <button
-            type="button"
-            aria-label="Pin"
-            aria-pressed={pinActive}
-            onClick={handlePinClick}
-            className={`flex items-center p-[10px] cursor-pointer transition-colors ${
-              pinActive
-                ? 'bg-[rgb(var(--accent-rgb)/0.55)]'
-                : 'hover:bg-[rgb(var(--accent-rgb)/0.2)]'
-            }`}
-            style={{
-              borderRadius: 'var(--glass-inner-radius)',
-              ...(pinActive ? {} : { color: 'var(--accent-muted)' }),
-            }}
-          >
+          </ToolButton>
+          <ToolButton label="Pin" active={pinActive} onClick={handlePinClick}>
             <PinIcon />
-          </button>
-          <button
-            type="button"
-            aria-label="Layers"
-            className="flex items-center p-[10px] cursor-pointer hover:bg-[rgb(var(--accent-rgb)/0.2)] transition-colors"
-            style={{
-              borderRadius: 'var(--glass-inner-radius)',
-              color: 'var(--accent-muted)',
-            }}
-          >
+          </ToolButton>
+          <ToolButton label="Layers">
             <LayersIcon />
-          </button>
+          </ToolButton>
         </div>
       </GlassPanel>
     </div>

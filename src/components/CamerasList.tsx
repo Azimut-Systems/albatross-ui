@@ -39,7 +39,7 @@ function ProgressBar({ value }: { value: number }) {
   const clamped = Math.max(0, Math.min(100, value));
   return (
     <div className="flex flex-col gap-4 w-full">
-      <span className="font-ibm-plex-sans font-medium text-sm text-white">
+      <span className="font-ibm-plex-sans font-medium text-sm text-white tabular-nums">
         {Math.round(clamped)}% To complete
       </span>
       <div
@@ -61,7 +61,7 @@ function ProgressBar({ value }: { value: number }) {
 
 function CameraThumbnail({ url }: { url?: string }) {
   return (
-    <div className="relative w-full h-[220px] overflow-hidden rounded-[8.48px]">
+    <div className="relative w-full h-[220px] overflow-hidden rounded-[8.48px] img-outline">
       {url ? (
         <img src={url} alt="" className="absolute inset-0 w-full h-full object-cover" />
       ) : (
@@ -152,7 +152,7 @@ export default function CamerasList({
               type="button"
               onClick={onSearch}
               aria-label="Search cameras"
-              className="flex items-center px-1 py-1.5 rounded text-white cursor-pointer hover:bg-[var(--hover-overlay)]"
+              className="relative flex items-center px-1 py-1.5 rounded text-white cursor-pointer hover:bg-[var(--hover-overlay)] active:scale-[0.96] before:absolute before:inset-[-8px] before:content-[''] [transition-property:background-color,scale] [transition-duration:140ms] [transition-timing-function:cubic-bezier(0.2,0,0,1)]"
             >
               <SearchIcon />
             </button>
