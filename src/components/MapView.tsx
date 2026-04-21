@@ -713,6 +713,7 @@ export default function MapView({
       zoom: 14,
       pitch: 0,
       bearing: 0,
+      projection: { name: 'globe' },
       attributionControl: false,
     });
 
@@ -779,6 +780,79 @@ export default function MapView({
       setMap(null);
     };
   }, []);
+
+  // Spin the globe when zoomed out and idle for a while.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const IDLE_MS = 60_000;
+    const SPIN_ZOOM_MAX = 3;
+    const DEG_PER_SEC = 3;
+
+    let idleTimer: number | null = null;
+    let rafId: number | null = null;
+    let spinning = false;
+    let lastTs = 0;
+
+    const stopSpin = () => {
+      spinning = false;
+      if (rafId != null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+    };
+
+    const tick = (now: number) => {
+      if (!spinning) return;
+      const dt = (now - lastTs) / 1000;
+      lastTs = now;
+      const c = map.getCenter();
+      map.setCenter([c.lng + DEG_PER_SEC * dt, c.lat]);
+      rafId = requestAnimationFrame(tick);
+    };
+
+    const startSpin = () => {
+      if (spinning) return;
+      if (map.getZoom() > SPIN_ZOOM_MAX) return;
+      spinning = true;
+      lastTs = performance.now();
+      rafId = requestAnimationFrame(tick);
+    };
+
+    const resetIdle = () => {
+      stopSpin();
+      if (idleTimer != null) window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(startSpin, IDLE_MS);
+    };
+
+    const onUserMove = (e: { originalEvent?: unknown }) => {
+      if (e.originalEvent) resetIdle();
+    };
+
+    const canvas = map.getCanvas();
+    canvas.addEventListener('mousemove', resetIdle);
+    canvas.addEventListener('mousedown', resetIdle);
+    canvas.addEventListener('wheel', resetIdle);
+    canvas.addEventListener('touchstart', resetIdle);
+    window.addEventListener('keydown', resetIdle);
+    map.on('movestart', onUserMove);
+    map.on('zoomstart', onUserMove);
+
+    resetIdle();
+
+    return () => {
+      stopSpin();
+      if (idleTimer != null) window.clearTimeout(idleTimer);
+      canvas.removeEventListener('mousemove', resetIdle);
+      canvas.removeEventListener('mousedown', resetIdle);
+      canvas.removeEventListener('wheel', resetIdle);
+      canvas.removeEventListener('touchstart', resetIdle);
+      window.removeEventListener('keydown', resetIdle);
+      map.off('movestart', onUserMove);
+      map.off('zoomstart', onUserMove);
+    };
+  }, [map]);
 
   // When measurement data or history changes, do a one-shot imperative
   // update so SVG elements are populated immediately (the map.move listener
