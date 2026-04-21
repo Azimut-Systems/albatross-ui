@@ -1,5 +1,18 @@
-import GlassPanel from './GlassPanel';
-import type { Camera, CameraStatus, CameraActivity } from './CamerasList';
+import CardPanel from './CardPanel';
+import type { Camera } from './CamerasList';
+import {
+  BackIcon,
+  BookmarkIcon,
+  CloseIcon,
+  CloseSmallIcon,
+  CompassIcon,
+  ExpandIcon,
+  InfoIcon,
+  PauseIcon,
+  SwapIcon,
+} from './icons';
+import { Badge, Field, IconButton, SectionHeading } from './primitives';
+import { CAMERA_STATUS_TONES, CAMERA_ACTIVITY_TONES } from '../design/tokens';
 
 type CameraCardProps = {
   camera: Camera;
@@ -10,93 +23,6 @@ type CameraCardProps = {
   onPauseMission?: () => void;
   onCancelMission?: () => void;
 };
-
-const STATUS_STYLES: Record<CameraStatus, { border: string; bg: string; text: string }> = {
-  Connected: { border: '#12a96f', bg: 'rgba(18,169,111,0.2)', text: '#2eb07e' },
-  Disconnected: { border: '#ff3646', bg: 'rgba(255,54,70,0.2)', text: '#ff3646' },
-};
-
-const ACTIVITY_STYLES: Record<CameraActivity, { border: string; bg: string; text: string }> = {
-  Idle: { border: '#ef835d', bg: 'rgba(239,131,93,0.2)', text: '#ef835d' },
-  Active: { border: 'var(--accent)', bg: 'rgb(var(--accent-rgb) / 0.2)', text: 'var(--accent)' },
-};
-
-function BackIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M15 6L9 12L15 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function BookmarkIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M6 4H18V20L12 16L6 20V4Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function InfoIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M12 11V16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <circle cx="12" cy="8" r="1" fill="currentColor" />
-    </svg>
-  );
-}
-
-function PauseIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <rect x="4" y="3.5" width="2.5" height="9" rx="0.5" fill="currentColor" />
-      <rect x="9.5" y="3.5" width="2.5" height="9" rx="0.5" fill="currentColor" />
-    </svg>
-  );
-}
-
-function CloseSmallIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function SwapIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M3 5H13L10 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M13 11H3L6 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function CompassIcon() {
-  return (
-    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M9 15L12 7L15 15L12 13L9 15Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function ExpandIcon() {
-  return (
-    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M4 10V4H10M20 10V4H14M4 14V20H10M20 14V20H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
 
 function CameraIllustration() {
   return (
@@ -118,49 +44,6 @@ function CameraIllustration() {
   );
 }
 
-function IconButton({
-  children,
-  label,
-  onClick,
-}: {
-  children: React.ReactNode;
-  label: string;
-  onClick?: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      className="flex items-center justify-center p-1 rounded text-white cursor-pointer hover:bg-[rgba(255,255,255,0.1)] transition-colors"
-    >
-      {children}
-    </button>
-  );
-}
-
-function Badge({ label, border, bg, text }: { label: string; border: string; bg: string; text: string }) {
-  return (
-    <div
-      className="flex h-5 items-center px-2 rounded-[34px] border"
-      style={{ borderColor: border, backgroundColor: bg }}
-    >
-      <span className="font-ibm-plex-sans font-medium text-xs leading-none" style={{ color: text }}>
-        {label}
-      </span>
-    </div>
-  );
-}
-
-function Field({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex-1 flex flex-col items-start bg-[rgb(var(--accent-rgb)/0.1)] rounded-xl px-3 py-4 min-w-0">
-      <span className="font-ibm-plex-sans font-normal text-xs text-[var(--accent-muted)]">{label}</span>
-      <span className="font-ibm-plex-sans font-medium text-sm text-white truncate w-full">{value}</span>
-    </div>
-  );
-}
-
 function MissionButton({
   icon,
   label,
@@ -174,7 +57,7 @@ function MissionButton({
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-1 px-2 py-1.5 rounded border border-[rgb(var(--accent-rgb)/0.5)] text-white cursor-pointer hover:bg-[rgba(255,255,255,0.05)] transition-colors"
+      className="flex items-center gap-1 px-2 py-1.5 rounded border border-[var(--border-accent)] text-white cursor-pointer hover:bg-[rgba(255,255,255,0.05)] transition-colors"
     >
       <span className="flex items-center justify-center size-4">{icon}</span>
       <span className="font-ibm-plex-sans font-medium text-sm">{label}</span>
@@ -196,20 +79,20 @@ function MissionDetails({
   const clamped = Math.max(0, Math.min(100, completion));
   return (
     <section className="flex flex-col gap-4 w-full">
-      <div className="flex items-center gap-1">
-        <h3 className="flex-1 font-ibm-plex-sans font-bold text-base text-white tracking-[0.1px] leading-5">
-          Mission Details
-        </h3>
-        <button
-          type="button"
-          onClick={onLoad}
-          className="flex items-center gap-1 text-[var(--accent-muted)] cursor-pointer hover:text-white transition-colors"
-        >
-          <span className="font-ibm-plex-sans font-bold text-sm tracking-[0.1px]">Load a mission</span>
-          <InfoIcon />
-        </button>
-      </div>
-      <div className="flex flex-col gap-4 bg-[rgb(var(--accent-rgb)/0.1)] rounded-xl px-4 py-5 w-full">
+      <SectionHeading
+        title="Mission Details"
+        action={
+          <button
+            type="button"
+            onClick={onLoad}
+            className="flex items-center gap-1 text-[var(--accent-muted)] cursor-pointer hover:text-white transition-colors"
+          >
+            <span className="font-ibm-plex-sans font-bold text-sm tracking-[0.1px]">Load a mission</span>
+            <InfoIcon />
+          </button>
+        }
+      />
+      <div className="flex flex-col gap-4 bg-[var(--surface-accent-subtle)] rounded-xl px-4 py-5 w-full">
         <span className="font-ibm-plex-sans font-bold text-base text-white">
           {Math.round(clamped)}% To complete
         </span>
@@ -238,19 +121,19 @@ function MissionDetails({
 function LiveCamera({ onSwap }: { onSwap?: () => void }) {
   return (
     <section className="flex flex-col gap-4 w-full">
-      <div className="flex items-center gap-1">
-        <h3 className="flex-1 font-ibm-plex-sans font-bold text-base text-white tracking-[0.1px] leading-5">
-          Live Camera
-        </h3>
-        <button
-          type="button"
-          onClick={onSwap}
-          className="flex items-center gap-1 px-2 py-1.5 rounded text-[var(--accent-muted)] cursor-pointer hover:bg-[rgba(255,255,255,0.1)] transition-colors"
-        >
-          <SwapIcon />
-          <span className="font-ibm-plex-sans font-bold text-sm">Swap View</span>
-        </button>
-      </div>
+      <SectionHeading
+        title="Live Camera"
+        action={
+          <button
+            type="button"
+            onClick={onSwap}
+            className="flex items-center gap-1 px-2 py-1.5 rounded text-[var(--accent-muted)] cursor-pointer hover:bg-[var(--hover-overlay)] transition-colors"
+          >
+            <SwapIcon />
+            <span className="font-ibm-plex-sans font-bold text-sm">Swap View</span>
+          </button>
+        }
+      />
       <div className="relative h-[283px] w-full overflow-hidden rounded-[8.48px]">
         <img
           src="/live-camera.jpeg"
@@ -275,25 +158,18 @@ export default function CameraCard({
   onPauseMission,
   onCancelMission,
 }: CameraCardProps) {
-  const status = STATUS_STYLES[camera.status];
-  const activity = ACTIVITY_STYLES[camera.activity];
-
   return (
-    <GlassPanel
-      className="absolute top-[110px] right-6 z-20"
-      cornerRadius={24}
-      padding="24px"
-    >
+    <CardPanel className="absolute top-[110px] right-6 z-20">
       <div
         className="flex flex-col gap-8 w-[416px] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         style={{ height: 'calc((100vh - 110px) / var(--ui-scale) - 110px)' }}
       >
         <div className="flex flex-col gap-6 w-full shrink-0">
           <div className="flex items-center justify-between w-full">
-            <IconButton label="Back to list" onClick={onBack}>
+            <IconButton label="Back to list" onClick={onBack} className="text-white">
               <BackIcon />
             </IconButton>
-            <IconButton label="Close camera card" onClick={onClose}>
+            <IconButton label="Close camera card" onClick={onClose} className="text-white">
               <CloseIcon />
             </IconButton>
           </div>
@@ -305,13 +181,13 @@ export default function CameraCard({
                 <h2 className="flex-1 font-ibm-plex-sans font-bold text-[22px] text-white leading-[1.5] truncate">
                   {camera.name}
                 </h2>
-                <IconButton label="Bookmark camera">
+                <IconButton label="Bookmark camera" className="text-white">
                   <BookmarkIcon />
                 </IconButton>
               </div>
               <div className="flex items-center gap-1">
-                <Badge label={camera.status} border={status.border} bg={status.bg} text={status.text} />
-                <Badge label={camera.activity} border={activity.border} bg={activity.bg} text={activity.text} />
+                <Badge label={camera.status} tone={CAMERA_STATUS_TONES[camera.status]} />
+                <Badge label={camera.activity} tone={CAMERA_ACTIVITY_TONES[camera.activity]} />
               </div>
             </div>
           </div>
@@ -328,15 +204,15 @@ export default function CameraCard({
 
         <section className="flex flex-col gap-3 w-full shrink-0">
           <div className="flex gap-3 items-center w-full">
-            <Field label="Camera" value="CS - AS637" />
-            <Field label="Speed" value="Normal" />
+            <Field label="Camera" value="CS - AS637" variant="roomy" />
+            <Field label="Speed" value="Normal" variant="roomy" />
           </div>
           <div className="flex gap-3 items-center w-full">
-            <Field label="Target Size" value="84m" />
-            <Field label="Next Run" value="28/01/26, 10:48:02" />
+            <Field label="Target Size" value="84m" variant="roomy" />
+            <Field label="Next Run" value="28/01/26, 10:48:02" variant="roomy" />
           </div>
         </section>
       </div>
-    </GlassPanel>
+    </CardPanel>
   );
 }

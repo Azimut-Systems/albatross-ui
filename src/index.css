@@ -14,6 +14,33 @@
   --fg-rgb: 255 255 255;
   --fg-muted: #dee3e7;
   --accent-active-fg: color-mix(in srgb, var(--accent) 25%, white);
+
+  /* Status colors — change here, propagates to every badge/border */
+  --status-critical: #ff3646;
+  --status-critical-bg: rgb(255 54 70 / 0.2);
+  --status-warning: #f5a623;
+  --status-warning-bg: rgb(245 166 35 / 0.2);
+  --status-success: #12a96f;
+  --status-success-fg: #2eb07e;
+  --status-success-bg: rgb(18 169 111 / 0.2);
+  --status-info: #ef835d;
+  --status-info-bg: rgb(239 131 93 / 0.2);
+
+  /* Semantic surface tints (accent-based) */
+  --surface-accent-soft: rgb(var(--accent-rgb) / 0.08);
+  --surface-accent-subtle: rgb(var(--accent-rgb) / 0.1);
+  --surface-accent-muted: rgb(var(--accent-rgb) / 0.15);
+  --surface-accent-medium: rgb(var(--accent-rgb) / 0.2);
+  --surface-accent-strong: rgb(var(--accent-rgb) / 0.3);
+  --border-accent: rgb(var(--accent-rgb) / 0.5);
+  --border-soft: rgb(255 255 255 / 0.04);
+  --hover-overlay: rgb(255 255 255 / 0.1);
+
+  /* Accent gradient used on active nav, progress bars, thumbnails */
+  --accent-gradient:
+    linear-gradient(90deg, rgb(var(--accent-rgb) / 0.35), rgb(var(--accent-rgb) / 0.35)),
+    linear-gradient(107deg, rgba(56, 78, 231, 0.15) 5.66%, rgba(30, 191, 245, 0.15) 98.96%);
+
   color-scheme: dark;
 }
 

@@ -1,4 +1,12 @@
-import GlassPanel from './GlassPanel';
+import CardPanel from './CardPanel';
+import { CameraIcon, SearchIcon } from './icons';
+import {
+  Badge,
+  FilterPill,
+  ListItemButton,
+  ListMoreHandle,
+} from './primitives';
+import { CAMERA_STATUS_TONES, CAMERA_ACTIVITY_TONES } from '../design/tokens';
 
 export type CameraStatus = 'Connected' | 'Disconnected';
 export type CameraActivity = 'Idle' | 'Active';
@@ -26,84 +34,13 @@ type CamerasListProps = {
 
 const DEFAULT_FILTERS: readonly CamerasListFilter[] = ['Status', 'Favorite', 'Missions', 'Zones'];
 
-const STATUS_STYLES: Record<CameraStatus, { border: string; bg: string; text: string }> = {
-  Connected: { border: '#12a96f', bg: 'rgba(18,169,111,0.2)', text: '#2eb07e' },
-  Disconnected: { border: '#ff3646', bg: 'rgba(255,54,70,0.2)', text: '#ff3646' },
-};
-
-const ACTIVITY_STYLES: Record<CameraActivity, { border: string; bg: string; text: string }> = {
-  Idle: { border: '#ef835d', bg: 'rgba(239,131,93,0.2)', text: '#ef835d' },
-  Active: { border: 'var(--accent)', bg: 'rgb(var(--accent-rgb) / 0.2)', text: 'var(--accent)' },
-};
-
-function SearchIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-      <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.5" />
-      <line x1="14" y1="14" x2="17.5" y2="17.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function ChevronDownIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function CameraIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="2" y="6" width="14" height="12" rx="2" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M16 10L21 7.5V16.5L16 14" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function MoreIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="5" cy="12" r="1.5" fill="currentColor" />
-      <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-      <circle cx="19" cy="12" r="1.5" fill="currentColor" />
-    </svg>
-  );
-}
-
-
-function FilterPill({ label, onClick }: { label: string; onClick?: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex-1 flex items-center gap-1 p-2 rounded border border-[rgb(var(--accent-rgb)/0.5)] text-white cursor-pointer hover:border-[var(--accent)] transition-colors"
-    >
-      <span className="flex-1 text-left font-ibm-plex-sans font-medium text-sm">{label}</span>
-      <ChevronDownIcon />
-    </button>
-  );
-}
-
-function Badge({ label, border, bg, text }: { label: string; border: string; bg: string; text: string }) {
-  return (
-    <div
-      className="flex h-5 items-center px-2 rounded-[34px] border"
-      style={{ borderColor: border, backgroundColor: bg }}
-    >
-      <span className="font-ibm-plex-sans font-medium text-xs leading-none" style={{ color: text }}>
-        {label}
-      </span>
-    </div>
-  );
-}
-
 function ProgressBar({ value }: { value: number }) {
   const clamped = Math.max(0, Math.min(100, value));
   return (
     <div className="flex flex-col gap-4 w-full">
-      <span className="font-ibm-plex-sans font-medium text-sm text-white">{Math.round(clamped)}% To complete</span>
+      <span className="font-ibm-plex-sans font-medium text-sm text-white">
+        {Math.round(clamped)}% To complete
+      </span>
       <div
         className="h-[11.4px] w-full rounded-[32.33px] overflow-hidden"
         style={{ background: 'rgb(var(--accent-rgb) / 0.2)' }}
@@ -145,30 +82,19 @@ function CameraThumbnail({ url }: { url?: string }) {
   );
 }
 
-type CameraCardProps = {
+type CameraRowProps = {
   camera: Camera;
   active: boolean;
   onSelect?: (id: string) => void;
   onMore?: (id: string) => void;
 };
 
-function CameraCard({ camera, active, onSelect, onMore }: CameraCardProps) {
-  const status = STATUS_STYLES[camera.status];
-  const activity = ACTIVITY_STYLES[camera.activity];
+function CameraRow({ camera, active, onSelect, onMore }: CameraRowProps) {
   return (
-    <button
-      type="button"
-      onClick={() => onSelect?.(camera.id)}
-      aria-pressed={active}
-      className={`flex flex-col gap-5 p-4 rounded-xl w-full text-left cursor-pointer transition-colors ${
-        active
-          ? 'bg-[rgb(var(--accent-rgb)/0.3)] border border-[rgb(var(--accent-rgb)/0.5)]'
-          : 'bg-[rgb(var(--accent-rgb)/0.1)] border border-transparent hover:bg-[rgb(var(--accent-rgb)/0.2)]'
-      }`}
-    >
+    <ListItemButton active={active} onClick={() => onSelect?.(camera.id)}>
       <div className="flex gap-3 items-center w-full">
         <div className="flex flex-1 gap-3 items-center min-w-0">
-          <div className="flex items-center p-2 rounded-[30px] bg-[rgb(var(--accent-rgb)/0.2)] text-white shrink-0">
+          <div className="flex items-center p-2 rounded-[30px] bg-[var(--surface-accent-medium)] text-white shrink-0">
             <CameraIcon />
           </div>
           <span className="font-ibm-plex-sans font-bold text-base text-white tracking-[0.1px] leading-5 truncate">
@@ -176,38 +102,23 @@ function CameraCard({ camera, active, onSelect, onMore }: CameraCardProps) {
           </span>
         </div>
         <div className="flex gap-2 items-center shrink-0">
-          <Badge label={camera.status} border={status.border} bg={status.bg} text={status.text} />
-          <Badge label={camera.activity} border={activity.border} bg={activity.bg} text={activity.text} />
-          {active && (
-            <span
-              role="button"
-              tabIndex={0}
-              aria-label={`More actions for ${camera.name}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                onMore?.(camera.id);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onMore?.(camera.id);
-                }
-              }}
-              className="flex items-center p-1 rounded text-white cursor-pointer hover:bg-[rgba(255,255,255,0.1)]"
-            >
-              <MoreIcon />
-            </span>
+          <Badge label={camera.status} tone={CAMERA_STATUS_TONES[camera.status]} />
+          <Badge label={camera.activity} tone={CAMERA_ACTIVITY_TONES[camera.activity]} />
+          {active && onMore && (
+            <ListMoreHandle
+              label={`More actions for ${camera.name}`}
+              onActivate={() => onMore(camera.id)}
+            />
           )}
         </div>
       </div>
 
-      <div className="h-px w-full bg-[rgb(var(--accent-rgb)/0.3)]" />
+      <div className="h-px w-full bg-[var(--surface-accent-strong)]" />
 
       <ProgressBar value={camera.completion} />
 
       <CameraThumbnail url={camera.thumbnailUrl} />
-    </button>
+    </ListItemButton>
   );
 }
 
@@ -221,11 +132,7 @@ export default function CamerasList({
   onCameraMore,
 }: CamerasListProps) {
   return (
-    <GlassPanel
-      className="absolute top-[110px] right-6 z-20"
-      cornerRadius={24}
-      padding="24px"
-    >
+    <CardPanel className="absolute top-[110px] right-6 z-20">
       <div
         className="flex flex-col gap-8 w-[416px]"
         style={{ height: 'calc((100vh - 110px) / var(--ui-scale) - 110px)' }}
@@ -239,7 +146,7 @@ export default function CamerasList({
               type="button"
               onClick={onSearch}
               aria-label="Search cameras"
-              className="flex items-center px-1 py-1.5 rounded text-white cursor-pointer hover:bg-[rgba(255,255,255,0.1)]"
+              className="flex items-center px-1 py-1.5 rounded text-white cursor-pointer hover:bg-[var(--hover-overlay)]"
             >
               <SearchIcon />
             </button>
@@ -258,7 +165,7 @@ export default function CamerasList({
         >
           {cameras.map((c) => (
             <li key={c.id} role="option" aria-selected={c.id === activeId}>
-              <CameraCard
+              <CameraRow
                 camera={c}
                 active={c.id === activeId}
                 onSelect={onSelect}
@@ -268,6 +175,6 @@ export default function CamerasList({
           ))}
         </ul>
       </div>
-    </GlassPanel>
+    </CardPanel>
   );
 }
