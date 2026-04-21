@@ -28,7 +28,8 @@ export default function PinContextMenu({ onMove, onDelete }: PinContextMenuProps
         <button
           type="button"
           onClick={onMove}
-          className="flex items-center gap-2 px-3 py-2 rounded-md text-white text-xs font-medium tracking-[0.25px] cursor-pointer hover:bg-[rgb(var(--accent-rgb)/0.55)] active:scale-[0.97] text-left [transition-property:background-color,scale] [transition-duration:120ms] [transition-timing-function:cubic-bezier(0.2,0,0,1)]"
+          className="flex items-center gap-2 px-3 py-2 text-white text-xs font-medium tracking-[0.25px] cursor-pointer hover:bg-[rgb(var(--accent-rgb)/0.55)] active:scale-[0.97] text-left [transition-property:background-color,scale] [transition-duration:120ms] [transition-timing-function:cubic-bezier(0.2,0,0,1)]"
+          style={{ borderRadius: 'var(--glass-inner-radius)' }}
         >
           <MoveIcon />
           <span>Move</span>
@@ -36,7 +37,8 @@ export default function PinContextMenu({ onMove, onDelete }: PinContextMenuProps
         <button
           type="button"
           onClick={onDelete}
-          className="flex items-center gap-2 px-3 py-2 rounded-md text-white text-xs font-medium tracking-[0.25px] cursor-pointer hover:bg-[rgb(var(--accent-rgb)/0.55)] active:scale-[0.97] text-left [transition-property:background-color,scale] [transition-duration:120ms] [transition-timing-function:cubic-bezier(0.2,0,0,1)]"
+          className="flex items-center gap-2 px-3 py-2 text-white text-xs font-medium tracking-[0.25px] cursor-pointer hover:bg-[rgb(var(--accent-rgb)/0.55)] active:scale-[0.97] text-left [transition-property:background-color,scale] [transition-duration:120ms] [transition-timing-function:cubic-bezier(0.2,0,0,1)]"
+          style={{ borderRadius: 'var(--glass-inner-radius)' }}
         >
           <TrashIcon />
           <span>Delete</span>
