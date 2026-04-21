@@ -332,47 +332,70 @@ function clusterVessels(
   positions: Record<string, { x: number; y: number }>,
   radiusPx: number,
 ): VesselClusterItem[] {
+  // Single-linkage clustering via union-find: any two vessels whose screen
+  // positions are within radiusPx end up in the same group, transitively.
+  // A simple greedy seed-and-sweep produces split clusters when a third
+  // vessel is close to the second but not to the seed — so near-colocated
+  // vessels at the same site can render as two overlapping bubbles.
   const r2 = radiusPx * radiusPx;
-  const used = new Set<string>();
-  const out: VesselClusterItem[] = [];
+  const ids = vessels.map((v) => v.id).filter((id) => positions[id]);
+  const parent = new Map<string, string>(ids.map((id) => [id, id]));
+  const find = (id: string): string => {
+    let root = id;
+    while (parent.get(root) !== root) root = parent.get(root)!;
+    let cur = id;
+    while (parent.get(cur) !== root) {
+      const next = parent.get(cur)!;
+      parent.set(cur, root);
+      cur = next;
+    }
+    return root;
+  };
+  const union = (a: string, b: string) => {
+    const ra = find(a);
+    const rb = find(b);
+    if (ra !== rb) parent.set(ra, rb);
+  };
+  for (let i = 0; i < ids.length; i++) {
+    const a = ids[i];
+    const pa = positions[a];
+    for (let j = i + 1; j < ids.length; j++) {
+      const b = ids[j];
+      const pb = positions[b];
+      const dx = pb.x - pa.x;
+      const dy = pb.y - pa.y;
+      if (dx * dx + dy * dy < r2) union(a, b);
+    }
+  }
+  const groups = new Map<string, Vessel[]>();
   for (const v of vessels) {
-    if (used.has(v.id)) continue;
-    const p = positions[v.id];
-    if (!p) continue;
-    const group: Vessel[] = [v];
-    used.add(v.id);
-    for (const other of vessels) {
-      if (used.has(other.id)) continue;
-      const po = positions[other.id];
-      if (!po) continue;
-      const dx = po.x - p.x;
-      const dy = po.y - p.y;
-      if (dx * dx + dy * dy < r2) {
-        group.push(other);
-        used.add(other.id);
-      }
-    }
+    if (!positions[v.id]) continue;
+    const root = find(v.id);
+    const arr = groups.get(root);
+    if (arr) arr.push(v);
+    else groups.set(root, [v]);
+  }
+  const out: VesselClusterItem[] = [];
+  for (const group of groups.values()) {
     if (group.length === 1) {
+      const v = group[0];
+      const p = positions[v.id];
       out.push({ kind: 'single', id: v.id, x: p.x, y: p.y, vessel: v });
-    } else {
-      const cx =
-        group.reduce((a, g) => a + positions[g.id].x, 0) / group.length;
-      const cy =
-        group.reduce((a, g) => a + positions[g.id].y, 0) / group.length;
-      const clng =
-        group.reduce((a, g) => a + g.lng, 0) / group.length;
-      const clat =
-        group.reduce((a, g) => a + g.lat, 0) / group.length;
-      out.push({
-        kind: 'cluster',
-        id: `cluster-${group.map((g) => g.id).join('-')}`,
-        x: cx,
-        y: cy,
-        lng: clng,
-        lat: clat,
-        vessels: group,
-      });
+      continue;
     }
+    const cx = group.reduce((a, g) => a + positions[g.id].x, 0) / group.length;
+    const cy = group.reduce((a, g) => a + positions[g.id].y, 0) / group.length;
+    const clng = group.reduce((a, g) => a + g.lng, 0) / group.length;
+    const clat = group.reduce((a, g) => a + g.lat, 0) / group.length;
+    out.push({
+      kind: 'cluster',
+      id: `cluster-${group.map((g) => g.id).join('-')}`,
+      x: cx,
+      y: cy,
+      lng: clng,
+      lat: clat,
+      vessels: group,
+    });
   }
   return out;
 }
@@ -800,7 +823,20 @@ export default function MapView({
       const pt = map.project([v.lng, v.lat]);
       positions[v.id] = { x: pt.x, y: pt.y };
     });
-    return clusterVessels(mockVessels, positions, 36);
+    // Only cluster at outer zoom levels — at closer zooms individual
+    // vessels are visually distinct enough that grouping hides detail.
+    if (mapZoom >= 10) {
+      return mockVessels
+        .filter((v) => positions[v.id])
+        .map((v) => ({
+          kind: 'single' as const,
+          id: v.id,
+          x: positions[v.id].x,
+          y: positions[v.id].y,
+          vessel: v,
+        }));
+    }
+    return clusterVessels(mockVessels, positions, 60);
     // mapZoom drives the recomputation even though project() reads from map.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map, mapZoom]);
@@ -1011,7 +1047,7 @@ export default function MapView({
       </svg>
       {/* Fixed cameras (infrastructure, not tied to pin mode). Hidden when
           zoomed out so they don't clutter the overview. */}
-      {map && mapZoom >= 13 && mockCameras.map((c) => (
+      {map && mapZoom >= 10 && mockCameras.map((c) => (
         <MapMarker
           key={c.id}
           map={map}
